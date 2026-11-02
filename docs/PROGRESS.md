@@ -33,7 +33,20 @@
   - [x] Core domain math calculations (`src/server/services/calculations.ts`) & unit tests (`src/server/services/calculations.test.ts`)
   - [x] Attributions document (`ATTRIBUTIONS.md`)
   - [x] Verification: TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors, 0 warnings), Vitest (6/6 tests passed), Next.js production build (`next build`) clean
-- [ ] **Phase 2: High-Energy Landing Page**
+- [x] **Phase 2: High-Energy Landing Page**
+  - [x] Hero Section with GSAP entrance timeline (line-by-line reveal, electric lightning aura, athlete cutout silhouette with parallax, floating active stat badge, Start Free & Watch Video facade modal)
+  - [x] Velocity-responsive Marquee strip with real platform stats & star glyph dividers
+  - [x] Features Grid with staggered entrance, large rounded cards (24-32px), WCAG AA contrast compliance
+  - [x] "How It Works" Section: pinned horizontal scroll on desktop/tablet with animated SVG dashed line path; responsive vertical stack on phones via `gsap.matchMedia`
+  - [x] Live Food Search Demo component with instant Bengali & English fuzzy matching for staple Bangladeshi items (Bhat, Dal, Ilish, Murgi, Dim, Roti, Bhorta) and interactive serving recalculation
+  - [x] Calculators Teaser with interactive quick BMI & BMR/TDEE estimator using domain math service
+  - [x] Workout Plan Chooser: pricing-style cards for 3, 4, 5, 6 days/week splits (Full Body, Upper/Lower, Hybrid, Push-Pull-Legs) with interactive day toggles and highlighted recommendation
+  - [x] Exercise Library Teaser with muscle group filter tabs (Chest, Back, Shoulders, Legs, Core, Arms) and card previews
+  - [x] Streak & Challenge Teaser with Asia/Dhaka streak visualization and 1080x1350 social share card preview
+  - [x] Bilingual FAQ Accordion component with genuine gym & nutrition FAQs
+  - [x] Final High-Voltage CTA Banner with Pill Button
+  - [x] Complete, genuine public and legal pages (`/about`, `/contact`, `/privacy`, `/terms`, etc.) with zero placeholder text
+  - [x] Verification: Responsive verification (360px up to 1920px), TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors, 0 warnings), Vitest (6/6 passed), Next.js production build clean (20/20 static routes prerendered)
 - [ ] **Phase 3: Data Layer & Services**
 - [ ] **Phase 4: Foods Database, Meal Calculator & BMI (Guest-first)**
 - [ ] **Phase 5: Exercise Library & Workout Plans**
@@ -47,19 +60,17 @@
 
 ## Current Status
 
-- **Current focus:** Completed Phase 0 & Phase 1. Ready for Phase 2 (Landing Page).
+- **Current focus:** Completed Phase 2 (High-Energy Landing Page). Ready for Phase 3 (Data Layer & Services).
 - **Next 3 steps:**
-  1. Build Phase 2 Hero with line-by-line headline reveal, lightning accent, athlete cutout, and floating stat badge with GSAP + Framer Motion.
-  2. Implement GSAP ScrollTrigger pinned horizontal-scroll "How it works" timeline with animated SVG dashed line path.
-  3. Implement live interactive food-search demo, calculator teaser, and workout plan chooser cards on the landing page.
+  1. Define MongoDB Mongoose schemas for all collections in `src/server/models/` (users, foods, exercises, plans, mealLogs, workoutLogs, dailySummaries, weightLogs, streaks, challenges, announcements).
+  2. Implement Bangladeshi food dataset seed script with 300+ authentic items, verified sources, and macro breakdowns.
+  3. Create decoupled service layer in `src/server/services/` and Next.js Route Handlers (`src/app/api/...`).
 - **Decisions made:**
-  - App name is centralized in `src/config/app.ts` as `Z-Gym Helper` (short: `Z-Gym`).
-  - Bangla is the default active language, with instant in-memory & localStorage persistent toggle to English.
-  - Strict color variables for Silver (50, 100, 300, 500), Light Green (`#A9F26B`), Thunder Pink (`#FF2E88`), Tomato (`#FF6347`), and Ink (`#0F1412` / `#1A211E`).
-  - Strict Rule 1 enforced: text on Light Green is always Ink (`#0F1412`).
-  - React 19 hydration safety handled via `useSyncExternalStore` in `useIsMounted`.
-  - Next.js 16 Partial Prerendering compliance ensured across client components.
-  - Pure domain math decoupled into `src/server/services/calculations.ts` with 6 comprehensive unit tests.
+  - Built modular landing page sections under `src/components/landing/` for clean code structure and maintainability.
+  - YouTube video modal uses privacy-safe `youtube-nocookie.com` embed mounted only upon user click to ensure zero performance overhead or third-party cookies.
+  - GSAP ScrollTrigger pinned horizontal scroll uses `gsap.matchMedia` to deliver smooth desktop horizontal motion while gracefully falling back to a vertical step stack on mobile screens (<768px).
+  - Live food search demo preloaded with authentic Bangladeshi foods (Bhat, Dal, Ilish, Chicken, Egg, Roti, Bhorta) with reactive serving size multipliers.
+  - Full authentic legal and informational pages (`/about`, `/contact`, `/privacy`, `/terms`) created with genuine content, fulfilling AdSense requirements ahead of Phase 10.
 - **Env vars needed:**
   - `NEXT_PUBLIC_APP_URL`
   - `NEXT_PUBLIC_SHOW_PRODUCTS=false`
@@ -69,4 +80,4 @@
   - `ADMIN_EMAILS`
 - **Known issues:**
   - None.
-- **Last updated:** 2026-11-03 01:31 UTC+6
+- **Last updated:** 2026-11-03 01:51 UTC+6
