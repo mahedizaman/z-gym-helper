@@ -87,7 +87,7 @@ export function FoodPickerModal({
                 {t(slotTitles[targetSlot].bn, slotTitles[targetSlot].en)}
               </h2>
               <span className="text-xs text-muted-foreground">
-                {t('৩০০+ দেশি খাবার ডেটাবেজ থেকে বেছে নিন', 'Select from 300+ authentic Bangladeshi foods')}
+                {t('৩০০+ দেশি খাবার ডেটাবেজ থেকে বেছে নিন', 'Select from 300+ Bangladeshi foods')}
               </span>
             </div>
           </div>

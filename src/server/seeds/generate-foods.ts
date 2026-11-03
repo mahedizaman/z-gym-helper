@@ -1054,7 +1054,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
     });
   }
 
-  // To reach 300+ authentic items, let's programmatically synthesize regional cooking styles
+  // To reach 300+ items, let's programmatically synthesize regional cooking styles
   // (ভাজা, ঝোল, ভুনা, সর্ষে বাটা, পাতুড়ি, ভাঁপা, ডালনা) across Bangladesh's core local produce:
   const baseVegetables = [
     { bn: 'ফুলকপি', en: 'Cauliflower', kcal: 25, p: 1.9, c: 5.0, f: 0.3, fib: 2.0 },

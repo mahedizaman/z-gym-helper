@@ -252,7 +252,7 @@ export function ExerciseTeaser() {
                   {locale === 'bn' ? ex.levelBn : ex.levelEn}
                 </span>
                 <Link
-                  href={`/exercises`}
+                  href={`/exercises/${ex.slug}`}
                   className="inline-flex items-center gap-1.5 text-xs font-black text-foreground hover:text-lime-brand transition-colors uppercase tracking-wider"
                 >
                   <span>{t('গাইড দেখুন', 'View Guide')}</span>

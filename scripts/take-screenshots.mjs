@@ -13,6 +13,10 @@ const routes = [
   { slug: 'foods', path: '/foods' },
   { slug: 'calculator', path: '/calculator' },
   { slug: 'bmi', path: '/bmi' },
+  { slug: 'exercises', path: '/exercises' },
+  { slug: 'exercise-detail', path: '/exercises/barbell-bench-press' },
+  { slug: 'plans', path: '/plans' },
+  { slug: 'plan-detail', path: '/plans/full-body-3' },
 ];
 
 async function main() {

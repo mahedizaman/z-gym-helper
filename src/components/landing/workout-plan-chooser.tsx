@@ -53,7 +53,7 @@ const PLANS: PlanOption[] = [
   },
   {
     days: 5,
-    slug: 'ppl-upper-lower-5',
+    slug: 'hybrid-5',
     nameBn: '৫-দিনের হাইব্রিড স্প্লিট',
     nameEn: '5-Day Hybrid Split',
     levelBn: 'ইন্টারমিডিয়েট',
@@ -225,7 +225,7 @@ export function WorkoutPlanChooser() {
                 {/* Card CTA */}
                 <div>
                   <PillButton
-                    href="/plans"
+                    href={`/plans/${plan.slug}`}
                     variant={isRec ? 'primary' : 'outline'}
                     size="md"
                     fullWidth

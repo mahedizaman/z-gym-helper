@@ -1,12 +1,20 @@
 import { connectToDatabase } from '@/server/db';
 import { ExerciseModel, IExercise } from '@/server/models/exercise.model';
 import { CORE_EXERCISES_DATA, SeedExercise } from '@/server/seeds/exercises.data';
+import { getExerciseImages } from '@/server/seeds/exercise-images.data';
 
 export interface ExerciseFilterOptions {
   muscle?: string;
   equipment?: string;
   level?: string;
   search?: string;
+}
+
+function withImages<T extends { slug: string; images?: string[] }>(exercise: T): T {
+  if (!exercise.images || exercise.images.length === 0) {
+    return { ...exercise, images: getExerciseImages(exercise.slug) };
+  }
+  return exercise;
 }
 
 export const exerciseService = {
@@ -31,14 +39,16 @@ export const exerciseService = {
         }
 
         const exercises = await ExerciseModel.find(query).lean();
-        if (exercises.length > 0) return exercises as IExercise[];
+        if (exercises.length > 0) {
+          return (exercises as IExercise[]).map(withImages);
+        }
       } catch (err) {
         console.warn('ExerciseModel.find failed, falling back to seed memory:', err);
       }
     }
 
     // In-memory fallback
-    return CORE_EXERCISES_DATA.filter((ex) => {
+    const filtered = CORE_EXERCISES_DATA.filter((ex) => {
       if (muscle && muscle !== 'all' && ex.muscle !== muscle) return false;
       if (equipment && equipment !== 'all' && ex.equipment !== equipment) return false;
       if (level && level !== 'all' && ex.level !== level) return false;
@@ -50,6 +60,8 @@ export const exerciseService = {
       }
       return true;
     });
+
+    return filtered.map(withImages);
   },
 
   /**
@@ -60,10 +72,11 @@ export const exerciseService = {
     if (db) {
       try {
         const ex = await ExerciseModel.findOne({ slug }).lean();
-        if (ex) return ex as IExercise;
+        if (ex) return withImages(ex as IExercise);
       } catch {}
     }
 
-    return CORE_EXERCISES_DATA.find((e) => e.slug === slug) || null;
+    const ex = CORE_EXERCISES_DATA.find((e) => e.slug === slug);
+    return ex ? withImages(ex) : null;
   },
 };

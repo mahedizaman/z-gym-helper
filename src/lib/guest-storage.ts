@@ -56,6 +56,8 @@ const STORAGE_KEYS = {
   PROFILE: 'zgym_guest_profile',
   BURNS_PREFIX: 'zgym_guest_burns_',
   FAVORITES: 'zgym_guest_food_favorites',
+  ACTIVE_PLAN: 'zgym_guest_active_plan',
+  PLAN_PROGRESS_PREFIX: 'zgym_guest_plan_progress_',
 };
 
 // Returns current Asia/Dhaka date YYYY-MM-DD
@@ -221,5 +223,57 @@ export const guestStorage = {
       }
     }
     return updated;
+  },
+
+  getActivePlanSlug(): string | null {
+    if (typeof window === 'undefined') return null;
+    try {
+      return localStorage.getItem(STORAGE_KEYS.ACTIVE_PLAN);
+    } catch {
+      return null;
+    }
+  },
+
+  setActivePlanSlug(slug: string | null): void {
+    if (typeof window === 'undefined') return;
+    try {
+      if (slug) {
+        localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, slug);
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.ACTIVE_PLAN);
+      }
+    } catch {
+      // ignore
+    }
+  },
+
+  getPlanProgress(planSlug: string, date: string = getDhakaDateString()): Record<string, boolean> {
+    if (typeof window === 'undefined') return {};
+    try {
+      const data = localStorage.getItem(`${STORAGE_KEYS.PLAN_PROGRESS_PREFIX}${planSlug}_${date}`);
+      return data ? JSON.parse(data) : {};
+    } catch {
+      return {};
+    }
+  },
+
+  togglePlanExerciseProgress(
+    planSlug: string,
+    key: string,
+    date: string = getDhakaDateString()
+  ): Record<string, boolean> {
+    const progress = this.getPlanProgress(planSlug, date);
+    progress[key] = !progress[key];
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(
+          `${STORAGE_KEYS.PLAN_PROGRESS_PREFIX}${planSlug}_${date}`,
+          JSON.stringify(progress)
+        );
+      } catch {
+        // ignore
+      }
+    }
+    return progress;
   },
 };

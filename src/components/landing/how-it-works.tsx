@@ -20,7 +20,7 @@ export function HowItWorks() {
       titleBn: 'খাবারের পুষ্টি খুঁজুন',
       titleEn: 'Search Bangladeshi Foods',
       descBn: 'ভাত, ডাল, মাছ, মাংস ও ভর্তার সঠিক ক্যালোরি ও প্রোটিন মান মুহূর্তেই জেনে নিন।',
-      descEn: 'Search 300+ authentic local staples and get instant macros for bowls, pieces, or grams.',
+      descEn: 'Search 300+ local staples and get instant macros for bowls, pieces, or grams.',
       badge: 'Step 1',
     },
     {

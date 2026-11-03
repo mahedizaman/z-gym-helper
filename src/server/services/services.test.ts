@@ -9,7 +9,7 @@ import { MealLogCreateSchema, FoodSearchQuerySchema } from '../validators';
 
 describe('Data Layer & Decoupled Service Suite', () => {
   describe('Bangladeshi Food Database & Fuzzy Search', () => {
-    it('has 300+ authentic Bangladeshi food items seeded', () => {
+    it('has 300+ Bangladeshi food items seeded', () => {
       expect(BANGLADESHI_FOODS_DATA.length).toBeGreaterThanOrEqual(300);
     });
 
@@ -65,8 +65,29 @@ describe('Data Layer & Decoupled Service Suite', () => {
       const bench = await exerciseService.getExerciseBySlug('barbell-bench-press');
       expect(bench).toBeDefined();
       expect(bench?.nameBn).toContain('বেঞ্চ প্রেস');
-      expect(bench?.youtubeId).toBeDefined();
+      expect(bench?.youtubeId).toBe('rT7DgCr-3pg');
       expect(bench?.instructionsBn.length).toBeGreaterThan(0);
+      expect(bench?.images?.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('ensures all Bangla exercise guides stay reviewed:false pending certified human review', () => {
+      const reviewedCount = CORE_EXERCISES_DATA.filter((e) => e.reviewed).length;
+      expect(reviewedCount).toBe(0);
+    });
+
+    it('populates free-exercise-db public domain images for exercises', async () => {
+      const exercises = await exerciseService.getExercises();
+      for (const ex of exercises) {
+        expect(ex.images).toBeDefined();
+        expect(ex.images?.length).toBeGreaterThanOrEqual(2);
+        expect(ex.images?.[0]).toContain('free-exercise-db');
+      }
+    });
+
+    it('gracefully handles exercises without verified YouTube video (ab-wheel-rollout)', async () => {
+      const rollout = await exerciseService.getExerciseBySlug('ab-wheel-rollout');
+      expect(rollout).toBeDefined();
+      expect(rollout?.youtubeId).toBe('');
     });
   });
 

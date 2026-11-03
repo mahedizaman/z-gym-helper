@@ -32,6 +32,9 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error: unknown) {
+    if ((error as { digest?: string })?.digest === 'NEXT_PRERENDER_INTERRUPTED') {
+      throw error;
+    }
     console.error('API /api/foods error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to retrieve food items' },

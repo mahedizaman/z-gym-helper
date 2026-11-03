@@ -25,7 +25,7 @@ export function FeaturesGrid() {
       descBn:
         'ভাত, ডাল, ইলিশ, আলু ভর্তা, খিচুড়ি ও মুরগির মাংসের নির্ভরযোগ্য ক্যালোরি, প্রোটিন, ফ্যাট ও কার্বোহাইড্রেট পরিমাপ।',
       descEn:
-        'Authentic nutrient profiles for Bangladeshi staples: Bhat, Dal, Ilish, Bhorta, Roti, and Chicken with exact grams.',
+        'Nutrient profiles for Bangladeshi staples: Bhat, Dal, Ilish, Bhorta, Roti, and Chicken with exact grams.',
       badgeBn: 'ওপেন ডেটা',
       badgeEn: 'Open Data',
       accent: 'lime',
@@ -112,7 +112,7 @@ export function FeaturesGrid() {
           <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
             {t(
               'বাংলাদেশী অ্যাথলেট ও ফিটনেস প্রেমীদের বাস্তব চাহিদা মাথায় রেখে তৈরি সম্পূর্ণ ফ্রি ও কার্যকর টুলস।',
-              'Tailored specifically for Bangladeshi fitness enthusiasts with authentic food macros and zero fluff.'
+              'Tailored specifically for Bangladeshi fitness enthusiasts with local food macros and zero fluff.'
             )}
           </p>
         </div>

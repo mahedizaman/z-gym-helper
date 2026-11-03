@@ -8,7 +8,7 @@ export function MarqueeRibbon() {
   const { t } = useLanguage();
 
   const items = [
-    t('৩০০+ খাঁটি দেশি খাবার পুষ্টি', '300+ Authentic Bangladeshi Foods'),
+    t('৩০০+ দেশি খাবারের পুষ্টি তথ্য', '300+ Bangladeshi Food Profiles'),
     t('১০০% ফ্রি ওপেন ডেটা', '100% Free Open Data Platform'),
     t('সঠিক MIFFLIN-ST JEOR BMR', 'Precision Mifflin-St Jeor BMR'),
     t('৩/৪/৫/৬ দিনের জিম স্প্লিট', '3/4/5/6 Days Gym Workout Splits'),

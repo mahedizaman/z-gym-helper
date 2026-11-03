@@ -32,7 +32,7 @@ export function FinalCTA() {
           <p className="mt-6 text-base sm:text-lg text-silver-300 max-w-2xl leading-relaxed">
             {t(
               'কোনো ক্রেডিট কার্ড বা সাইন-আপ ছাড়াই এখনই ব্যবহার শুরু করুন। সম্পূর্ণ দেশি খাবারের পুষ্টিমান ও বৈজ্ঞানিক জিম প্ল্যান আপনার হাতের মুঠোয়।',
-              'No credit card or registration required. Experience authentic Bangladeshi nutrition and gym tools completely free.'
+              'No credit card or registration required. Experience Bangladeshi nutrition and gym tools completely free.'
             )}
           </p>
 

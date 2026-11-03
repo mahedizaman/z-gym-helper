@@ -11,7 +11,8 @@ export interface SeedExercise {
   commonMistakesBn: string[];
   tipsBn: string;
   tipsEn: string;
-  youtubeId: string;
+  youtubeId?: string;
+  images?: string[];
   reviewed: boolean;
 }
 
@@ -266,7 +267,7 @@ export const CORE_EXERCISES_DATA: SeedExercise[] = [
     commonMistakesBn: ['ওজন টানার সময় পিঠ সোজা না রেখে ঝাঁকুনি দেওয়া।'],
     tipsBn: 'কোর শক্ত রাখুন যাতে লোয়ার ব্যাকে অতিরিক্ত চাপ না পড়ে।',
     tipsEn: 'Brace your core tight to support lower spinal alignment.',
-    youtubeId: 'FWJR5Ve8gkQ',
+    youtubeId: 'vT2GjY_Umpw',
     reviewed: false,
   },
   {
@@ -485,7 +486,7 @@ export const CORE_EXERCISES_DATA: SeedExercise[] = [
     commonMistakesBn: ['হাঁটু অতিরিক্ত ভেঙে স্কোয়াটের মতো করে ফেলা।'],
     tipsBn: 'সব মুভমেন্ট হিপ হিংজে কেন্দ্রীভূত রাখুন।',
     tipsEn: 'Focus on pushing your hips backward like closing a car door.',
-    youtubeId: 'XoZKnQ3i3oU',
+    youtubeId: 'JCXUYuzwNrM',
     reviewed: false,
   },
   {
@@ -607,7 +608,7 @@ export const CORE_EXERCISES_DATA: SeedExercise[] = [
     commonMistakesBn: ['পিঠ দুলিয়ে ওজন তোলা।'],
     tipsBn: 'কনুই নড়াচড়া না করে স্থির রাখুন।',
     tipsEn: 'Pin elbows to your ribs to prevent deltoid takeover.',
-    youtubeId: 'ykJmrZ5v0Oo',
+    youtubeId: 'kwG2ipFRgfo',
     reviewed: false,
   },
   {
@@ -795,7 +796,7 @@ export const CORE_EXERCISES_DATA: SeedExercise[] = [
     commonMistakesBn: ['কোমরের হাড়ে চাপ ফেলে পিঠ ঝুলে যাওয়া।'],
     tipsBn: 'প্রথমদিকে অল্প দূর পর্যন্ত রোল করুন।',
     tipsEn: 'Do not overextend past your ability to maintain neutral spine.',
-    youtubeId: 'rqiTPdK1cWg',
+    youtubeId: '',
     reviewed: false,
   },
   {

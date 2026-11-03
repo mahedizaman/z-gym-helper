@@ -23,8 +23,8 @@ This document logs all open-source, free-licensed, or public domain assets used 
 ---
 
 ## 4. Exercise Imagery & Videos
-- Exercise demonstrations: sourced from the public domain dataset [`free-exercise-db`](https://github.com/yuhonas/free-exercise-db) and verified open-licensed imagery.
-- Video embeds: Rendered using privacy-enhanced `youtube-nocookie.com` façades without scraping, downloading, or re-hosting video streams.
+- Exercise demonstrations and muscle illustrations: sourced from [`free-exercise-db`](https://github.com/yuhonas/free-exercise-db) by yuhonas, licensed under **The Unlicense (Public Domain dedication)**.
+- Video embeds: Rendered using privacy-enhanced `youtube-nocookie.com` façades without scraping, downloading, or re-hosting video streams. Only verified existing YouTube demonstration video IDs are embedded. Exercise guides in Bangla remain marked `reviewed: false` with visible review notices pending certified trainer verification.
 
 ---
 

@@ -17,7 +17,7 @@ export interface IExercise extends Document {
   commonMistakesBn: string[];
   tipsBn: string;
   tipsEn: string;
-  youtubeId: string;
+  youtubeId?: string;
   images?: string[];
   reviewed: boolean;
   createdAt: Date;
@@ -53,7 +53,7 @@ const ExerciseSchema = new Schema<IExercise>(
     commonMistakesBn: [{ type: String }],
     tipsBn: { type: String, default: '' },
     tipsEn: { type: String, default: '' },
-    youtubeId: { type: String, required: true },
+    youtubeId: { type: String, default: '' },
     images: [{ type: String }],
     reviewed: { type: Boolean, default: false },
   },

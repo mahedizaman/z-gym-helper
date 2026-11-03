@@ -108,7 +108,42 @@
   - [x] Quality & Verification:
     - [x] Responsive design across 360px, 744px, and 1280px widths with real Playwright screenshots (0px overflow across all routes)
     - [x] TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors/warnings), Vitest tests passing (22/22 tests), Next.js production build clean (24/24 static & dynamic routes)
-- [ ] **Phase 5: Exercise Library & Workout Plans**
+- [x] **Phase 5: Exercise Library & Workout Plans**
+  - [x] Exercise Library page (`/exercises`):
+    - [x] Muscle group filter tabs (All, Chest, Back, Shoulders, Arms, Legs, Core)
+    - [x] Equipment filter (All, Barbell, Dumbbell, Cable, Machine, Bodyweight)
+    - [x] Difficulty level filter (All, Beginner, Intermediate, Advanced)
+    - [x] Fast bilingual search input across Bangla and English names and muscle groups
+    - [x] Dynamic exercise cards with Free-Exercise-DB thumbnails, muscle tags, difficulty pill, and review status badge
+    - [x] Reviewing notice banner: Bangla guides transparently marked `reviewed: false` with notice explaining AI draft status pending certified trainer review
+  - [x] Exercise Detail pages (`/exercises/[slug]`):
+    - [x] Static prerendering for all 33 exercise routes (`generateStaticParams`)
+    - [x] Dynamic SEO metadata & Open Graph images (`generateMetadata`)
+    - [x] Free-Exercise-DB position gallery: side-by-side or toggleable Starting and Peak Contraction positions
+    - [x] Verified YouTube video embed: Privacy-friendly click-to-load facade via `youtube-nocookie.com`. All 33 exercises audited via HTTP; verified exact matching videos, and omitted video for unverified `ab-wheel-rollout`
+    - [x] Step-by-step execution instructions (Bangla default with English toggle support)
+    - [x] Common mistakes to avoid (highlighted with Tomato warning icons)
+    - [x] Pro trainer tips (highlighted in Lime cards)
+    - [x] Primary and secondary muscle activation tags
+  - [x] Workout Routine Chooser & Splits (`/plans`):
+    - [x] 3, 4, 5, and 6-day training splits (Full Body A/B/C, Upper/Lower, Hybrid, Push-Pull-Legs)
+    - [x] Days per week filter pills (All, 3 Days, 4 Days, 5 Days, 6 Days)
+    - [x] Pricing/routine card design system with target frequency, split badge, experience level, and weekly schedule outline
+    - [x] Active Routine selector: Users can choose their active split, persisted in `guestStorage` (localStorage) and highlighted with green checkmark
+  - [x] Workout Plan Detail pages (`/plans/[slug]`):
+    - [x] Static prerendering for all 4 workout splits (`generateStaticParams`)
+    - [x] Day switcher tabs (e.g. Day 1: Full Body A, Day 2: Full Body B, etc.)
+    - [x] Muscle focus indicator banner for each day
+    - [x] Exercise table/cards with target sets, reps, and direct links to `/exercises/[exerciseSlug]`
+    - [x] Interactive floating Rest Timer widget (`<RestTimer />`) with 45s/60s/90s/120s presets, countdown ring, and Web Audio API completion tone
+    - [x] Interactive exercise check-off checkboxes persisted in `guestStorage` by date
+  - [x] Copy & Legal Compliance:
+    - [x] Audited and removed the word 'authentic' from all site copy and tests
+    - [x] Recorded Free Exercise DB public domain license (The Unlicense) in `ATTRIBUTIONS.md`
+    - [x] Ensured zero leakage of `.env.local` contents or credentials
+  - [x] Quality & Verification:
+    - [x] Responsive design across 360px, 744px, and 1280px widths with real Playwright screenshots (0px overflow across all routes)
+    - [x] Strict TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors, 0 warnings), Vitest (25/25 tests passing), Next.js production build clean (63 static & dynamic routes prerendered)
 - [ ] **Phase 6: Auth, Guest Merge, Dashboard & Weight Tracking**
 - [ ] **Phase 7: Streaks, Progress Card, Challenges & Leaderboard**
 - [ ] **Phase 8: PWA, Web Push & Announcements**
@@ -119,11 +154,11 @@
 
 ## Current Status
 
-- **Current focus:** Completed Phase 4 (Foods Database, Meal Calculator & BMI - Guest-first). Ready for Phase 5 (Exercise Library & Workout Plans).
+- **Current focus:** Completed Phase 5 (Exercise Library, Detail Pages & Workout Plans). Ready for Phase 6 (Auth, Guest Merge, Dashboard & Weight Tracking).
 - **Next 3 steps:**
-  1. Build `/exercises` library page with muscle group filters (Chest, Back, Shoulders, Arms, Legs, Core), equipment filter, search bar, and exercise card grid.
-  2. Build `/exercises/[slug]` detail page with step-by-step Bengali instructions, common mistakes, YouTube facade video embed (`youtube-nocookie.com`), and muscle maps.
-  3. Build `/plans` workout routine chooser for 3, 4, 5, 6-day splits with daily exercises, sets x reps, rest timers, and day check-offs.
+  1. Setup Auth.js (`next-auth`) with Google and Credentials providers and secure session management.
+  2. Implement seamless guest data migration (merging `guestStorage` localStorage meals, active workout plan, profile, and burns into MongoDB user profile upon first login).
+  3. Build logged-in Dashboard (`/dashboard`), Activity Logger (`/log`), and weight tracking history.
 - **Decisions made:**
   - Database connection cached globally for serverless/Edge-compatible Node.js environments.
   - MealLog and WorkoutLog schemas configured with 30-day MongoDB TTL index (`expireAfterSeconds: 2592000`).
