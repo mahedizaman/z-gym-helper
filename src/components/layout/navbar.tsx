@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowRight, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, X, ArrowRight, User, LogOut, LayoutDashboard, Shield } from 'lucide-react';
 import { Wordmark } from '@/components/ui/wordmark';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { LanguageToggle } from '@/components/ui/language-toggle';
@@ -103,8 +103,19 @@ export function Navbar() {
           <LanguageToggle />
           <ThemeToggle />
           {isAuthenticated ? (
-            <Link
-              href="/dashboard"
+            <>
+              {session?.user?.role === 'admin' && (
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-lime-brand/40 bg-lime-brand/10 hover:bg-lime-brand/20 text-lime-brand text-xs font-bold transition-all shadow-xs"
+                  title="Admin Console"
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  <span className="hidden xl:inline">Admin</span>
+                </Link>
+              )}
+              <Link
+                href="/dashboard"
               className="flex items-center gap-2 pl-2 pr-3.5 py-1.5 rounded-full border border-border/80 bg-secondary/70 hover:border-lime-brand/50 text-foreground transition-all duration-200 cursor-pointer shadow-xs"
               title={session?.user?.name || 'Dashboard'}
             >
@@ -121,7 +132,8 @@ export function Navbar() {
                 {session?.user?.name?.split(' ')[0] || 'User'}
               </span>
             </Link>
-          ) : (
+          </>
+        ) : (
             <>
               <PillButton
                 href="/calculator"
@@ -213,6 +225,19 @@ export function Navbar() {
               <div className="flex flex-col gap-3">
                 {isAuthenticated ? (
                   <>
+                    {session?.user?.role === 'admin' && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center justify-between px-4 py-3 rounded-2xl bg-secondary border border-lime-brand/40 text-lime-brand font-bold text-sm"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Shield className="w-4 h-4" />
+                          {t('অ্যাডমিন কনসোল', 'Admin Console')}
+                        </span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    )}
                     <Link
                       href="/dashboard"
                       onClick={() => setMobileMenuOpen(false)}

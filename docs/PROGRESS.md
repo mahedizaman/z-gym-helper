@@ -108,7 +108,41 @@
     - [x] ESLint: clean (0 errors, 0 warnings).
     - [x] Next.js production build: clean (80 routes compiled).
     - [x] Playwright screenshots: verified across 360px, 744px, and 1280px (0px horizontal overflow across all 16 views).
-- [ ] **Phase 9: Admin Dashboard**
+- [x] **Phase 9: Admin Dashboard**
+  - [x] **Server-Side Admin Role & Guard**:
+    - [x] Implemented `requireServerAdmin()` in [`src/server/utils/admin-guard.ts`](../src/server/utils/admin-guard.ts) strictly evaluated on the server using `auth()`, `ADMIN_EMAILS`, and MongoDB role checks.
+    - [x] Enforced server-side authentication and admin checks on `/admin` page and every admin API endpoint (`/api/admin/*`).
+    - [x] In NextAuth `signIn` callback, disabled user accounts are strictly rejected from logging in.
+  - [x] **Administrative Audit Trail**:
+    - [x] Created `AuditLogModel` ([`src/server/models/audit-log.model.ts`](../src/server/models/audit-log.model.ts)) logging who (`adminId`, `adminEmail`), what (`action`), when (`createdAt`), target ID, IP, and structured details.
+    - [x] Audit logs recorded for every admin mutation (disabling/enabling users, creating/updating foods and exercises, broadcasting announcements).
+  - [x] **Throttled `lastActiveAt` Updates**:
+    - [x] Updated user service `touchLastActive()` and login session refresh so `lastActiveAt` is updated at most once per hour.
+  - [x] **Platform Analytics & Privacy Protection**:
+    - [x] Implemented `adminService.getMetrics()` aggregating total registered users, 7-day active members formatted as `'37/100'` with an animated progress bar, DAU / WAU / MAU, signups today (Asia/Dhaka), and 30-day signup chart using Recharts.
+    - [x] **Enforced Privacy Standard**: Admins can NEVER view any member's personal meal, weight, or workout logs. Only account-level data (nickname, email, joined date, last active, status) is exposed.
+  - [x] **Announcement Composer & History**:
+    - [x] Composer supporting bilingual text (Bangla & English) with character counters (max 100 title, max 500 content).
+    - [x] Confirmation dialog before broadcasting to all athletes.
+    - [x] Rate limiting on dispatch and single FCM topic push to `/topics/announcements`.
+    - [x] History table of all past announcements.
+  - [x] **Food Database Management**:
+    - [x] Interactive food creation & editing modal.
+    - [x] **Enforced Strict Rule**: The `verified` flag can be set `true` ONLY with `source` filled in. Attempting to mark a food verified without a source citation is strictly rejected on both client and server.
+  - [x] **Exercise Library Management**:
+    - [x] Interactive exercise creation & editing modal.
+    - [x] YouTube ID format validated to exact 11-character code or blank (no fake IDs).
+    - [x] Reviewed guide toggle.
+  - [x] **User Management & Access Control**:
+    - [x] Searchable, paginated user list by nickname or email.
+    - [x] Account disabling toggle.
+    - [x] **Self & Admin Protection**: Admins cannot disable their own account and cannot disable other administrators.
+  - [x] **Verification**:
+    - [x] 51/51 tests passing across 5 test suites.
+    - [x] Clean TypeScript (`tsc --noEmit` 0 errors).
+    - [x] Clean ESLint (0 errors, 0 warnings).
+    - [x] Next.js production build clean (87 static & dynamic routes compiled).
+    - [x] Playwright screenshots verified across 360px, 744px, and 1280px for all 17 routes with 0px horizontal overflow.
 - [ ] **Phase 10: AdSlot, Legal Pages, SEO, A11y & Production Polish**
 
 ---
@@ -127,25 +161,26 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 | `AUTH_GOOGLE_ID` | OAuth | Google Cloud Console OAuth 2.0 Client ID |
 | `AUTH_GOOGLE_SECRET` | OAuth | Google Cloud Console OAuth 2.0 Client Secret |
 | `ADMIN_EMAILS` | Authorization | Comma-separated list of admin email addresses |
-| `FIREBASE_SERVICE_ACCOUNT_BASE64` | Web Push (FCM) | **Phase 8:** Base64-encoded JSON string of the Firebase service account private key. Decoded in memory on the server only. |
-| `CRON_SECRET` | Cron Security | **Phase 8:** Secret bearer token for authenticating scheduled reminder cron dispatches via GitHub Actions or external cron services. |
+| `FIREBASE_SERVICE_ACCOUNT_BASE64` | Web Push (FCM) | Base64-encoded JSON string of the Firebase service account private key. Decoded in memory on the server only. |
+| `CRON_SECRET` | Cron Security | Secret bearer token for authenticating scheduled reminder cron dispatches via GitHub Actions or external cron services. |
 
 ---
 
 ## Current Status
 
-- **Current focus:** Completed Phase 8 (PWA, Web Push & Announcements). Ready for Phase 9 (Admin Dashboard).
+- **Current focus:** Completed Phase 9 (Admin Dashboard). Ready for Phase 10 (AdSlot, Legal Pages, SEO, A11y & Production Polish).
 - **Next 3 steps:**
-  1. Build admin route guards checking `ADMIN_EMAILS` on the server.
-  2. Implement admin dashboard analytics (users count, active daily streaks, food items, logs volume).
-  3. Provide admin management UI for announcements, food verification status, and exercise review.
+  1. Build `<AdSlot />` with reserved layout dimensions and `NEXT_PUBLIC_ADS_ENABLED=false` default (excluding `/login`, `/settings`, and `/admin`).
+  2. Complete Cookie/Consent banner and audit all public/legal pages (`/about`, `/contact`, `/privacy`, `/terms`).
+  3. Conduct full accessibility (a11y), SEO (JSON-LD, sitemap, robots, OG cards), and performance polish for final delivery.
 - **Decisions made:**
-  - `FIREBASE_SERVICE_ACCOUNT_BASE64` is decoded only on the server, wrapped in try/catch, and returns graceful fallback without crashing if unset or invalid.
-  - Rate limiter is placed behind `IRateLimiterStore` interface so Redis/Upstash can replace in-memory storage in multi-region deployments.
-  - Authenticated personal routes and `/api/*` are strictly excluded from service worker caching (`NetworkOnly` / `NetworkFirst`), guaranteeing no stale user data is served.
-  - Cron endpoint uses `crypto.timingSafeEqual` with byte buffers to avoid timing vulnerability attacks.
+  - Admin access is protected exclusively on the server in every `/admin` page and every `/api/admin/*` route.
+  - Admins cannot disable themselves or other admins to prevent accidental lockout or privilege attacks.
+  - Disabled accounts are actively barred from sign-in via NextAuth `signIn` callback.
+  - Food `verified` status is strictly tied to a populated `source` citation.
+  - `lastActiveAt` updates are throttled to at most once per hour to minimize DB write pressure.
 - **Logged-in screens note for Playwright:**
-  - Automated screenshots for `/dashboard`, `/log`, `/progress`, `/settings`, and `/c/preview` were checked in the unauthenticated guest view (which displays the guest login prompts / guest local data). Authenticated user session views require live Google OAuth login which cannot be automated headlessly without real Google credentials.
+  - Automated screenshots for `/dashboard`, `/log`, `/progress`, `/settings`, `/c/preview`, and `/admin` were checked in the unauthenticated guest view (which showcases the guest login prompt and 403 Forbidden access check on `/admin`). Authenticated user and admin session views require live Google OAuth login which cannot be automated headlessly without real Google credentials.
 - **Known issues:**
   - Nutrition values need human verification against certified food composition tables (all 308 seeded items are transparently set to `verified: false`).
-- **Last updated:** 2026-11-03 17:00 UTC+6
+- **Last updated:** 2026-11-03 17:45 UTC+6

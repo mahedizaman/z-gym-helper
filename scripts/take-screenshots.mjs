@@ -25,6 +25,7 @@ const routes = [
   { slug: 'leaderboard', path: '/leaderboard' },
   { slug: 'challenges', path: '/challenges' },
   { slug: 'challenge-detail', path: '/c/preview' },
+  { slug: 'admin', path: '/admin' },
 ];
 
 async function main() {

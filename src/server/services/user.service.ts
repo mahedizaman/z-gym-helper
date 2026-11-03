@@ -93,9 +93,12 @@ export const userService = {
     let user = await UserModel.findOne({ email });
 
     if (user) {
-      // Refresh admin role, last active timestamp, and avatar
+      // Refresh admin role, last active timestamp (at most once per hour), and avatar
       user.role = isAdmin ? 'admin' : user.role || 'user';
-      user.lastActiveAt = new Date();
+      const oneHourAgo = Date.now() - 60 * 60 * 1000;
+      if (!user.lastActiveAt || new Date(user.lastActiveAt).getTime() < oneHourAgo) {
+        user.lastActiveAt = new Date();
+      }
       if (profile.image) user.avatar = profile.image;
       if (!user.nickname) {
         user.nickname = generateDefaultNickname();
@@ -345,5 +348,22 @@ export const userService = {
     ]);
 
     return true;
+  },
+
+  /**
+   * Update user lastActiveAt timestamp at most once per hour.
+   */
+  async touchLastActive(userId: string): Promise<void> {
+    const db = await connectToDatabase();
+    if (!db) return;
+
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    await UserModel.updateOne(
+      {
+        _id: userId,
+        $or: [{ lastActiveAt: { $lt: oneHourAgo } }, { lastActiveAt: { $exists: false } }],
+      },
+      { $set: { lastActiveAt: new Date() } }
+    );
   },
 };

@@ -25,6 +25,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             image: user.image || undefined,
           });
           if (dbUser) {
+            if (dbUser.disabled) {
+              console.warn(`[Auth] Disabled user ${user.email} attempted to sign in.`);
+              return false;
+            }
             user.id = dbUser._id.toString();
             user.role = dbUser.role;
           }
