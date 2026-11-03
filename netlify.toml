@@ -1,0 +1,33 @@
+# Netlify Deployment Configuration for Z-Gym Helper (Next.js 16 App Router)
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NETLIFY = "true"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# PWA Service Worker: Ensure root scope & fresh service worker delivery
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Content-Type = "application/javascript; charset=utf-8"
+    Service-Worker-Allowed = "/"
+
+# PWA Web Manifest
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Content-Type = "application/manifest+json; charset=utf-8"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Security & Static Asset Optimization
+[[headers]]
+  for = "/icons/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
