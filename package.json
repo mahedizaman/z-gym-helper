@@ -9,7 +9,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "db:seed": "tsx ./src/server/seeds/seed.ts"
+    "db:seed": "tsx --env-file=.env.local ./src/server/seeds/seed.ts",
+    "db:ping": "tsx --env-file=.env.local ./src/server/seeds/ping.ts"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
