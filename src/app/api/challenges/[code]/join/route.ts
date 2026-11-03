@@ -1,0 +1,58 @@
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { challengeService } from '@/server/services/challenge.service';
+import { ChallengeJoinInputSchema } from '@/server/validators';
+import { enforceRateLimit } from '@/server/utils/rate-limiter';
+import { UserModel } from '@/server/models/user.model';
+import { connectToDatabase } from '@/server/db';
+
+export async function POST(
+  request: Request,
+  props: { params: Promise<{ code: string }> }
+) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Rate limit: max 20 join attempts per 10 minutes
+  const rateLimitError = enforceRateLimit(request, 'join-challenge', {
+    limit: 20,
+    windowMs: 10 * 60 * 1000,
+    identifier: session.user.id,
+  });
+  if (rateLimitError) return rateLimitError;
+
+  const { code } = await props.params;
+  const parsed = ChallengeJoinInputSchema.safeParse({ code });
+  if (!parsed.success) {
+    return NextResponse.json(
+      { success: false, error: 'Invalid challenge code', details: parsed.error.format() },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await connectToDatabase();
+    const user = await UserModel.findById(session.user.id);
+    const nickname = user?.nickname || 'Athlete';
+
+    const result = await challengeService.joinChallenge(
+      parsed.data.code,
+      session.user.id,
+      nickname
+    );
+
+    if (!result.success) {
+      return NextResponse.json(
+        { success: false, error: result.error || 'Failed to join challenge' },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json({ success: true, message: 'Successfully joined challenge' });
+  } catch (error) {
+    console.error('POST /api/challenges/[code]/join error:', error);
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+  }
+}

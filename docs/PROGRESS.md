@@ -185,7 +185,40 @@
     - [x] Vitest suite: 27/27 tests passing (`services.test.ts` with `isAdminEmail` checks)
     - [x] Next.js production build: 69 static & dynamic routes compiled cleanly
     - [x] Playwright responsive screenshots at 360px, 744px, and 1280px widths across all 13 routes (0px horizontal overflow)
-- [ ] **Phase 7: Streaks, Progress Card, Challenges & Leaderboard**
+- [x] **Phase 7: Streaks, Progress Card, Challenges & Leaderboard**
+  - [x] Streak Tracking:
+    - [x] Evaluated strictly in `Asia/Dhaka` timezone (UTC+6) via `getDhakaDateString` and `calculateStreak`
+    - [x] Meal logs, workout sessions, and merged guest logs increment and maintain Dhaka day streaks
+    - [x] Unit tested for multi-day consecutive runs, same-day multiple entries, and graceful 1-day preservation
+  - [x] Nicknames & Privacy Guarantee:
+    - [x] Default nicknames generated randomly (3-20 characters, e.g. `Hero_4829`, `Athlete_9124`)
+    - [x] User-editable nickname setting with Zod validation (3-20 chars)
+    - [x] Google real name, email, and Google avatar are NEVER exposed on public leaderboards, challenges, or social share cards
+  - [x] Community Leaderboard (`/leaderboard`):
+    - [x] 100% Opt-in via user profile (`optInLeaderboard`)
+    - [x] Ranks by active streak or weight loss percentage, NEVER raw kg
+    - [x] Custom medal indicators for Top 3 (🥇, 🥈, 🥉) and personalized pinned rank banner for the logged-in athlete
+  - [x] Server-Generated Dynamic Progress Card (`/api/og/progress`):
+    - [x] Rendered with `next/og` (`ImageResponse`) in 1080x1080 (Square) and 1080x1350 (Story) formats
+    - [x] Displays Wordmark, Nickname, Streak, Workouts completed, and 30-day percentage delta
+    - [x] Raw kg weight remains strictly hidden unless the user explicitly toggles "Show weight on card"
+    - [x] In-app `<ProgressShareModal />` with Web Share API, direct PNG download, and WhatsApp fallbacks
+  - [x] Friend Challenges (`/challenges` and `/c/[code]`):
+    - [x] Unguessable 8-character invite codes generated with `crypto.randomBytes` (over 1.09 trillion combinations)
+    - [x] Strictly capped at 10 participants maximum
+    - [x] Duration choices: 7, 14, or 30 days
+    - [x] Metrics supported: `streak`, `workouts`, or `weight_loss_pct`
+    - [x] Dedicated `/c/[code]` screen with standings, 1-click invite link copying, and "Leave Challenge" capability
+  - [x] Security, Rate Limiting & Account Deletion:
+    - [x] Built sliding-window in-memory Rate Limiter utility (`src/server/utils/rate-limiter.ts`)
+    - [x] Audited and added Zod validation + Rate Limiting to EVERY write endpoint in the app (12 endpoints total)
+    - [x] Extended `DELETE /api/user/delete-account` to remove user from all challenge participant lists and clean up empty challenges
+  - [x] Quality & Verification:
+    - [x] Strict TypeScript clean (`tsc --noEmit` 0 errors)
+    - [x] Clean ESLint (0 errors, 0 warnings)
+    - [x] Vitest suite: 33/33 tests passing (including challenge codes, default nicknames, and Zod schemas)
+    - [x] Next.js production build: 75 static & dynamic routes compiled cleanly
+    - [x] Playwright responsive screenshots at 360px, 744px, and 1280px across all 16 routes (0px horizontal overflow)
 - [ ] **Phase 8: PWA, Web Push & Announcements**
 - [ ] **Phase 9: Admin Dashboard**
 - [ ] **Phase 10: AdSlot, Legal Pages, SEO, A11y & Production Polish**
@@ -194,17 +227,29 @@
 
 ## Current Status
 
-- **Current focus:** Completed Phase 6 (Auth, Guest Merge, Dashboard & Weight Tracking). Ready for Phase 7 (Streaks, Progress Card, Challenges & Leaderboard).
+- **Current focus:** Completed Phase 7 (Streaks, Progress Card, Challenges & Leaderboard). Ready for Phase 8 (PWA, Web Push & Announcements).
 - **Next 3 steps:**
-  1. Implement streak tracking logic in `Asia/Dhaka` timezone with frozen streak / freeze support.
-  2. Build dynamic progress share card with canvas/SVG rendering for social sharing.
-  3. Build community challenges and opt-in leaderboard (`/challenges`, `/leaderboard`).
+  1. Configure Serwist PWA manifest, service worker caching, and install prompt banner.
+  2. Implement Web Push notifications via Firebase Cloud Messaging (FCM) topics.
+  3. Build in-app Announcements collection and bell indicator.
 - **Decisions made:**
-  - Auth.js v5 configured strictly with Google Sign-In; no password storage or email authentication.
-  - Role-based access control derives admin status exclusively on the server from `ADMIN_EMAILS` environment variable.
-  - All mutating user routes authenticate via server session; user IDs in request payloads are rejected/ignored.
-  - `GuestSyncListener` silently merges localStorage guest logs to MongoDB on first authentication without creating duplicates.
-  - Responsive layout verified at 360px, 744px, and 1280px across all routes with 0 horizontal overflow.
+  - Nicknames default to randomly generated tags (`Hero_XXXX`, `Athlete_XXXX`) to protect user privacy from Google profile defaults.
+  - Public leaderboard and social cards never expose raw kg weights or Google account identifiers.
+  - All write endpoints (12 total) have strict Zod validation and in-memory rate limiting.
+  - Challenge invite codes are 8-character cryptographically random strings with unambiguous characters, capped at 10 participants.
+  - Next.js 16 cacheComponents compatibility: dynamic routes await params within Suspense boundaries.
+- **Env vars needed:**
+  - `NEXT_PUBLIC_APP_URL`
+  - `NEXT_PUBLIC_SHOW_PRODUCTS=false`
+  - `NEXT_PUBLIC_ADS_ENABLED=false`
+  - `MONGODB_URI`
+  - `AUTH_SECRET` / `NEXTAUTH_SECRET`
+  - `ADMIN_EMAILS`
+  - `AUTH_GOOGLE_ID`
+  - `AUTH_GOOGLE_SECRET`
+- **Known issues:**
+  - Nutrition values need human verification against certified food composition tables (all 308 seeded items are transparently set to `verified: false`).
+- **Last updated:** 2026-11-03 15:30 UTC+6
 - **Env vars needed:**
   - `NEXT_PUBLIC_APP_URL`
   - `NEXT_PUBLIC_SHOW_PRODUCTS=false`

@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { userService } from '@/server/services/user.service';
+import { enforceRateLimit } from '@/server/utils/rate-limiter';
 import { z } from 'zod';
 
 const UpdateProfileSchema = z.object({
-  nickname: z.string().min(2).max(50).optional(),
+  nickname: z.string().trim().min(3).max(20).optional(),
   gender: z.enum(['male', 'female']).optional(),
   age: z.number().int().min(12).max(100).optional(),
   heightCm: z.number().min(100).max(250).optional(),
@@ -14,6 +15,8 @@ const UpdateProfileSchema = z.object({
   activityLevel: z
     .enum(['sedentary', 'light', 'moderate', 'very_active', 'extra_active'])
     .optional(),
+  optInLeaderboard: z.boolean().optional(),
+  shareWeight: z.boolean().optional(),
 });
 
 export async function GET() {
@@ -37,6 +40,8 @@ export async function GET() {
       avatar: user.avatar,
       timezone: user.timezone,
       profile: user.profile,
+      optInLeaderboard: user.optInLeaderboard ?? false,
+      shareWeight: user.shareWeight ?? false,
       createdAt: user.createdAt,
     },
   });
@@ -48,6 +53,14 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Rate limit: max 30 updates per minute
+  const rateLimitError = enforceRateLimit(request, 'user-patch', {
+    limit: 30,
+    windowMs: 60 * 1000,
+    identifier: session.user.id,
+  });
+  if (rateLimitError) return rateLimitError;
+
   try {
     const body = await request.json();
     const parsed = UpdateProfileSchema.safeParse(body);
@@ -58,7 +71,7 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const { nickname, ...profileFields } = parsed.data;
+    const { nickname, optInLeaderboard, shareWeight, ...profileFields } = parsed.data;
     const cleanProfile = {
       ...profileFields,
       targetWeightKg: profileFields.targetWeightKg ?? undefined,
@@ -66,6 +79,8 @@ export async function PATCH(request: Request) {
     };
     const updatedUser = await userService.updateProfile(session.user.id, {
       nickname,
+      optInLeaderboard,
+      shareWeight,
       profile: cleanProfile,
     });
 

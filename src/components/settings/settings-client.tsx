@@ -19,6 +19,7 @@ interface UserData {
   nickname: string;
   avatar?: string;
   timezone: string;
+  optInLeaderboard?: boolean;
   profile: {
     gender: 'male' | 'female';
     weightKg: number;
@@ -63,6 +64,7 @@ export function SettingsClient() {
     const target = guestStorage.getProfile().customCalorieTarget;
     return target ? String(target) : '';
   });
+  const [optInLeaderboard, setOptInLeaderboard] = useState<boolean>(false);
 
   // Delete account confirmation modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -72,6 +74,9 @@ export function SettingsClient() {
   const applyUserData = useCallback((u: UserData) => {
     setUserData(u);
     setNickname(u.nickname || '');
+    if (typeof u.optInLeaderboard === 'boolean') {
+      setOptInLeaderboard(u.optInLeaderboard);
+    }
     if (u.profile) {
       setGender(u.profile.gender || 'male');
       setAge(u.profile.age || 26);
@@ -147,6 +152,7 @@ export function SettingsClient() {
             weightKg,
             activityLevel,
             calorieTarget: calorieTargetVal,
+            optInLeaderboard,
           }),
         });
 
@@ -185,6 +191,8 @@ export function SettingsClient() {
       setDeleting(true);
       const res = await fetch('/api/user/delete-account', {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirmText: 'DELETE' }),
       });
 
       if (res.ok) {
@@ -260,17 +268,51 @@ export function SettingsClient() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {/* Nickname (Logged-in only) */}
           {status === 'authenticated' && (
-            <div className="sm:col-span-2">
-              <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
-                {t('ডাকনাম / নিকনেম', 'Nickname')} *
-              </label>
-              <input
-                type="text"
-                required
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-2xl bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-lime-brand"
-              />
+            <div className="sm:col-span-2 space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                  {t('ডাকনাম / নিকনেম', 'Nickname')} *
+                </label>
+                <input
+                  type="text"
+                  required
+                  minLength={3}
+                  maxLength={20}
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-2xl bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-lime-brand"
+                />
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  {t(
+                    '৩ থেকে ২০ অক্ষরের নিকনেম। এটি লিডারবোর্ড ও গ্রুপ চ্যালেঞ্জে ব্যবহৃত হয়।',
+                    '3-20 characters nickname used on leaderboard and group challenges.'
+                  )}
+                </p>
+              </div>
+
+              {/* Opt-in Leaderboard Toggle */}
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-muted/30 border border-border/60">
+                <div className="space-y-0.5">
+                  <span className="text-xs font-bold text-foreground block">
+                    {t('কমিউনিটি লিডারবোর্ডে অংশ নিন', 'Join Community Leaderboard')}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground block">
+                    {t(
+                      'আপনার নিকনেম ও স্ট্রিক লিডারবোর্ডে প্রদর্শিত হবে। আসল নাম বা ওজন গোপন থাকবে।',
+                      'Display your nickname and streak publicly. Email, photo, and kg weight remain private.'
+                    )}
+                  </span>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                  <input
+                    type="checkbox"
+                    checked={optInLeaderboard}
+                    onChange={(e) => setOptInLeaderboard(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-lime-brand"></div>
+                </label>
+              </div>
             </div>
           )}
 

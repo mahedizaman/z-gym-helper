@@ -4,6 +4,8 @@ import { connectToDatabase } from '@/server/db';
 import { WeightLogModel } from '@/server/models/log.model';
 import { UserModel } from '@/server/models/user.model';
 import { getDhakaDateString } from '@/server/services/calculations';
+import { enforceRateLimit } from '@/server/utils/rate-limiter';
+import { WeightLogDeleteSchema } from '@/server/validators';
 import { z } from 'zod';
 
 const AddWeightSchema = z.object({
@@ -64,6 +66,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Rate limit: max 30 weight logs per minute
+  const rateLimitError = enforceRateLimit(request, 'user-weight-post', {
+    limit: 30,
+    windowMs: 60 * 1000,
+    identifier: session.user.id,
+  });
+  if (rateLimitError) return rateLimitError;
+
   const db = await connectToDatabase();
   if (!db) {
     return NextResponse.json({ success: false, error: 'Database unavailable' }, { status: 503 });
@@ -110,6 +120,14 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Rate limit: max 30 deletions per minute
+  const rateLimitError = enforceRateLimit(request, 'user-weight-delete', {
+    limit: 30,
+    windowMs: 60 * 1000,
+    identifier: session.user.id,
+  });
+  if (rateLimitError) return rateLimitError;
+
   const db = await connectToDatabase();
   if (!db) {
     return NextResponse.json({ success: false, error: 'Database unavailable' }, { status: 503 });
@@ -118,12 +136,13 @@ export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    if (!id) {
-      return NextResponse.json({ success: false, error: 'Log ID required' }, { status: 400 });
+    const parsed = WeightLogDeleteSchema.safeParse({ id });
+    if (!parsed.success) {
+      return NextResponse.json({ success: false, error: 'Valid Log ID required' }, { status: 400 });
     }
 
     // Ensure the log belongs strictly to this user
-    await WeightLogModel.findOneAndDelete({ _id: id, userId: session.user.id });
+    await WeightLogModel.findOneAndDelete({ _id: parsed.data.id, userId: session.user.id });
 
     return NextResponse.json({ success: true, message: 'Weight log deleted' });
   } catch (error) {

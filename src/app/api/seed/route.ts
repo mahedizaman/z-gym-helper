@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { runDatabaseSeed } from '@/server/seeds/seed';
+import { enforceRateLimit } from '@/server/utils/rate-limiter';
 
 export async function POST(request: NextRequest) {
+  // Rate limit: max 5 requests per minute
+  const rateLimitError = enforceRateLimit(request, 'seed', { limit: 5, windowMs: 60 * 1000 });
+  if (rateLimitError) return rateLimitError;
+
   // Seeding via HTTP API is permanently disabled in production to prevent accidental data wipes
   if (process.env.NODE_ENV === 'production') {
     return NextResponse.json(

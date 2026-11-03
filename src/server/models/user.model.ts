@@ -19,6 +19,8 @@ export interface IUser extends Document {
   timezone: string;
   profile?: IUserProfile;
   disabled?: boolean;
+  optInLeaderboard?: boolean;
+  shareWeight?: boolean;
   lastSeenAnnouncementAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -51,6 +53,8 @@ const UserSchema = new Schema<IUser>(
     timezone: { type: String, default: 'Asia/Dhaka' },
     profile: { type: UserProfileSchema },
     disabled: { type: Boolean, default: false },
+    optInLeaderboard: { type: Boolean, default: false },
+    shareWeight: { type: Boolean, default: false },
     lastSeenAnnouncementAt: { type: Date },
   },
   { timestamps: true }

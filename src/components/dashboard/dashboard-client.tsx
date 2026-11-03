@@ -17,7 +17,9 @@ import {
   Zap,
   Calendar,
   Layers,
+  Share2,
 } from 'lucide-react';
+import { ProgressShareModal } from '@/components/progress/progress-share-modal';
 import {
   ResponsiveContainer,
   BarChart,
@@ -103,6 +105,7 @@ export function DashboardClient() {
   const [showWeightModal, setShowWeightModal] = useState(false);
   const [newWeight, setNewWeight] = useState<string>('');
   const [submittingWeight, setSubmittingWeight] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -254,19 +257,30 @@ export function DashboardClient() {
           </div>
         </div>
 
-        {/* Current Streak Badge */}
-        <div className="flex items-center gap-3 bg-muted/50 p-3 px-5 rounded-2xl border border-border">
-          <div className="w-10 h-10 rounded-xl bg-thunder-soft text-thunder-base flex items-center justify-center font-bold">
-            <Flame className="w-6 h-6 fill-current text-thunder-base" />
-          </div>
-          <div>
-            <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              {t('ফিটনেস স্ট্রিক', 'Current Streak')}
+        {/* Right Action: Current Streak Badge & Share Card */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-3 bg-muted/50 p-3 px-5 rounded-2xl border border-border">
+            <div className="w-10 h-10 rounded-xl bg-thunder-soft text-thunder-base flex items-center justify-center font-bold">
+              <Flame className="w-6 h-6 fill-current text-thunder-base" />
             </div>
-            <div className="font-display font-black text-xl text-foreground">
-              {t(`${streak.currentStreak} দিন একটিভ`, `${streak.currentStreak} Days Active`)}
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                {t('ফিটনেস স্ট্রিক', 'Current Streak')}
+              </div>
+              <div className="font-display font-black text-xl text-foreground">
+                {t(`${streak.currentStreak} দিন একটিভ`, `${streak.currentStreak} Days Active`)}
+              </div>
             </div>
           </div>
+
+          <button
+            onClick={() => setShowShareModal(true)}
+            className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-lime-brand text-ink-base font-bold text-xs hover:bg-lime-hover shadow-sm transition-all cursor-pointer"
+            title="Share Progress Card"
+          >
+            <Share2 className="w-4 h-4" />
+            <span className="hidden sm:inline">{t('কার্ড শেয়ার', 'Share Card')}</span>
+          </button>
         </div>
       </div>
 
@@ -529,6 +543,21 @@ export function DashboardClient() {
           </div>
         </div>
       )}
+
+      {/* Progress Share Card Modal */}
+      <ProgressShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        nickname={user.nickname}
+        streak={streak.currentStreak}
+        workouts={today.summary.mealCount || 0}
+        monthChange={
+          weightStats.totalChange !== 0
+            ? `${weightStats.totalChange > 0 ? '+' : ''}${weightStats.totalChange} kg`
+            : '0 kg'
+        }
+        weightKg={user.profile?.weightKg || weightStats.current}
+      />
     </div>
   );
 }

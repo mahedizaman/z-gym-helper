@@ -4,7 +4,8 @@ import { connectToDatabase } from '@/server/db';
 import { logService } from '@/server/services/log.service';
 import { MealLogModel, DailySummaryModel } from '@/server/models/log.model';
 import { getDhakaDateString } from '@/server/services/calculations';
-import { MealLogCreateSchema } from '@/server/validators';
+import { MealLogCreateSchema, MealLogDeleteSchema } from '@/server/validators';
+import { enforceRateLimit } from '@/server/utils/rate-limiter';
 
 export async function GET(request: Request) {
   const session = await auth();
@@ -48,6 +49,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Rate limit: max 60 meal logs per minute
+  const rateLimitError = enforceRateLimit(request, 'user-meal-post', {
+    limit: 60,
+    windowMs: 60 * 1000,
+    identifier: session.user.id,
+  });
+  if (rateLimitError) return rateLimitError;
+
   try {
     const body = await request.json();
     const parsed = MealLogCreateSchema.safeParse(body);
@@ -77,10 +86,19 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Rate limit: max 60 deletions per minute
+  const rateLimitError = enforceRateLimit(request, 'user-meal-delete', {
+    limit: 60,
+    windowMs: 60 * 1000,
+    identifier: session.user.id,
+  });
+  if (rateLimitError) return rateLimitError;
+
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
-  if (!id) {
-    return NextResponse.json({ success: false, error: 'Item ID required' }, { status: 400 });
+  const parsed = MealLogDeleteSchema.safeParse({ id });
+  if (!parsed.success) {
+    return NextResponse.json({ success: false, error: 'Valid Item ID required' }, { status: 400 });
   }
 
   const db = await connectToDatabase();
@@ -89,7 +107,7 @@ export async function DELETE(request: Request) {
   }
 
   try {
-    const meal = await MealLogModel.findOne({ _id: id, userId: session.user.id });
+    const meal = await MealLogModel.findOne({ _id: parsed.data.id, userId: session.user.id });
     if (!meal) {
       return NextResponse.json({ success: false, error: 'Meal item not found' }, { status: 404 });
     }
@@ -108,7 +126,7 @@ export async function DELETE(request: Request) {
       }
     );
 
-    await MealLogModel.deleteOne({ _id: id });
+    await MealLogModel.deleteOne({ _id: parsed.data.id });
 
     return NextResponse.json({ success: true, message: 'Meal item deleted' });
   } catch (error) {

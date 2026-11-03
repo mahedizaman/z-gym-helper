@@ -11,7 +11,9 @@ import {
   Sparkles,
   ArrowRight,
   Info,
+  Share2,
 } from 'lucide-react';
+import { ProgressShareModal } from '@/components/progress/progress-share-modal';
 import {
   ResponsiveContainer,
   LineChart,
@@ -44,6 +46,7 @@ export function ProgressClient() {
   const [dateInput, setDateInput] = useState(() => new Date().toISOString().split('T')[0]);
   const [noteInput, setNoteInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const fetchWeightData = useCallback(async () => {
     try {
@@ -185,6 +188,14 @@ export function ProgressClient() {
             )}
           </p>
         </div>
+
+        <button
+          onClick={() => setShowShareModal(true)}
+          className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-lime-brand text-ink-base font-bold text-xs hover:bg-lime-hover shadow-sm transition-all cursor-pointer shrink-0"
+        >
+          <Share2 className="w-4 h-4" />
+          <span>{t('প্রগ্রেস কার্ড শেয়ার', 'Share Progress Card')}</span>
+        </button>
       </div>
 
       {/* Metric Delta Stat Cards */}
@@ -448,6 +459,19 @@ export function ProgressClient() {
           </div>
         )}
       </div>
+
+      {/* Progress Share Modal */}
+      <ProgressShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        nickname={status === 'authenticated' ? 'Z-Athlete' : 'Guest'}
+        streak={logs.length > 0 ? 1 : 0}
+        workouts={logs.length}
+        monthChange={
+          totalChange !== 0 ? `${totalChange > 0 ? '+' : ''}${totalChange} kg` : '0 kg'
+        }
+        weightKg={currentWeight}
+      />
     </div>
   );
 }

@@ -22,6 +22,9 @@ const routes = [
   { slug: 'log', path: '/log' },
   { slug: 'settings', path: '/settings' },
   { slug: 'login', path: '/login' },
+  { slug: 'leaderboard', path: '/leaderboard' },
+  { slug: 'challenges', path: '/challenges' },
+  { slug: 'challenge-detail', path: '/c/preview' },
 ];
 
 async function main() {

@@ -102,7 +102,7 @@ export const WeightLogCreateSchema = z.object({
 });
 
 export const UserProfileUpdateSchema = z.object({
-  nickname: z.string().min(2).max(40).optional(),
+  nickname: z.string().trim().min(3).max(20).optional(),
   gender: z.enum(['male', 'female']).optional(),
   weightKg: z.number().min(30).max(300).optional(),
   heightCm: z.number().min(100).max(250).optional(),
@@ -112,10 +112,32 @@ export const UserProfileUpdateSchema = z.object({
   activityLevel: z
     .enum(['sedentary', 'light', 'moderate', 'very_active', 'extra_active'])
     .optional(),
+  optInLeaderboard: z.boolean().optional(),
+  shareWeight: z.boolean().optional(),
 });
 
-export const ChallengeCreateSchema = z.object({
-  title: z.string().min(3).max(80),
-  durationDays: z.enum(['7', '14', '30']).transform(Number),
+export const ChallengeCreateInputSchema = z.object({
+  title: z.string().trim().min(3).max(60),
+  durationDays: z.union([z.literal(7), z.literal(14), z.literal(30)]),
   metric: z.enum(['streak', 'workouts', 'weight_loss_pct']),
+});
+
+export const ChallengeJoinInputSchema = z.object({
+  code: z.string().trim().min(4).max(16).toUpperCase(),
+});
+
+export const LeaderboardOptInSchema = z.object({
+  optIn: z.boolean(),
+});
+
+export const DeleteAccountSchema = z.object({
+  confirmText: z.literal('DELETE'),
+});
+
+export const WeightLogDeleteSchema = z.object({
+  id: z.string().min(1),
+});
+
+export const MealLogDeleteSchema = z.object({
+  id: z.string().min(1),
 });

@@ -2,11 +2,19 @@ import { describe, it, expect } from 'vitest';
 import { foodService } from './food.service';
 import { exerciseService } from './exercise.service';
 import { planService } from './plan.service';
-import { userService } from './user.service';
+import { userService, generateDefaultNickname } from './user.service';
+import { generateChallengeCode } from './challenge.service';
 import { BANGLADESHI_FOODS_DATA } from '../seeds/foods.data';
 import { CORE_EXERCISES_DATA } from '../seeds/exercises.data';
 import { WORKOUT_PLANS_DATA } from '../seeds/plans.data';
-import { MealLogCreateSchema, FoodSearchQuerySchema } from '../validators';
+import {
+  MealLogCreateSchema,
+  FoodSearchQuerySchema,
+  ChallengeCreateInputSchema,
+  ChallengeJoinInputSchema,
+  LeaderboardOptInSchema,
+  UserProfileUpdateSchema,
+} from '../validators';
 
 describe('Data Layer & Decoupled Service Suite', () => {
   describe('Bangladeshi Food Database & Fuzzy Search', () => {
@@ -174,6 +182,71 @@ describe('Data Layer & Decoupled Service Suite', () => {
       expect(userService.isAdminEmail('admin@zgym.app')).toBe(false);
 
       process.env.ADMIN_EMAILS = originalEnv;
+    });
+
+    it('generates random default nicknames between 3 and 20 chars without personal info', () => {
+      for (let i = 0; i < 50; i++) {
+        const nickname = generateDefaultNickname();
+        expect(nickname.length).toBeGreaterThanOrEqual(3);
+        expect(nickname.length).toBeLessThanOrEqual(20);
+        expect(nickname).toMatch(/^[A-Za-z]+_\d{4}$/);
+      }
+    });
+
+    it('validates nickname constraints (3 to 20 chars) in UserProfileUpdateSchema', () => {
+      expect(UserProfileUpdateSchema.safeParse({ nickname: 'Hero_99' }).success).toBe(true);
+      expect(UserProfileUpdateSchema.safeParse({ nickname: 'ab' }).success).toBe(false); // < 3 chars
+      expect(
+        UserProfileUpdateSchema.safeParse({ nickname: 'this_nickname_is_way_too_long_for_zgym' }).success
+      ).toBe(false); // > 20 chars
+    });
+  });
+
+  describe('Challenges & Community Leaderboard', () => {
+    it('generates unguessable 8-character challenge invite codes with high entropy', () => {
+      const generatedCodes = new Set<string>();
+      for (let i = 0; i < 100; i++) {
+        const code = generateChallengeCode();
+        expect(code).toHaveLength(8);
+        expect(code).toMatch(/^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);
+        generatedCodes.add(code);
+      }
+      // Assert zero collisions in 100 samples
+      expect(generatedCodes.size).toBe(100);
+    });
+
+    it('strictly validates challenge creation parameters with Zod', () => {
+      const valid = ChallengeCreateInputSchema.safeParse({
+        title: '30-Day Fitness Blast',
+        durationDays: 30,
+        metric: 'streak',
+      });
+      expect(valid.success).toBe(true);
+
+      const invalidDuration = ChallengeCreateInputSchema.safeParse({
+        title: 'Fitness',
+        durationDays: 45, // only 7, 14, 30 allowed
+        metric: 'streak',
+      });
+      expect(invalidDuration.success).toBe(false);
+
+      const invalidMetric = ChallengeCreateInputSchema.safeParse({
+        title: 'Fitness',
+        durationDays: 14,
+        metric: 'bicep_size', // invalid metric
+      });
+      expect(invalidMetric.success).toBe(false);
+    });
+
+    it('validates challenge join code input', () => {
+      expect(ChallengeJoinInputSchema.safeParse({ code: '7k9x2b4p' }).success).toBe(true);
+      expect(ChallengeJoinInputSchema.safeParse({ code: 'ab' }).success).toBe(false); // too short
+    });
+
+    it('validates leaderboard opt-in toggle payload', () => {
+      expect(LeaderboardOptInSchema.safeParse({ optIn: true }).success).toBe(true);
+      expect(LeaderboardOptInSchema.safeParse({ optIn: false }).success).toBe(true);
+      expect(LeaderboardOptInSchema.safeParse({ optIn: 'yes' }).success).toBe(false);
     });
   });
 });

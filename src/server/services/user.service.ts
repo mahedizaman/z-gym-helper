@@ -6,8 +6,15 @@ import {
   DailySummaryModel,
   WeightLogModel,
 } from '@/server/models/log.model';
-import { StreakModel } from '@/server/models/social.model';
+import { StreakModel, ChallengeModel } from '@/server/models/social.model';
 import { streakService } from './streak.service';
+
+export function generateDefaultNickname(): string {
+  const prefixes = ['Athlete', 'Hero', 'Lifter', 'Runner', 'Gymmer', 'Titan', 'Warrior'];
+  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const randNum = Math.floor(1000 + Math.random() * 9000);
+  return `${prefix}_${randNum}`;
+}
 
 export interface GoogleProfileInput {
   email: string;
@@ -89,19 +96,23 @@ export const userService = {
       user.role = isAdmin ? 'admin' : user.role || 'user';
       user.lastActiveAt = new Date();
       if (profile.image) user.avatar = profile.image;
-      if (!user.nickname && profile.name) user.nickname = profile.name;
+      if (!user.nickname) {
+        user.nickname = generateDefaultNickname();
+      }
       await user.save();
       return user;
     }
 
-    // Create new user
+    // Create new user with random default nickname (3-20 chars, never Google name or email)
     user = await UserModel.create({
       email,
       role: isAdmin ? 'admin' : 'user',
-      nickname: profile.name || email.split('@')[0],
+      nickname: generateDefaultNickname(),
       avatar: profile.image,
       lastActiveAt: new Date(),
       timezone: 'Asia/Dhaka',
+      optInLeaderboard: false,
+      shareWeight: false,
       profile: {
         gender: 'male',
         weightKg: 70,
@@ -136,6 +147,8 @@ export const userService = {
     updates: {
       nickname?: string;
       profile?: Partial<IUserProfile>;
+      optInLeaderboard?: boolean;
+      shareWeight?: boolean;
     }
   ): Promise<IUser | null> {
     const db = await connectToDatabase();
@@ -146,6 +159,14 @@ export const userService = {
 
     if (updates.nickname && updates.nickname.trim()) {
       user.nickname = updates.nickname.trim();
+    }
+
+    if (typeof updates.optInLeaderboard === 'boolean') {
+      user.optInLeaderboard = updates.optInLeaderboard;
+    }
+
+    if (typeof updates.shareWeight === 'boolean') {
+      user.shareWeight = updates.shareWeight;
     }
 
     if (updates.profile) {
@@ -314,6 +335,11 @@ export const userService = {
       DailySummaryModel.deleteMany({ userId }),
       WeightLogModel.deleteMany({ userId }),
       StreakModel.deleteMany({ userId }),
+      ChallengeModel.updateMany(
+        { 'participants.userId': userId },
+        { $pull: { participants: { userId } } }
+      ),
+      ChallengeModel.deleteMany({ creatorId: userId, 'participants.0': { $exists: false } }),
     ]);
 
     return true;
