@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowRight, User } from 'lucide-react';
+import { Menu, X, ArrowRight, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { Wordmark } from '@/components/ui/wordmark';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { LanguageToggle } from '@/components/ui/language-toggle';
@@ -16,6 +18,8 @@ import { cn } from '@/lib/utils';
 export function Navbar() {
   const pathname = usePathname();
   const { t, locale } = useLanguage();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === 'authenticated';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -96,22 +100,45 @@ export function Navbar() {
         <div className="hidden lg:flex items-center gap-3">
           <LanguageToggle />
           <ThemeToggle />
-          <PillButton
-            href="/calculator"
-            variant="primary"
-            size="sm"
-            icon="arrow"
-            className="hidden sm:inline-flex"
-          >
-            {t('শুরু করুন', 'Start Free')}
-          </PillButton>
-          <Link
-            href="/login"
-            className="flex items-center justify-center w-10 h-10 rounded-full border border-border/60 hover:bg-secondary text-foreground transition-all duration-200"
-            aria-label="Account Login"
-          >
-            <User className="w-4 h-4" />
-          </Link>
+          {isAuthenticated ? (
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-2 pl-2 pr-3.5 py-1.5 rounded-full border border-border/80 bg-secondary/70 hover:border-lime-brand/50 text-foreground transition-all duration-200 cursor-pointer shadow-xs"
+              title={session?.user?.name || 'Dashboard'}
+            >
+              {session?.user?.image ? (
+                <div className="relative w-6 h-6 rounded-full overflow-hidden border border-lime-brand">
+                  <Image src={session.user.image} alt="Avatar" fill className="object-cover" />
+                </div>
+              ) : (
+                <div className="w-6 h-6 rounded-full bg-lime-brand text-ink-base text-xs font-bold flex items-center justify-center">
+                  {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
+                </div>
+              )}
+              <span className="text-xs font-bold max-w-[100px] truncate">
+                {session?.user?.name?.split(' ')[0] || 'User'}
+              </span>
+            </Link>
+          ) : (
+            <>
+              <PillButton
+                href="/calculator"
+                variant="primary"
+                size="sm"
+                icon="arrow"
+                className="hidden sm:inline-flex"
+              >
+                {t('শুরু করুন', 'Start Free')}
+              </PillButton>
+              <Link
+                href="/login"
+                className="flex items-center justify-center w-10 h-10 rounded-full border border-border/60 hover:bg-secondary text-foreground transition-all duration-200"
+                aria-label="Account Login"
+              >
+                <User className="w-4 h-4" />
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -181,26 +208,54 @@ export function Navbar() {
 
               {/* Action Buttons in Mobile Drawer */}
               <div className="flex flex-col gap-3">
-                <PillButton
-                  href="/calculator"
-                  variant="primary"
-                  size="md"
-                  fullWidth
-                  icon="arrow"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {t('ফ্রি ক্যালকুলেটর শুরু করুন', 'Start Free Calculator')}
-                </PillButton>
-                <PillButton
-                  href="/login"
-                  variant="outline"
-                  size="md"
-                  fullWidth
-                  icon="none"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {t('লগইন / রেজিস্টার', 'Login / Register')}
-                </PillButton>
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between px-4 py-3 rounded-2xl bg-lime-brand text-ink-base font-bold text-sm"
+                    >
+                      <span className="flex items-center gap-2">
+                        <LayoutDashboard className="w-4 h-4" />
+                        {t('ড্যাশবোর্ডে যান', 'Open Dashboard')}
+                      </span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        signOut({ callbackUrl: '/' });
+                      }}
+                      className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border border-border bg-muted/60 text-foreground font-semibold text-sm cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4 text-tomato-base" />
+                      <span>{t('লগআউট করুন', 'Sign Out')}</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <PillButton
+                      href="/calculator"
+                      variant="primary"
+                      size="md"
+                      fullWidth
+                      icon="arrow"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {t('ফ্রি ক্যালকুলেটর শুরু করুন', 'Start Free Calculator')}
+                    </PillButton>
+                    <PillButton
+                      href="/login"
+                      variant="outline"
+                      size="md"
+                      fullWidth
+                      icon="none"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {t('লগইন / রেজিস্টার', 'Login / Register')}
+                    </PillButton>
+                  </>
+                )}
               </div>
             </motion.div>
           </>

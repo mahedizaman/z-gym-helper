@@ -4,6 +4,7 @@ import './globals.css';
 import { RootProvider } from '@/components/providers/root-provider';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
+import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav';
 import { APP_CONFIG } from '@/config/app';
 
 const sairaCondensed = Saira_Condensed({
@@ -98,6 +99,7 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-1 flex flex-col">{children}</main>
           <Footer />
+          <MobileBottomNav />
         </RootProvider>
       </body>
     </html>

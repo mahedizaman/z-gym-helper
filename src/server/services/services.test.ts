@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { foodService } from './food.service';
 import { exerciseService } from './exercise.service';
 import { planService } from './plan.service';
+import { userService } from './user.service';
 import { BANGLADESHI_FOODS_DATA } from '../seeds/foods.data';
 import { CORE_EXERCISES_DATA } from '../seeds/exercises.data';
 import { WORKOUT_PLANS_DATA } from '../seeds/plans.data';
@@ -150,6 +151,29 @@ describe('Data Layer & Decoupled Service Suite', () => {
         macros: { kcal: 130, protein: 2.7, carbs: 28.2, fat: 0.3 },
       });
       expect(invalid.success).toBe(false);
+    });
+  });
+
+  describe('User Service & Account Data Management', () => {
+    it('verifies admin role strictly against ADMIN_EMAILS environment variable', () => {
+      const originalEnv = process.env.ADMIN_EMAILS;
+      process.env.ADMIN_EMAILS = 'admin@zgym.app, testadmin@gmail.com';
+
+      expect(userService.isAdminEmail('admin@zgym.app')).toBe(true);
+      expect(userService.isAdminEmail('TESTADMIN@GMAIL.COM')).toBe(true);
+      expect(userService.isAdminEmail('regularuser@gmail.com')).toBe(false);
+      expect(userService.isAdminEmail('')).toBe(false);
+
+      process.env.ADMIN_EMAILS = originalEnv;
+    });
+
+    it('correctly reports non-admin when ADMIN_EMAILS is unset', () => {
+      const originalEnv = process.env.ADMIN_EMAILS;
+      delete process.env.ADMIN_EMAILS;
+
+      expect(userService.isAdminEmail('admin@zgym.app')).toBe(false);
+
+      process.env.ADMIN_EMAILS = originalEnv;
     });
   });
 });

@@ -17,6 +17,11 @@ const routes = [
   { slug: 'exercise-detail', path: '/exercises/barbell-bench-press' },
   { slug: 'plans', path: '/plans' },
   { slug: 'plan-detail', path: '/plans/full-body-3' },
+  { slug: 'dashboard', path: '/dashboard' },
+  { slug: 'progress', path: '/progress' },
+  { slug: 'log', path: '/log' },
+  { slug: 'settings', path: '/settings' },
+  { slug: 'login', path: '/login' },
 ];
 
 async function main() {

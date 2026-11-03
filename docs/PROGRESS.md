@@ -144,7 +144,47 @@
   - [x] Quality & Verification:
     - [x] Responsive design across 360px, 744px, and 1280px widths with real Playwright screenshots (0px overflow across all routes)
     - [x] Strict TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors, 0 warnings), Vitest (25/25 tests passing), Next.js production build clean (63 static & dynamic routes prerendered)
-- [ ] **Phase 6: Auth, Guest Merge, Dashboard & Weight Tracking**
+- [x] **Phase 6: Auth, Guest Merge, Dashboard & Weight Tracking**
+  - [x] Authentication & Authorization:
+    - [x] Auth.js v5 (`next-auth@beta`) configured strictly with Google Sign-In (`src/lib/auth.ts`, `src/app/api/auth/[...nextauth]/route.ts`)
+    - [x] No email/password sign-in allowed
+    - [x] Admin role strictly verified on server against `ADMIN_EMAILS` environment variable
+    - [x] Every API route handler derives `userId` securely from server session (`session.user.id`), never from request bodies or URL parameters
+  - [x] Guest-to-Account Seamless Migration:
+    - [x] `guestStorage` localStorage migration service (`POST /api/user/merge`)
+    - [x] Deduplicated meal migration checking `(userId, date, slot, foodNameEn, grams)`
+    - [x] Deduplicated weight entries and biometrics migration without data loss
+    - [x] Silent auto-sync listener (`<GuestSyncListener />`) triggered automatically upon user login
+  - [x] User Dashboard (`/dashboard`):
+    - [x] Real-time caloric balance ring (consumed vs target kcal)
+    - [x] Macronutrient distribution breakdown (Protein, Carbs, Fat)
+    - [x] Exercise calorie burn tally
+    - [x] 7-day Caloric Balance trend chart using Recharts
+    - [x] Weight quick-log modal and streak status widget
+    - [x] Guest fallback view with direct Google sign-in CTA
+  - [x] Meal & Activity Logger (`/log`):
+    - [x] Date switcher with quick buttons (Yesterday, Today, Tomorrow) and date picker
+    - [x] Meal categorization (Breakfast, Lunch, Snack, Dinner)
+    - [x] Integrated `FoodPickerModal` with instant portion grams and macro preview
+    - [x] Dynamic item deletion and instant total calorie recalc
+    - [x] Seamless dual operation: reads/writes to MongoDB when logged in, persists in `guestStorage` when guest
+  - [x] Weight Tracking & Progress (`/progress`):
+    - [x] Key metrics: Current weight, starting weight, 30-day delta, and total delta
+    - [x] Interactive Recharts Area/Line chart with tooltip and target weight line
+    - [x] Weight entry form with custom date, notes, and instant validation
+    - [x] Chronological weight log history with delete action
+  - [x] Profile Settings & Account Deletion (`/settings`):
+    - [x] Biometric update form (age, gender, height, weight, activity level, custom calorie target)
+    - [x] "Delete My Account" permanent data wiper (`DELETE /api/user/delete-account`): permanently wipes records across `User`, `MealLog`, `WorkoutLog`, `DailySummary`, `WeightLog`, and `Streak` collections
+    - [x] Confirmation dialog requiring typing "DELETE" to prevent accidental data loss
+  - [x] Mobile Navigation:
+    - [x] Fixed bottom navigation bar (`<MobileBottomNav />`) on mobile viewports for authenticated users
+  - [x] Quality & Verification:
+    - [x] Strict TypeScript clean (`tsc --noEmit` 0 errors)
+    - [x] Clean ESLint (0 errors, 0 warnings)
+    - [x] Vitest suite: 27/27 tests passing (`services.test.ts` with `isAdminEmail` checks)
+    - [x] Next.js production build: 69 static & dynamic routes compiled cleanly
+    - [x] Playwright responsive screenshots at 360px, 744px, and 1280px widths across all 13 routes (0px horizontal overflow)
 - [ ] **Phase 7: Streaks, Progress Card, Challenges & Leaderboard**
 - [ ] **Phase 8: PWA, Web Push & Announcements**
 - [ ] **Phase 9: Admin Dashboard**
@@ -154,27 +194,17 @@
 
 ## Current Status
 
-- **Current focus:** Completed Phase 5 (Exercise Library, Detail Pages & Workout Plans). Ready for Phase 6 (Auth, Guest Merge, Dashboard & Weight Tracking).
+- **Current focus:** Completed Phase 6 (Auth, Guest Merge, Dashboard & Weight Tracking). Ready for Phase 7 (Streaks, Progress Card, Challenges & Leaderboard).
 - **Next 3 steps:**
-  1. Setup Auth.js (`next-auth`) with Google and Credentials providers and secure session management.
-  2. Implement seamless guest data migration (merging `guestStorage` localStorage meals, active workout plan, profile, and burns into MongoDB user profile upon first login).
-  3. Build logged-in Dashboard (`/dashboard`), Activity Logger (`/log`), and weight tracking history.
+  1. Implement streak tracking logic in `Asia/Dhaka` timezone with frozen streak / freeze support.
+  2. Build dynamic progress share card with canvas/SVG rendering for social sharing.
+  3. Build community challenges and opt-in leaderboard (`/challenges`, `/leaderboard`).
 - **Decisions made:**
-  - Database connection cached globally for serverless/Edge-compatible Node.js environments.
-  - MealLog and WorkoutLog schemas configured with 30-day MongoDB TTL index (`expireAfterSeconds: 2592000`).
-  - DailySummary and WeightLog stored permanently.
-  - In-memory fallback dataset bundled with services so public tools and searches remain 100% operational in guest mode and offline even without MongoDB connection!
-  - Next.js 16 cacheComponents compatibility: dynamic query parameters dynamically bail out prerender naturally without requiring legacy `export const dynamic = 'force-dynamic'`.
-  - Fix Pass (Pre-Phase 4):
-    - `POST /api/seed` disabled in production and restricted in non-production. CLI `npm run db:seed` is the canonical seeding mechanism.
-    - Bangladeshi food dataset audit: All 308 items set to `verified: false`. Fabricated BIRDEM citations eliminated from models, seeds, FAQ, about page, and attributions.
-    - Landing page audit: Replaced demo '21 Days Active' with actual database inventory (308 Foods, 32 Exercises), removed fake badges, and stamped social card as sample preview.
-    - Mobile 360px overflow audit: Identified 5px overflow caused by mobile navbar control cluster; fixed by condensing wordmark to 'Z-GYM' on mobile, tightening gaps, and adding `overflow-x-clip` to HTML and body shells.
-  - Phase 4 Decisions:
-    - Guest storage abstraction implemented via `guestStorage` in `src/lib/guest-storage.ts` using localStorage, completely decoupled and ready for MongoDB account merging in Phase 6.
-    - Food database page (`/foods`) features fast client-side fuzzy search over 308 authentic items with portion converter accordion directly on each card and instant "+ মিলে যোগ করুন" meal slot logger.
-    - Calorie calculator (`/calculator`) enforces WHO/clinical minimums (1200 kcal women, 1500 kcal men) with medical advisory banners on aggressive deficits.
-    - BMI calculator (`/bmi`) features dual classifications: Standard international WHO cutoffs alongside South Asian specific risk thresholds (normal cutoff <= 22.9).
+  - Auth.js v5 configured strictly with Google Sign-In; no password storage or email authentication.
+  - Role-based access control derives admin status exclusively on the server from `ADMIN_EMAILS` environment variable.
+  - All mutating user routes authenticate via server session; user IDs in request payloads are rejected/ignored.
+  - `GuestSyncListener` silently merges localStorage guest logs to MongoDB on first authentication without creating duplicates.
+  - Responsive layout verified at 360px, 744px, and 1280px across all routes with 0 horizontal overflow.
 - **Env vars needed:**
   - `NEXT_PUBLIC_APP_URL`
   - `NEXT_PUBLIC_SHOW_PRODUCTS=false`
@@ -182,6 +212,8 @@
   - `MONGODB_URI`
   - `AUTH_SECRET` / `NEXTAUTH_SECRET`
   - `ADMIN_EMAILS`
+  - `AUTH_GOOGLE_ID`
+  - `AUTH_GOOGLE_SECRET`
 - **Known issues:**
   - Nutrition values need human verification against certified food composition tables (all 308 seeded items are transparently set to `verified: false`).
-- **Last updated:** 2026-11-03 13:16 UTC+6
+- **Last updated:** 2026-11-03 14:30 UTC+6
