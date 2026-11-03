@@ -41,7 +41,7 @@ export function sanitizeDbError(error: unknown): string {
  */
 export function loadEnvLocal(): void {
   // Next.js runtime automatically loads .env.local into process.env
-  if (process.env.NEXT_RUNTIME || process.env.MONGODB_URI) return;
+  if (process.env.NEXT_RUNTIME || process.env.MONGODB_URI || process.env.DATABASE_URL) return;
   try {
     const cwd = process.cwd();
     const envFiles = ['.env.local', '.env'] as const;
@@ -78,7 +78,7 @@ export async function connectToDatabase(options?: {
   throwOnError?: boolean;
 }): Promise<typeof mongoose | null> {
   loadEnvLocal();
-  const uri = process.env.MONGODB_URI;
+  const uri = process.env.MONGODB_URI || process.env.DATABASE_URL;
 
   if (!uri) {
     if (options?.throwOnError) {

@@ -34,15 +34,24 @@ Create a `.env.local` file in the root directory. **Never commit `.env.local` or
 
 | Variable | Required | Description | Example / Default |
 |---|---|---|---|
-| `DATABASE_URL` or `MONGODB_URI` | **Yes** | MongoDB Atlas connection string | `mongodb+srv://user:pass@cluster.mongodb.net/zgym` |
+| `MONGODB_URI` | **Yes** | MongoDB Atlas connection string (the app reads `MONGODB_URI`) | `mongodb+srv://user:pass@cluster.mongodb.net/zgym` |
 | `AUTH_SECRET` | **Yes** | 32+ char secret for Auth.js cookie encryption | `openssl rand -base64 32` |
+| `AUTH_TRUST_HOST` | **Yes** | Required for Auth.js behind reverse proxies (Netlify, Vercel previews) | `true` |
 | `AUTH_GOOGLE_ID` | **Yes** | Google Cloud Console OAuth Client ID | `*.apps.googleusercontent.com` |
 | `AUTH_GOOGLE_SECRET` | **Yes** | Google Cloud Console OAuth Client Secret | Client secret string |
 | `ADMIN_EMAILS` | **Yes** | Comma-separated list of server-verified admin emails | `admin@zgym.app,lead@zgym.app` |
 | `NEXT_PUBLIC_APP_URL` | **Yes** | Canonical production or preview URL | `https://zgym.app` |
+| `CRON_SECRET` | **Yes** | Secret key for secured reminder cron execution | Constant-time bearer token |
 | `FIREBASE_SERVICE_ACCOUNT_BASE64` | Optional | Base64-encoded Firebase Service Account JSON for FCM push | Decoded securely on server only |
-| `CRON_SECRET` | Optional | Secret key for secured reminder cron execution | Constant-time bearer token |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Optional | Client Firebase API Key for web push | `AIzaSy...` |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Optional | Client Firebase Auth Domain | `zgym-helper.firebaseapp.com` |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Optional | Client Firebase Project ID | `zgym-helper` |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Optional | Client Firebase Storage Bucket | `zgym-helper.firebasestorage.app` |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Optional | Client Firebase Messaging Sender ID | `764408126845` |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Optional | Client Firebase App ID | `1:764408126845:web:...` |
+| `NEXT_PUBLIC_FIREBASE_VAPID_KEY` | Optional | Web push VAPID key for browser FCM subscription | `BN8cJy...` |
 | `NEXT_PUBLIC_ADS_ENABLED` | No | Google AdSense feature flag (`false` by default) | `false` |
+| `NEXT_PUBLIC_ADSENSE_CLIENT` | No | Google AdSense client ID (e.g. `ca-pub-XXXXXXXXXXXXXXXX`) | `ca-pub-XXXXXXXXXXXXXXXX` |
 | `ADSENSE_PUBLISHER_ID` | No | Publisher ID for `/ads.txt` generation | `pub-XXXXXXXXXXXXXXXX` |
 | `NEXT_PUBLIC_SHOW_PRODUCTS` | No | E-commerce feature flag (kept off for MVP) | `false` |
 

@@ -41,7 +41,7 @@ Configure these environment variables in your hosting provider's dashboard. **Ne
 | Variable Name | Required | Description | Example / Production Value |
 |---|:---:|---|---|
 | `NEXT_PUBLIC_APP_URL` | **Yes** | Canonical HTTPS base URL of your site (no trailing slash). | `https://zgym.app` or `https://<site>.netlify.app` |
-| `DATABASE_URL` or `MONGODB_URI` | **Yes** | MongoDB Atlas production connection string. | `mongodb+srv://<user>:<password>@cluster0.mongodb.net/zgym_prod?retryWrites=true&w=majority` |
+| `MONGODB_URI` | **Yes** | MongoDB Atlas production connection string (the app reads `MONGODB_URI`). | `mongodb+srv://<user>:<password>@cluster0.mongodb.net/zgym_prod?retryWrites=true&w=majority` |
 | `AUTH_SECRET` | **Yes** | 32+ character random secret used by Auth.js for session cookie encryption. | Generate via: `openssl rand -base64 32` |
 | `AUTH_TRUST_HOST` | **Yes** | Required for Auth.js behind reverse proxies (Netlify, Vercel previews). | `true` |
 | `AUTH_GOOGLE_ID` | **Yes** | Google Cloud Console OAuth 2.0 Client ID. | `*.apps.googleusercontent.com` |
@@ -49,7 +49,15 @@ Configure these environment variables in your hosting provider's dashboard. **Ne
 | `ADMIN_EMAILS` | **Yes** | Comma-separated list of administrative emails allowed to access `/admin`. | `admin@zgym.app,tanvir@example.com` |
 | `CRON_SECRET` | **Yes** | High-entropy secret token for authenticating hourly push reminders. | Generate via: `openssl rand -hex 24` |
 | `FIREBASE_SERVICE_ACCOUNT_BASE64` | Optional | Base64-encoded string of your Firebase Service Account JSON (for FCM web push). | `cat serviceAccountKey.json \| base64 -w 0` |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Optional | Client Firebase API Key for web push registration. | `AIzaSy...` |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Optional | Client Firebase Auth Domain. | `zgym-helper.firebaseapp.com` |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Optional | Client Firebase Project ID. | `zgym-helper` |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Optional | Client Firebase Storage Bucket. | `zgym-helper.firebasestorage.app` |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Optional | Client Firebase Cloud Messaging Sender ID. | `764408126845` |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Optional | Client Firebase Web App ID. | `1:764408126845:web:...` |
+| `NEXT_PUBLIC_FIREBASE_VAPID_KEY` | Optional | Web Push VAPID key for Firebase Cloud Messaging browser subscription. | `BN8cJy...` |
 | `NEXT_PUBLIC_ADS_ENABLED` | Optional | Controls whether Google AdSense ad slots render (`false` by default). | `false` (or `true` once approved by AdSense) |
+| `NEXT_PUBLIC_ADSENSE_CLIENT` | Optional | Google AdSense client ID attribute (e.g. `ca-pub-XXXXXXXXXXXXXXXX`). | `ca-pub-XXXXXXXXXXXXXXXX` |
 | `ADSENSE_PUBLISHER_ID` | Optional | Google AdSense publisher ID for `/ads.txt` generation. | `pub-XXXXXXXXXXXXXXXX` |
 | `NEXT_PUBLIC_SHOW_PRODUCTS` | Optional | Keeps e-commerce shop UI hidden for current fitness MVP. | `false` |
 
@@ -139,7 +147,7 @@ Use Vercel for rapid staging validation, pull-request previews, and testing.
 4. **Set Environment Variables**:
    Expand the **Environment Variables** section and add:
    - `NEXT_PUBLIC_APP_URL`: `https://<your-project>.vercel.app`
-   - `DATABASE_URL`: Your MongoDB Atlas URI.
+   - `MONGODB_URI`: Your MongoDB Atlas URI.
    - `AUTH_SECRET`: Random 32-char string.
    - `AUTH_TRUST_HOST`: `true`
    - `AUTH_GOOGLE_ID`: From Google Cloud Console.
@@ -174,7 +182,7 @@ Netlify is the recommended host for commercial zero-budget deployment with Googl
    In **Site configuration > Environment variables**, click **Add a variable** (or **Import from .env**) and paste:
    ```env
    NEXT_PUBLIC_APP_URL=https://zgym.app
-   DATABASE_URL=mongodb+srv://...
+   MONGODB_URI=mongodb+srv://...
    AUTH_SECRET=your_32_char_random_secret
    AUTH_TRUST_HOST=true
    AUTH_GOOGLE_ID=your_google_client_id.apps.googleusercontent.com

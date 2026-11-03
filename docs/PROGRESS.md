@@ -193,16 +193,29 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 | Variable Name | Required For | Description & Example |
 | :--- | :--- | :--- |
 | `NEXT_PUBLIC_APP_URL` | General / SEO | Public base URL of the application, e.g. `https://zgym.app` |
-| `NEXT_PUBLIC_SHOW_PRODUCTS` | Spec / Feature flag | Flag for e-commerce products (must be `false` now) |
-| `NEXT_PUBLIC_ADS_ENABLED` | Spec / Feature flag | Flag for Google AdSense slots (must be `false` now) |
-| `ADSENSE_PUBLISHER_ID` | Monetization / ads.txt | Google AdSense publisher ID (e.g. `pub-XXXXXXXXXXXXXXXX`) |
-| `MONGODB_URI` / `DATABASE_URL` | Database | MongoDB Atlas connection string (e.g. `mongodb+srv://...`) |
-| `AUTH_SECRET` / `NEXTAUTH_SECRET` | Authentication | Cryptographic secret used by Auth.js to sign session cookies |
+| `MONGODB_URI` | Database | Primary MongoDB Atlas connection string (e.g. `mongodb+srv://...`) |
+| `AUTH_SECRET` | Authentication | Cryptographic secret used by Auth.js to sign session cookies |
+| `AUTH_TRUST_HOST` | Reverse Proxy | Set `true` so Auth.js trusts headers behind Netlify and Vercel proxies |
 | `AUTH_GOOGLE_ID` | OAuth | Google Cloud Console OAuth 2.0 Client ID |
 | `AUTH_GOOGLE_SECRET` | OAuth | Google Cloud Console OAuth 2.0 Client Secret |
 | `ADMIN_EMAILS` | Authorization | Comma-separated list of admin email addresses |
-| `FIREBASE_SERVICE_ACCOUNT_BASE64` | Web Push (FCM) | Base64-encoded JSON string of the Firebase service account private key. Decoded in memory on the server only. |
-| `CRON_SECRET` | Cron Security | Secret bearer token for authenticating scheduled reminder cron dispatches via GitHub Actions or external cron services. |
+| `CRON_SECRET` | Cron Security | Secret bearer token for authenticating scheduled reminder cron dispatches via GitHub Actions or external cron services |
+| `FIREBASE_SERVICE_ACCOUNT_BASE64` | Web Push (FCM) | Base64-encoded JSON string of the Firebase service account private key. Decoded in memory on the server only |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Client Web Push | Client Firebase API Key |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Client Web Push | Client Firebase Auth Domain |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Client Web Push | Client Firebase Project ID |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Client Web Push | Client Firebase Storage Bucket |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Client Web Push | Client Firebase Messaging Sender ID |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Client Web Push | Client Firebase Web App ID |
+| `NEXT_PUBLIC_FIREBASE_VAPID_KEY` | Client Web Push | Web Push VAPID key for Firebase Cloud Messaging browser subscription |
+| `NEXT_PUBLIC_ADS_ENABLED` | Feature flag | Flag for Google AdSense slots (must be `false` now) |
+| `NEXT_PUBLIC_ADSENSE_CLIENT` | AdSense Tag | Google AdSense client attribute (e.g. `ca-pub-XXXXXXXXXXXXXXXX`) |
+| `ADSENSE_PUBLISHER_ID` | Monetization / ads.txt | Google AdSense publisher ID (e.g. `pub-XXXXXXXXXXXXXXXX`) |
+| `NEXT_PUBLIC_SHOW_PRODUCTS` | Spec / Feature flag | Flag for e-commerce products (must be `false` now) |
+
+### GitHub Actions Secrets (in `.github/workflows/cron-reminders.yml`)
+- `APP_URL`: Deployment base URL (e.g. `https://zgym.app` or `https://<site>.netlify.app`). Defaults to `https://zgym.app` if omitted.
+- `CRON_SECRET`: High-entropy secret token passed in `Authorization: Bearer ${{ secrets.CRON_SECRET }}` matching the server `CRON_SECRET` env var.
 
 ---
 
