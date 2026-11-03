@@ -184,6 +184,38 @@
     - [x] Complete env vars table, CLI seed/ping commands, and host-agnostic deploy guides for Netlify and Cloudflare Pages / Docker.
     - [x] Explicitly documented why Vercel Hobby tier cannot be used commercially once Google AdSense ads are active.
 
+- [x] **Phase 11: Env Names Consistency & Mobile Menu/Panel Portal Overhaul**
+  - [x] **Part A: Environment Variable Names & Alignment**:
+    - [x] Audited every `process.env` usage across the entire repository.
+    - [x] Verified `src/server/db.ts` uses `MONGODB_URI` (with graceful fallback to `DATABASE_URL`).
+    - [x] Completely synchronized `.env.example`, `DEPLOY.md`, `README.md`, and `docs/PROGRESS.md` with exact real variable names: `MONGODB_URI`, `AUTH_SECRET`, `AUTH_TRUST_HOST`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `ADMIN_EMAILS`, `NEXT_PUBLIC_APP_URL`, `CRON_SECRET`, `FIREBASE_SERVICE_ACCOUNT_BASE64`, `NEXT_PUBLIC_FIREBASE_*`, `NEXT_PUBLIC_ADS_ENABLED`, `NEXT_PUBLIC_ADSENSE_CLIENT`, `ADSENSE_PUBLISHER_ID`, and `NEXT_PUBLIC_SHOW_PRODUCTS`.
+    - [x] Explicitly listed the exact GitHub Actions secret names in `cron-reminders.yml`: `APP_URL` and `CRON_SECRET`.
+  - [x] **Part B: Header Menu & Notification Panel Portals + UX Overhaul**:
+    - [x] Portaled Mobile Menu via Radix Dialog/Sheet (`src/components/ui/sheet.tsx`) to `document.body`, eliminating stacking context traps caused by header `backdrop-filter`.
+    - [x] Portaled Notification Panel (`src/components/layout/announcement-bell.tsx`) using Radix Popover on desktop (>=1024px) and bottom Sheet on mobile (<1024px).
+    - [x] Solid, opaque backgrounds (`bg-card` / `bg-popover`) with clear borders and shadows in both light and dark mode (zero see-through text bleed).
+    - [x] Unified Z-index scale established in `src/config/z-index.ts` (`header: 40`, `overlay: 60`, `sheet: 70`, `popover: 70`, `modal: 80`, `toast: 90`, `max: 100`).
+    - [x] Automatic body scroll locking (`overflow: hidden` on body when open), outside click dismiss, Escape key dismiss, focus trap, and focus restoration.
+    - [x] Notification panel features inner max-height scrollable list, bilingual empty state, and preserved mark-as-read behavior.
+    - [x] Fancy mobile curtain menu (`src/components/layout/mobile-menu.tsx`) featuring GSAP curtain wipe (`clip-path: polygon(...)`), Framer Motion staggered links with bold condensed typography, active indicator in light green (`#A9F26B`) with thunder-pink (`#FF2E88`) accent bar, rotating close icon, micro-interactions, language & theme switcher row at the bottom, and reduced-motion fallback.
+    - [x] Redesigned Wordmark logo (`src/components/ui/wordmark.tsx`) to clearly and unmistakably read as **Z-GYM** (stylized Z lightning polygon + `-GYM`).
+    - [x] Verified default language on first visit is Bangla (`bn`).
+  - [x] **Playwright Interactive QA Verification**:
+    - [x] Script `scripts/verify-menu-panel.mjs` ran real clicks to open the mobile menu and notification panel across 360px, 744px, and 1280px in both light and dark themes.
+    - [x] Verified body scroll locking is active when opened (`document.body.style.overflow === 'hidden'`).
+    - [x] Saved 10 real interaction screenshots in `docs/screenshots/`:
+      - `menu-open-360-light.png`, `menu-open-360-dark.png`
+      - `menu-open-744-light.png`, `menu-open-744-dark.png`
+      - `panel-open-360-light.png`, `panel-open-360-dark.png`
+      - `panel-open-744-light.png`, `panel-open-744-dark.png`
+      - `panel-open-1280-light.png`, `panel-open-1280-dark.png`
+  - [x] **Automated Tests & Quality Checks**:
+    - [x] Unit test suite `src/server/services/phase11.test.ts` (Z-index scale monotonicity, Bangla first-visit default, brand short name).
+    - [x] 58/58 tests passing across 7 suites (`npm test`).
+    - [x] Clean TypeScript (`npm run typecheck` - 0 errors).
+    - [x] Clean ESLint (`npm run lint` - 0 errors, 0 warnings).
+    - [x] Production build clean (90/90 static and dynamic routes compiled).
+
 ---
 
 ## Environment Variables Reference
@@ -221,21 +253,20 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 
 ## Current Status
 
-- **Current focus:** Phase 10: Complete. All project phases (0 through 10) have been engineered, verified, and delivered according to specifications.
-- **Key milestones completed in Phase 10:**
-  1. Disabled user enforcement on every request & session with automated tests (4/4 passed).
-  2. `<AdSlot />` with CLS: 0 layout reservation, off by default, and forbidden on login/settings/admin.
-  3. Dynamic `/ads.txt` route driven by env.
-  4. Real, completed `/privacy`, `/terms`, `/about`, and `/contact` pages.
-  5. Cookie & Ads consent banner `<ConsentNotice />`.
-  6. Prominent medical disclaimer `<MedicalDisclaimer />` linked from calculator, BMI, and food pages.
-  7. Site copy audit eliminating unverified claims.
-  8. SEO dynamic sitemap, robots, Open Graph, and Schema.org JSON-LD.
-  9. Mobile Lighthouse audit: SEO 100, Best Practices 96, A11y 91, Performance 72.
-  10. Responsive Playwright QA: 0px overflow across all 21 routes at 360, 744, 1280.
-  11. Production `README.md` with Netlify and Cloudflare Pages deployment instructions.
+- **Current focus:** Phase 11: Complete. Env var names verified & unified across all documentation, and header menu & notification panels re-engineered with clean solid portals, body scroll lock, and GSAP/Framer Motion curtain experience.
+- **Key milestones completed in Phase 11:**
+  1. Complete env var audit & synchronization (`MONGODB_URI`, `AUTH_SECRET`, `AUTH_TRUST_HOST`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `ADMIN_EMAILS`, `NEXT_PUBLIC_APP_URL`, `CRON_SECRET`, `FIREBASE_SERVICE_ACCOUNT_BASE64`, `NEXT_PUBLIC_FIREBASE_*`, `NEXT_PUBLIC_ADS_ENABLED`, `NEXT_PUBLIC_ADSENSE_CLIENT`, `ADSENSE_PUBLISHER_ID`, `NEXT_PUBLIC_SHOW_PRODUCTS`).
+  2. GitHub Actions secrets in `.github/workflows/cron-reminders.yml` explicitly listed (`APP_URL`, `CRON_SECRET`).
+  3. Stacking context trap fixed: rendered both mobile menu and notification panel through `document.body` portals via Radix Dialog/Sheet and Popover.
+  4. Solid opaque cards with clear border and shadow in light and dark modes — zero see-through overlap.
+  5. Body scroll locked on open, Esc key to dismiss, outside click to dismiss, focus trap and restoration.
+  6. Fancy curtain mobile menu with GSAP clip-path polygon wipe, Framer Motion staggered typography, light green active indicator with thunder-pink accent bar, rotating close icon, and language/theme toggles.
+  7. Legible Z-GYM wordmark redesign.
+  8. Default locale verified as Bangla (`bn`) on first visit.
+  9. Real Playwright interactive tests and screenshots across 360px, 744px, and 1280px in light and dark modes.
+  10. 58/58 unit tests passing, clean typecheck, clean lint, clean production build.
 - **Logged-in screens note for Playwright:**
   - Automated screenshots for `/dashboard`, `/log`, `/progress`, `/settings`, `/c/preview`, and `/admin` were captured in the unauthenticated guest view (which showcases the guest login prompt and 403 Forbidden access check on `/admin`). Authenticated user and admin session views require live Google OAuth login which cannot be automated headlessly without real Google credentials.
 - **Known issues:**
   - Nutrition values need human verification against certified food composition tables (all 308 seeded items are transparently set to `verified: false`).
-- **Last updated:** 2026-11-03 18:22 UTC+6
+- **Last updated:** 2026-11-03 19:15 UTC+6
