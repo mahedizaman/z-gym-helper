@@ -29,11 +29,11 @@ export function Footer() {
             <div className="flex items-center gap-2 mt-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-brand/15 border border-lime-brand/30 text-lime-brand text-xs font-bold tracking-wide">
                 <Sparkles className="w-3.5 h-3.5" />
-                {t('১০০% ফ্রি ওপেন ডেটা', '100% Free Open Data')}
+                {t('উন্মুক্ত ওপেন ডেটা', 'Open Data Platform')}
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-silver-300 text-xs font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                {t('কোন গোপন খরচ নেই', 'Zero Hidden Fees')}
+                {t('পেওয়াল-মুক্ত এক্সেস', 'No Paywalls')}
               </span>
             </div>
           </div>

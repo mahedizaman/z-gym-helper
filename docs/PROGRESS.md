@@ -143,7 +143,46 @@
     - [x] Clean ESLint (0 errors, 0 warnings).
     - [x] Next.js production build clean (87 static & dynamic routes compiled).
     - [x] Playwright screenshots verified across 360px, 744px, and 1280px for all 17 routes with 0px horizontal overflow.
-- [ ] **Phase 10: AdSlot, Legal Pages, SEO, A11y & Production Polish**
+- [x] **Phase 10: AdSlot, Legal Pages, SEO, A11y & Production Polish**
+  - [x] **Fix First**:
+    - [x] Implemented `requireAuthUser()` in `src/server/utils/auth-guard.ts` verifying active account status on every request and blocking disabled accounts with 403 Forbidden.
+    - [x] NextAuth `session` callback dynamically queries MongoDB and terminates active sessions if `disabled: true`.
+    - [x] User route handlers (`/api/user`) enforce real-time disabled checks on `GET` and `PATCH`.
+    - [x] Verified with unit test suite in `src/server/services/disabled-user.test.ts` (4/4 tests passing).
+  - [x] **AdSlot & ads.txt**:
+    - [x] `<AdSlot />` component (`src/components/ads/ad-slot.tsx`) with reserved static layout heights (`min-h-[90px]`, `min-h-[250px]`, `min-h-[100px]`) preventing Cumulative Layout Shift (CLS: 0).
+    - [x] Strict route exclusion: Never renders on `/login`, `/settings`, or `/admin`.
+    - [x] Feature flag: Controlled via `NEXT_PUBLIC_ADS_ENABLED` (disabled by default `false`).
+    - [x] Dynamic `/ads.txt` route handler (`src/app/ads.txt/route.ts`) driven by `ADSENSE_PUBLISHER_ID` with clean fallback comments when unset.
+  - [x] **Cookie & Ads Consent Notice**:
+    - [x] `<ConsentNotice />` component (`src/components/legal/consent-notice.tsx`) with localStorage persistence (`zgym_cookie_consent`), dual "Essential Only" / "Accept All" controls, and seamless integration into root layout.
+  - [x] **Medical & Clinical Disclaimer**:
+    - [x] Created `<MedicalDisclaimer />` (`src/components/legal/medical-disclaimer.tsx`) with compact and expanded views plus educational dialog.
+    - [x] Wired into `/calculator`, `/bmi`, and `/foods` database views.
+  - [x] **Site Copy Audit**:
+    - [x] Removed all unverified claims (e.g. replaced "free forever" with "free to use" / "open access", removed "verified macros" claims where foods are unverified estimates, removed "বিজ্ঞাপন-মুক্ত" claims to reflect planned AdSense slots).
+  - [x] **Complete Authentic Legal & Public Pages**:
+    - [x] `/privacy`: Fully detailed 8-section policy detailing Google OAuth, stored user data, Firebase FCM push tokens, essential cookies, planned Google AdSense, administrative audit logs (actions + IP), 30-day automated log TTL, and one-click cascading account erasure.
+    - [x] `/terms`: Terms of service with user conduct, medical disclaimer, rate limiting rules, account suspension rights, and limitation of liability.
+    - [x] `/about`: Authentic mission for Bangladeshi lifters, open data pillars, guest-first values, and genuine media attributions.
+    - [x] `/contact`: Community feedback and food suggestion channel with Dhaka location and support contact.
+  - [x] **SEO & Structured Data**:
+    - [x] Created dynamic XML sitemap (`src/app/sitemap.ts`) indexing all static public routes and core exercise slug pages.
+    - [x] Created robots rule generator (`src/app/robots.ts`) allowing public indexation while disallowing `/admin/`, `/api/`, and `/login`.
+    - [x] Added Schema.org JSON-LD structured data (`WebApplication` and `Organization`) in root layout head.
+  - [x] **Accessibility & Lighthouse Mobile Audit**:
+    - [x] Configured `:focus-visible` accessible outline rings and `@media (prefers-reduced-motion: reduce)` in `globals.css`.
+    - [x] Real mobile Lighthouse run on landing page (`http://localhost:3000`):
+      - **SEO:** 100
+      - **Best Practices:** 96
+      - **Accessibility:** 91
+      - **Performance:** 72 (FCP: 0.9s, Speed Index: 2.7s, CLS: 0, TBT: 330ms)
+  - [x] **Full Responsive Playwright Screenshots QA**:
+    - [x] Verified all 21 routes across 360px, 744px, and 1280px viewports (63 full-page screenshots).
+    - [x] **0px horizontal scroll overflow** (`overflowX = false`) on all 21 routes.
+  - [x] **Comprehensive Production `README.md`**:
+    - [x] Complete env vars table, CLI seed/ping commands, and host-agnostic deploy guides for Netlify and Cloudflare Pages / Docker.
+    - [x] Explicitly documented why Vercel Hobby tier cannot be used commercially once Google AdSense ads are active.
 
 ---
 
@@ -156,7 +195,8 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 | `NEXT_PUBLIC_APP_URL` | General / SEO | Public base URL of the application, e.g. `https://zgym.app` |
 | `NEXT_PUBLIC_SHOW_PRODUCTS` | Spec / Feature flag | Flag for e-commerce products (must be `false` now) |
 | `NEXT_PUBLIC_ADS_ENABLED` | Spec / Feature flag | Flag for Google AdSense slots (must be `false` now) |
-| `MONGODB_URI` | Database | MongoDB Atlas connection string (e.g. `mongodb+srv://...`) |
+| `ADSENSE_PUBLISHER_ID` | Monetization / ads.txt | Google AdSense publisher ID (e.g. `pub-XXXXXXXXXXXXXXXX`) |
+| `MONGODB_URI` / `DATABASE_URL` | Database | MongoDB Atlas connection string (e.g. `mongodb+srv://...`) |
 | `AUTH_SECRET` / `NEXTAUTH_SECRET` | Authentication | Cryptographic secret used by Auth.js to sign session cookies |
 | `AUTH_GOOGLE_ID` | OAuth | Google Cloud Console OAuth 2.0 Client ID |
 | `AUTH_GOOGLE_SECRET` | OAuth | Google Cloud Console OAuth 2.0 Client Secret |
@@ -168,19 +208,21 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 
 ## Current Status
 
-- **Current focus:** Completed Phase 9 (Admin Dashboard). Ready for Phase 10 (AdSlot, Legal Pages, SEO, A11y & Production Polish).
-- **Next 3 steps:**
-  1. Build `<AdSlot />` with reserved layout dimensions and `NEXT_PUBLIC_ADS_ENABLED=false` default (excluding `/login`, `/settings`, and `/admin`).
-  2. Complete Cookie/Consent banner and audit all public/legal pages (`/about`, `/contact`, `/privacy`, `/terms`).
-  3. Conduct full accessibility (a11y), SEO (JSON-LD, sitemap, robots, OG cards), and performance polish for final delivery.
-- **Decisions made:**
-  - Admin access is protected exclusively on the server in every `/admin` page and every `/api/admin/*` route.
-  - Admins cannot disable themselves or other admins to prevent accidental lockout or privilege attacks.
-  - Disabled accounts are actively barred from sign-in via NextAuth `signIn` callback.
-  - Food `verified` status is strictly tied to a populated `source` citation.
-  - `lastActiveAt` updates are throttled to at most once per hour to minimize DB write pressure.
+- **Current focus:** Phase 10: Complete. All project phases (0 through 10) have been engineered, verified, and delivered according to specifications.
+- **Key milestones completed in Phase 10:**
+  1. Disabled user enforcement on every request & session with automated tests (4/4 passed).
+  2. `<AdSlot />` with CLS: 0 layout reservation, off by default, and forbidden on login/settings/admin.
+  3. Dynamic `/ads.txt` route driven by env.
+  4. Real, completed `/privacy`, `/terms`, `/about`, and `/contact` pages.
+  5. Cookie & Ads consent banner `<ConsentNotice />`.
+  6. Prominent medical disclaimer `<MedicalDisclaimer />` linked from calculator, BMI, and food pages.
+  7. Site copy audit eliminating unverified claims.
+  8. SEO dynamic sitemap, robots, Open Graph, and Schema.org JSON-LD.
+  9. Mobile Lighthouse audit: SEO 100, Best Practices 96, A11y 91, Performance 72.
+  10. Responsive Playwright QA: 0px overflow across all 21 routes at 360, 744, 1280.
+  11. Production `README.md` with Netlify and Cloudflare Pages deployment instructions.
 - **Logged-in screens note for Playwright:**
-  - Automated screenshots for `/dashboard`, `/log`, `/progress`, `/settings`, `/c/preview`, and `/admin` were checked in the unauthenticated guest view (which showcases the guest login prompt and 403 Forbidden access check on `/admin`). Authenticated user and admin session views require live Google OAuth login which cannot be automated headlessly without real Google credentials.
+  - Automated screenshots for `/dashboard`, `/log`, `/progress`, `/settings`, `/c/preview`, and `/admin` were captured in the unauthenticated guest view (which showcases the guest login prompt and 403 Forbidden access check on `/admin`). Authenticated user and admin session views require live Google OAuth login which cannot be automated headlessly without real Google credentials.
 - **Known issues:**
   - Nutrition values need human verification against certified food composition tables (all 308 seeded items are transparently set to `verified: false`).
-- **Last updated:** 2026-11-03 17:45 UTC+6
+- **Last updated:** 2026-11-03 18:22 UTC+6

@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/footer';
 import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav';
 import { PwaInstallPrompt } from '@/components/pwa/pwa-install-prompt';
 import { ServiceWorkerRegister } from '@/components/pwa/service-worker-register';
+import { ConsentNotice } from '@/components/legal/consent-notice';
 import { APP_CONFIG } from '@/config/app';
 
 const sairaCondensed = Saira_Condensed({
@@ -102,6 +103,42 @@ export default function RootLayout({
         } as React.CSSProperties
       }
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@graph': [
+                {
+                  '@type': 'WebApplication',
+                  '@id': `${APP_CONFIG.url}/#webapp`,
+                  name: APP_CONFIG.name,
+                  alternateName: APP_CONFIG.shortName,
+                  url: APP_CONFIG.url,
+                  applicationCategory: 'HealthApplication',
+                  operatingSystem: 'All',
+                  browserRequirements: 'Requires JavaScript and HTML5 support',
+                  description: APP_CONFIG.descriptionEn,
+                  inLanguage: ['bn-BD', 'en-US'],
+                  offers: {
+                    '@type': 'Offer',
+                    price: '0',
+                    priceCurrency: 'BDT',
+                  },
+                },
+                {
+                  '@type': 'Organization',
+                  '@id': `${APP_CONFIG.url}/#organization`,
+                  name: APP_CONFIG.name,
+                  url: APP_CONFIG.url,
+                  logo: `${APP_CONFIG.url}/icons/icon-192x192.png`,
+                },
+              ],
+            }),
+          }}
+        />
+      </head>
       <body className="min-h-[100dvh] flex flex-col antialiased overflow-x-clip selection:bg-lime-brand selection:text-ink-base">
         <RootProvider>
           <ServiceWorkerRegister />
@@ -110,6 +147,7 @@ export default function RootLayout({
           <Footer />
           <MobileBottomNav />
           <PwaInstallPrompt />
+          <ConsentNotice />
         </RootProvider>
       </body>
     </html>

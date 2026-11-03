@@ -19,8 +19,8 @@ export default function AboutPage() {
         </h1>
         <p className="mt-3 text-base text-muted-foreground leading-relaxed">
           {t(
-            'বাংলাদেশের ফিটনেস কমিউনিটির জন্য তৈরি সম্পূর্ণ উন্মুক্ত, বিজ্ঞাপন-মুক্ত ও বিজ্ঞানসম্মত প্ল্যাটফর্ম।',
-            'A 100% free, evidence-based fitness and nutrition platform built for gym-goers in Bangladesh.'
+            'বাংলাদেশের ফিটনেস কমিউনিটির জন্য তৈরি উন্মুক্ত, স্বচ্ছ ও বিজ্ঞানসম্মত পুষ্টি ও জিম প্ল্যাটফর্ম।',
+            'An open, transparent, evidence-based fitness and nutrition platform built for gym-goers in Bangladesh.'
           )}
         </p>
       </div>

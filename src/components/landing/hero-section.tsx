@@ -102,8 +102,8 @@ export function HeroSection() {
             {/* Subtext description */}
             <p className="mt-6 text-base sm:text-lg text-muted-foreground font-normal max-w-xl leading-relaxed">
               {t(
-                '৩০০+ খাঁটি দেশি খাবারের পুষ্টিমান, BMR ও ক্যালোরি ক্যালকুলেটর, জিম ওয়ার্কআউট স্প্লিট ও ডেইলি স্ট্রিক — সম্পূর্ণ বিনামূল্যে। কোনো সাবস্ক্রিপশন বা পেওয়াল নেই।',
-                '300+ Bangladeshi food nutrition profiles, exact Mifflin-St Jeor BMR calculator, proven workout splits, and daily streak tracking — 100% free with zero paywalls.'
+                '৩০০+ দেশি খাবারের পুষ্টিমান, BMR ও ক্যালোরি ক্যালকুলেটর, জিম ওয়ার্কআউট স্প্লিট ও ডেইলি স্ট্রিক — উন্মুক্ত এবং কোনো সাবস্ক্রিপশন বা পেওয়াল নেই।',
+                '300+ Bangladeshi food nutrition profiles, exact Mifflin-St Jeor BMR calculator, proven workout splits, and daily streak tracking — open access with zero paywalls.'
               )}
             </p>
 

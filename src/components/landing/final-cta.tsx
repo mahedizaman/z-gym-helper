@@ -18,7 +18,7 @@ export function FinalCTA() {
           {/* Small Top Pill Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-lime-brand text-xs font-black uppercase tracking-wider mb-8">
             <Zap className="w-3.5 h-3.5 fill-lime-brand" />
-            <span>{t('১০০% উন্মুক্ত ও ফ্রি প্ল্যাটফর্ম', '100% Free Open Platform')}</span>
+            <span>{t('উন্মুক্ত ও স্বাধীন প্ল্যাটফর্ম', 'Open Fitness Platform')}</span>
           </div>
 
           {/* Main Call to Action Headline */}

@@ -5,6 +5,8 @@ import { useLanguage } from '@/lib/language-context';
 import { calculateBMI, getBMICategory, getHealthyWeightRange } from '@/server/services/calculations';
 import { Scale, Info, Calculator, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
+import { MedicalDisclaimer } from '@/components/legal/medical-disclaimer';
+import { AdSlot } from '@/components/ads/ad-slot';
 
 export default function BMIPage() {
   const { t } = useLanguage();
@@ -357,6 +359,16 @@ export default function BMIPage() {
               )}
             </p>
           </div>
+        </div>
+
+        {/* Medical Disclaimer Banner */}
+        <div className="mt-8">
+          <MedicalDisclaimer />
+        </div>
+
+        {/* AdSense Slot */}
+        <div className="mt-8">
+          <AdSlot slot="banner" />
         </div>
       </div>
     </div>

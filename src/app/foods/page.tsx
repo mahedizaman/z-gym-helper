@@ -4,6 +4,8 @@ import React, { useState, useMemo } from 'react';
 import { useLanguage } from '@/lib/language-context';
 import { BANGLADESHI_FOODS_DATA } from '@/server/seeds/foods.data';
 import { FoodCard } from '@/components/foods/food-card';
+import { MedicalDisclaimer } from '@/components/legal/medical-disclaimer';
+import { AdSlot } from '@/components/ads/ad-slot';
 import {
   Search,
   Utensils,
@@ -109,8 +111,8 @@ export default function FoodsPage() {
 
             <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
               {t(
-                'ভাত, ডাল, মাছ, মাংস, দেশি ভর্তা ও নাস্তার নির্ভরযোগ্য ক্যালোরি, প্রোটিন, কার্বস ও ফ্যাটের পরিমাপ। যে কোনো খাবার আপনার আজকের মিলে যোগ করুন সম্পূর্ণ ফ্রিতে।',
-                'Comprehensive nutritional values for Bangladeshi staples, curries, bhortas, and snacks. Recalculate portions and log items to your daily plan instantly.'
+                'ভাত, ডাল, মাছ, মাংস, দেশি ভর্তা ও নাস্তার প্রমিত ক্যালোরি, প্রোটিন, কার্বস ও ফ্যাটের পরিমাপ। যে কোনো খাবার আপনার আজকের মিলে যোগ করে ট্র্যাকিং শুরু করুন।',
+                'Standardized nutritional values for Bangladeshi staples, curries, bhortas, and snacks. Recalculate portions and log items to your daily plan instantly.'
               )}
             </p>
           </div>
@@ -128,17 +130,20 @@ export default function FoodsPage() {
         </div>
 
         {/* Scientific Transparency & Disclaimer Banner */}
-        <div className="mt-6 p-4 rounded-2xl bg-secondary/50 border border-border text-xs text-muted-foreground flex items-start gap-3">
-          <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-          <p className="leading-relaxed">
-            <strong className="text-foreground">
-              {t('পুষ্টিমান যাচাইকরণ বিজ্ঞপ্তি:', 'Nutrition Verification Notice:')}
-            </strong>{' '}
-            {t(
-              'এই ডেটাবেজের মানসমূহ প্রমিত দেশীয় রান্নার রেসিপি ও উন্মুক্ত বৈজ্ঞানিক খাদ্য টেবিলের অনুমানের ভিত্তিতে প্রস্তুত। শতভাগ নিশ্চিত ফলাফলের জন্য ডেটাবেজটি বিশেষজ্ঞদের দ্বারা যাচাই প্রক্রিয়াধীন রয়েছে।',
-              'All values represent standardized culinary recipe and open food composition estimates. Formal human verification by clinical nutritionists is actively ongoing.'
-            )}
-          </p>
+        <div className="mt-6 space-y-4">
+          <MedicalDisclaimer compact />
+          <div className="p-4 rounded-2xl bg-secondary/50 border border-border text-xs text-muted-foreground flex items-start gap-3">
+            <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+            <p className="leading-relaxed">
+              <strong className="text-foreground">
+                {t('পুষ্টিমান যাচাইকরণ বিজ্ঞপ্তি:', 'Nutrition Verification Notice:')}
+              </strong>{' '}
+              {t(
+                'এই ডেটাবেজের মানসমূহ প্রমিত দেশীয় রান্নার রেসিপি ও উন্মুক্ত বৈজ্ঞানিক খাদ্য টেবিলের অনুমানের ভিত্তিতে প্রস্তুত। শতভাগ নিশ্চিত ফলাফলের জন্য ডেটাবেজটি বিশেষজ্ঞদের দ্বারা যাচাই প্রক্রিয়াধীন রয়েছে।',
+                'All values represent standardized culinary recipe and open food composition estimates. Formal human verification by clinical nutritionists is actively ongoing.'
+              )}
+            </p>
+          </div>
         </div>
 
         {/* Search & Filter Toolbar */}
@@ -285,6 +290,11 @@ export default function FoodsPage() {
             </button>
           </div>
         )}
+
+        {/* AdSense Slot */}
+        <div className="mt-12">
+          <AdSlot slot="banner" />
+        </div>
       </div>
     </div>
   );

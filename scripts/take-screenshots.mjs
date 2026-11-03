@@ -26,6 +26,10 @@ const routes = [
   { slug: 'challenges', path: '/challenges' },
   { slug: 'challenge-detail', path: '/c/preview' },
   { slug: 'admin', path: '/admin' },
+  { slug: 'privacy', path: '/privacy' },
+  { slug: 'terms', path: '/terms' },
+  { slug: 'about', path: '/about' },
+  { slug: 'contact', path: '/contact' },
 ];
 
 async function main() {

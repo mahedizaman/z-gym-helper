@@ -11,9 +11,9 @@ export const APP_CONFIG = {
   taglineBn: 'বাংলাদেশের জিম ও নিউট্রিশন প্ল্যাটফর্ম',
   taglineEn: 'Bangladesh\'s Premier Gym & Nutrition Platform',
   descriptionBn:
-    'বাংলাদেশী খাবারের পুষ্টি পরিমাপ, ব্যক্তিগত ওয়ার্কআউট প্ল্যান, ক্যালোরি ট্র্যাকিং ও ফিটনেস স্ট্রিক — সবকিছু এক ছাদের নিচে সম্পূর্ণ ফ্রিতে।',
+    'বাংলাদেশী খাবারের পুষ্টি পরিমাপ, ব্যক্তিগত ওয়ার্কআউট প্ল্যান, ক্যালোরি ট্র্যাকিং ও ফিটনেস স্ট্রিক — সবকিছু এক ছাদের নিচে সহজে ব্যবহার উপযোগী।',
   descriptionEn:
-    'Bangladeshi food nutrition calculator, personalized workout splits, calorie tracking, and fitness streaks — all in one place, free forever.',
+    'Bangladeshi food nutrition calculator, personalized workout splits, calorie tracking, and fitness streaks — all in one place, free to use.',
   url: process.env.NEXT_PUBLIC_APP_URL || 'https://zgym.app',
   ogImage: '/images/og-preview.png',
   locale: 'bn-BD',

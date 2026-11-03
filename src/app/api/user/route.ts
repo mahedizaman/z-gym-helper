@@ -25,9 +25,24 @@ export async function GET() {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  const existingUser = await userService.getUserById(session.user.id);
+  if (!existingUser || existingUser.disabled) {
+    return NextResponse.json(
+      { success: false, error: 'Forbidden: Account has been suspended or disabled' },
+      { status: 403 }
+    );
+  }
+
   const user = await userService.getUserById(session.user.id);
   if (!user) {
     return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
+  }
+
+  if (user.disabled) {
+    return NextResponse.json(
+      { success: false, error: 'Forbidden: Account has been suspended or disabled' },
+      { status: 403 }
+    );
   }
 
   return NextResponse.json({
@@ -51,6 +66,14 @@ export async function PATCH(request: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const existingUser = await userService.getUserById(session.user.id);
+  if (!existingUser || existingUser.disabled) {
+    return NextResponse.json(
+      { success: false, error: 'Forbidden: Account has been suspended or disabled' },
+      { status: 403 }
+    );
   }
 
   // Rate limit: max 30 updates per minute

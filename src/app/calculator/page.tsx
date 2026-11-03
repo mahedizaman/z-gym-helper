@@ -22,6 +22,8 @@ import { type SeedFood } from '@/server/seeds/generate-foods';
 import { FoodPickerModal } from '@/components/calculator/food-picker-modal';
 import { ProfileTargetModal } from '@/components/calculator/profile-target-modal';
 import { ExerciseBurnSection } from '@/components/calculator/exercise-burn-section';
+import { MedicalDisclaimer } from '@/components/legal/medical-disclaimer';
+import { AdSlot } from '@/components/ads/ad-slot';
 import {
   Calculator,
   Sliders,
@@ -543,6 +545,16 @@ export default function CalculatorPage() {
             burns={exerciseBurns}
             onBurnsUpdated={(updated) => setExerciseBurns(updated)}
           />
+        </div>
+
+        {/* Medical & Health Disclaimer */}
+        <div className="mt-10">
+          <MedicalDisclaimer />
+        </div>
+
+        {/* AdSense Slot */}
+        <div className="mt-8">
+          <AdSlot slot="banner" />
         </div>
       </div>
 

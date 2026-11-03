@@ -47,8 +47,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = (token.id as string) || (token.sub as string);
+        const userId = (token.id as string) || (token.sub as string);
+        session.user.id = userId;
         session.user.role = (token.role as 'user' | 'admin') || 'user';
+
+        if (userId) {
+          try {
+            const { connectToDatabase } = await import('@/server/db');
+            const { UserModel } = await import('@/server/models/user.model');
+            await connectToDatabase();
+            const dbUser = await UserModel.findById(userId).select('disabled role').lean();
+            if (dbUser?.disabled) {
+              console.warn(`[Auth] Invaliding session for disabled user ${userId}`);
+              return null as unknown as typeof session;
+            }
+            if (dbUser?.role) {
+              session.user.role = dbUser.role;
+            }
+          } catch {
+            // Handled gracefully
+          }
+        }
       }
       return session;
     },
