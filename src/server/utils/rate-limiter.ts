@@ -1,10 +1,65 @@
 import { NextResponse } from 'next/server';
 
-interface RateLimitRecord {
+export interface RateLimitRecord {
   timestamps: number[];
 }
 
-const rateLimitStore = new Map<string, RateLimitRecord>();
+/**
+ * Storage interface for rate limiting.
+ * Allows seamless substitution of the in-memory store with Redis (e.g. Upstash),
+ * Memcached, or MongoDB in multi-instance or serverless environments.
+ */
+export interface IRateLimiterStore {
+  get(key: string): RateLimitRecord | undefined;
+  set(key: string, record: RateLimitRecord): void;
+  delete(key: string): void;
+  cleanup(cutoff: number): void;
+}
+
+/**
+ * Default in-memory rate limiter store using JavaScript Map.
+ */
+export class InMemoryRateLimiterStore implements IRateLimiterStore {
+  private store = new Map<string, RateLimitRecord>();
+
+  get(key: string): RateLimitRecord | undefined {
+    return this.store.get(key);
+  }
+
+  set(key: string, record: RateLimitRecord): void {
+    this.store.set(key, record);
+  }
+
+  delete(key: string): void {
+    this.store.delete(key);
+  }
+
+  cleanup(cutoff: number): void {
+    for (const [key, record] of this.store.entries()) {
+      record.timestamps = record.timestamps.filter((ts) => ts > cutoff);
+      if (record.timestamps.length === 0) {
+        this.store.delete(key);
+      }
+    }
+  }
+}
+
+// Active store singleton
+let activeStore: IRateLimiterStore = new InMemoryRateLimiterStore();
+
+/**
+ * Replace the active rate limiter store (e.g., in unit tests or with an Upstash Redis adapter).
+ */
+export function setRateLimiterStore(store: IRateLimiterStore): void {
+  activeStore = store;
+}
+
+/**
+ * Retrieve the current active rate limiter store.
+ */
+export function getRateLimiterStore(): IRateLimiterStore {
+  return activeStore;
+}
 
 // Periodic cleanup of stale entries every 5 minutes
 const CLEANUP_INTERVAL = 5 * 60 * 1000;
@@ -16,12 +71,7 @@ function cleanupStale(windowMs: number) {
   lastCleanup = now;
 
   const cutoff = now - windowMs;
-  for (const [key, record] of rateLimitStore.entries()) {
-    record.timestamps = record.timestamps.filter((ts) => ts > cutoff);
-    if (record.timestamps.length === 0) {
-      rateLimitStore.delete(key);
-    }
-  }
+  activeStore.cleanup(cutoff);
 }
 
 export function getClientIp(request: Request): string {
@@ -43,7 +93,7 @@ export interface RateLimitOptions {
 }
 
 /**
- * Sliding window in-memory rate limiter for Next.js App Router route handlers.
+ * Sliding window rate limiter for Next.js App Router route handlers.
  */
 export function checkRateLimit(
   request: Request,
@@ -63,10 +113,10 @@ export function checkRateLimit(
   const now = Date.now();
   cleanupStale(windowMs);
 
-  let record = rateLimitStore.get(key);
+  let record = activeStore.get(key);
   if (!record) {
     record = { timestamps: [] };
-    rateLimitStore.set(key, record);
+    activeStore.set(key, record);
   }
 
   // Remove timestamps outside current window

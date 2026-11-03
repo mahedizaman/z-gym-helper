@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { useLanguage } from '@/lib/language-context';
-import { Trophy, Flame, TrendingDown, ShieldCheck, Sparkles, ArrowRight } from 'lucide-react';
+import { Trophy, Flame, TrendingDown, ShieldCheck, Sparkles, ArrowRight, Info } from 'lucide-react';
 
 interface LeaderboardEntry {
   rank: number;
@@ -151,6 +151,19 @@ export function LeaderboardClient() {
         </div>
       </div>
 
+      {/* Healthy Pace Note for Weight Loss % */}
+      {metric === 'weight_loss_pct' && (
+        <div className="rounded-2xl border border-lime-brand/30 bg-lime-soft/30 p-4 px-5 text-xs text-foreground flex items-center gap-3">
+          <Info className="w-4 h-4 text-lime-brand shrink-0" />
+          <p>
+            {t(
+              'স্বাস্থ্যকর ওজন হ্রাস: সপ্তাহে ০.৫–১.০ কেজি (~১% বডিওয়েট) হ্রাস নিরাপদ। আন্ডারওয়েট (BMI < ১৮.৫) সুরক্ষিত রাখতে তালিকাভুক্ত করা হয় না এবং প্রদর্শিত হার ২০%-এ সীমাবদ্ধ।',
+              'Healthy pacing: 0.5–1.0 kg/wk loss is safe. Athletes with BMI < 18.5 are excluded for health safety, and progress is capped at 20%.'
+            )}
+          </p>
+        </div>
+      )}
+
       {/* Privacy Opt-In Notice Card */}
       {status === 'authenticated' ? (
         <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -289,9 +302,6 @@ export function LeaderboardClient() {
                           </span>
                         )}
                       </div>
-                      <span className="text-[11px] text-muted-foreground">
-                        {t('ভেরিফাইড অ্যাথলেট', 'Verified Athlete')}
-                      </span>
                     </div>
                   </div>
 

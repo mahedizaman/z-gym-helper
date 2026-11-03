@@ -1,5 +1,11 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
+export interface IUserNotificationPreferences {
+  workoutReminderTime?: string; // e.g. "18:00"
+  mealReminderTime?: string; // e.g. "13:00"
+  notificationsOptOut: boolean;
+}
+
 export interface IUserProfile {
   gender: 'male' | 'female';
   weightKg: number;
@@ -22,6 +28,7 @@ export interface IUser extends Document {
   optInLeaderboard?: boolean;
   shareWeight?: boolean;
   lastSeenAnnouncementAt?: Date;
+  notificationPreferences?: IUserNotificationPreferences;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,6 +63,11 @@ const UserSchema = new Schema<IUser>(
     optInLeaderboard: { type: Boolean, default: false },
     shareWeight: { type: Boolean, default: false },
     lastSeenAnnouncementAt: { type: Date },
+    notificationPreferences: {
+      workoutReminderTime: { type: String, default: '18:00' },
+      mealReminderTime: { type: String, default: '13:00' },
+      notificationsOptOut: { type: Boolean, default: false },
+    },
   },
   { timestamps: true }
 );

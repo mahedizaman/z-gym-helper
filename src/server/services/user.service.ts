@@ -7,6 +7,7 @@ import {
   WeightLogModel,
 } from '@/server/models/log.model';
 import { StreakModel, ChallengeModel } from '@/server/models/social.model';
+import { PushTokenModel } from '@/server/models/push-token.model';
 import { streakService } from './streak.service';
 
 export function generateDefaultNickname(): string {
@@ -335,6 +336,7 @@ export const userService = {
       DailySummaryModel.deleteMany({ userId }),
       WeightLogModel.deleteMany({ userId }),
       StreakModel.deleteMany({ userId }),
+      PushTokenModel.deleteMany({ userId }),
       ChallengeModel.updateMany(
         { 'participants.userId': userId },
         { $pull: { participants: { userId } } }

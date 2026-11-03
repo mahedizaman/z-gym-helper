@@ -20,245 +20,132 @@
   - [x] Lightning-bolt 'Z' Wordmark component (`<Wordmark />` referencing `APP_CONFIG`)
   - [x] Dark / Light mode provider and theme toggle (`next-themes` + `useIsMounted`)
   - [x] Bilingual Language Context / Hook (`useLanguage` with Bangla `bn` default and English `en` toggle + localStorage persistence)
-  - [x] Motion primitives:
-    - `<Reveal />` (staggered & fade-up entrance with Framer Motion, reduced-motion aware)
-    - `<Stagger />` & `<StaggerItem />` (container staggered children)
-    - `<Marquee />` (infinite scrolling strip with star/lightning dividers, pause on hover)
-    - `<CountUp />` (animated metric counter with Bengali digit support)
-    - `<PillButton />` (magnetic/pill CTA button with directional arrow, WCAG AA compliance, light green/ink rule)
+  - [x] Motion primitives (`<Reveal />`, `<Stagger />`, `<Marquee />`, `<CountUp />`, `<PillButton />`)
   - [x] GSAP setup utility (`src/lib/gsap.ts` with client registration and cleanup hooks)
-  - [x] Responsive Navigation Bar (`<Navbar />`) with desktop menu, active layoutId pill, language toggle, theme toggle, and mobile sheet drawer
-  - [x] Responsive Dark Rounded Footer (`<Footer />`) with brand info, bilingual links, open data badges, and attributions link
+  - [x] Responsive Navigation Bar (`<Navbar />`) and Dark Rounded Footer (`<Footer />`)
   - [x] Root layout (`src/app/layout.tsx`) & page transition shell (`src/app/template.tsx`)
-  - [x] Core domain math calculations (`src/server/services/calculations.ts`) & unit tests (`src/server/services/calculations.test.ts`)
+  - [x] Core domain math calculations (`src/server/services/calculations.ts`) & unit tests
   - [x] Attributions document (`ATTRIBUTIONS.md`)
-  - [x] Verification: TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors, 0 warnings), Vitest (6/6 tests passed), Next.js production build (`next build`) clean
 - [x] **Phase 2: High-Energy Landing Page**
-  - [x] Hero Section with GSAP entrance timeline (line-by-line reveal, electric lightning aura, athlete cutout silhouette with parallax, floating active stat badge, Start Free & Watch Video facade modal)
-  - [x] Velocity-responsive Marquee strip with real platform stats & star glyph dividers
-  - [x] Features Grid with staggered entrance, large rounded cards (24-32px), WCAG AA contrast compliance
-  - [x] "How It Works" Section: pinned horizontal scroll on desktop/tablet with animated SVG dashed line path; responsive vertical stack on phones via `gsap.matchMedia`
-  - [x] Live Food Search Demo component with instant Bengali & English fuzzy matching for staple Bangladeshi items (Bhat, Dal, Ilish, Murgi, Dim, Roti, Bhorta) and interactive serving recalculation
-  - [x] Calculators Teaser with interactive quick BMI & BMR/TDEE estimator using domain math service
-  - [x] Workout Plan Chooser: pricing-style cards for 3, 4, 5, 6 days/week splits (Full Body, Upper/Lower, Hybrid, Push-Pull-Legs) with interactive day toggles and highlighted recommendation
-  - [x] Exercise Library Teaser with muscle group filter tabs (Chest, Back, Shoulders, Legs, Core, Arms) and card previews
-  - [x] Streak & Challenge Teaser with Asia/Dhaka streak visualization and 1080x1350 social share card preview
-  - [x] Bilingual FAQ Accordion component with genuine gym & nutrition FAQs
-  - [x] Final High-Voltage CTA Banner with Pill Button
-  - [x] Complete, genuine public and legal pages (`/about`, `/contact`, `/privacy`, `/terms`, etc.) with zero placeholder text
-  - [x] Verification: Responsive verification (360px up to 1920px), TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors, 0 warnings), Vitest (6/6 passed), Next.js production build clean (20/20 static routes prerendered)
+  - [x] Hero Section with GSAP entrance timeline and electric lightning aura
+  - [x] Velocity-responsive Marquee strip with real platform stats
+  - [x] Features Grid with staggered entrance and WCAG AA contrast compliance
+  - [x] "How It Works" Section: pinned horizontal scroll on desktop/tablet with animated SVG dashed line path; responsive vertical stack on phones
+  - [x] Live Food Search Demo component with instant Bengali & English fuzzy matching
+  - [x] Calculators Teaser with interactive quick BMI & BMR/TDEE estimator
+  - [x] Workout Plan Chooser with interactive day toggles
+  - [x] Exercise Library Teaser with muscle group filter tabs
+  - [x] Streak & Challenge Teaser with Asia/Dhaka streak visualization
+  - [x] Bilingual FAQ Accordion component with genuine FAQs
+  - [x] Complete public and legal pages (`/about`, `/contact`, `/privacy`, `/terms`)
 - [x] **Phase 3: Data Layer & Services**
-  - [x] Database connection manager (`src/server/db.ts` with connection caching and reconnection resilience)
-  - [x] Mongoose Data Models with strict schemas (`src/server/models/`):
-    - `User` (`role`, `nickname`, `lastActiveAt`, `timezone`, `profile`)
-    - `Food` (`nameBn`, `nameEn`, `aliases`, `category`, `image`, `per100g`, `servings`, `source`, `verified`, text index)
-    - `Exercise` (`slug`, `nameBn`, `nameEn`, `muscle`, `equipment`, `level`, `instructionsBn`, `instructionsEn`, `commonMistakesBn`, `youtubeId`, `reviewed`)
-    - `Plan` (`slug`, `nameBn`, `nameEn`, `daysPerWeek`, `splitType`, `level`, `schedule`)
-    - `MealLog` (`userId`, `date`, `slot`, `foodId`, `servings`, `grams`, `calculatedMacros`, TTL 30 days)
-    - `WorkoutLog` (`userId`, `date`, `planId`, `completedDays`, `exercisesDone`, TTL 30 days)
-    - `DailySummary` (`userId`, `date`, `totalKcal`, `totalProtein`, `totalCarbs`, `totalFat`, `workoutCompleted`, permanent)
-    - `WeightLog` (`userId`, `date`, `weightKg`, `note`, permanent)
-    - `Streak` (`userId`, `currentStreak`, `longestStreak`, `lastActiveDhakaDate`, `activeDates`)
-    - `Challenge` (`code`, `creatorId`, `title`, `durationDays`, `metric`, `participants`, `startDate`, `endDate`, `active`)
-    - `Announcement` (`title`, `body`, `type`, `createdAt`, `authorId`)
-    - `PushToken` (`userId`, `token`, `endpoint`, `userAgent`)
-  - [x] Zod Schemas for input validation across entities (`src/server/validators/index.ts`)
-  - [x] Decoupled Service Layer (`src/server/services/`):
-    - `foodService` (fuzzy search with Fuse.js fallback, pagination, category filtering)
-    - `exerciseService` (filter by muscle, equipment, level, slug lookup)
-    - `planService` (splits retrieval, day checkoffs)
-    - `logService` (meals, workouts, TTL index support, daily summary aggregation)
-    - `streakService` (Asia/Dhaka timezone evaluation, streak updates)
-    - `challengeService` (create group, invite code generator, ranking)
-  - [x] Seed Data and Scripts:
-    - 300+ authentic Bangladeshi foods (`src/server/seeds/foods.data.ts` - 308 foods across 9 categories)
-    - 32 core exercises (`src/server/seeds/exercises.data.ts`)
-    - 4 complete workout splits (`src/server/seeds/plans.data.ts`)
-    - Unified database seed runner (`npm run db:seed` via `src/server/seeds/seed.ts`)
-  - [x] Next.js Route Handlers (`src/app/api/...`):
-    - `GET /api/foods` (search, category, pagination)
-    - `GET /api/exercises` & `GET /api/exercises/[slug]`
-    - `GET /api/plans` & `GET /api/plans/[slug]`
-    - `GET /api/seed` (secure seed endpoint)
-  - [x] Unit Tests for services, validation, and data transformations (19/19 tests passing)
-  - [x] Verification (TypeScript clean, ESLint clean, Vitest passing, Next.js build clean)
+  - [x] Database connection manager (`src/server/db.ts` with connection caching)
+  - [x] Mongoose Data Models with strict schemas (`src/server/models/`)
+  - [x] Zod Schemas for input validation across entities
+  - [x] Decoupled Service Layer (`foodService`, `exerciseService`, `planService`, `logService`, `streakService`, `challengeService`)
+  - [x] Seed data (308 authentic Bangladeshi foods, 32 core exercises, 4 workout splits)
+  - [x] Next.js Route Handlers (`/api/foods`, `/api/exercises`, `/api/plans`, `/api/seed`)
 - [x] **Phase 4: Foods Database, Meal Calculator & BMI (Guest-first)**
-  - [x] Guest storage abstraction (`src/lib/guest-storage.ts` for localStorage persistence of meals, profile, and calculations)
-  - [x] Interactive Food Database page (`/foods`):
-    - [x] Real-time search with bilingual support (Bangla & English) and category filters (Grains, Fish, Meat, Lentils, Vegetables/Bhorta, Sweets/Dairy, Fruits, Snacks)
-    - [x] Food catalog cards with per 100g calories & macro badges (Protein, Carbs, Fat, Fiber, Sodium, Potassium, Calcium)
-    - [x] Serving size converter drawer/modal (bowl, piece, spoon, and custom grams) with instant macro recalculation
-    - [x] Transparent verification flag (`verified: false` pending clinical review) and source citation
-    - [x] Sort options (Highest Protein, Lowest Calorie, Highest Fiber, Name A-Z) and pagination/load more
-  - [x] Interactive Meal Planner & Calorie Burn Calculator (`/calculator`):
-    - [x] Meal slots (Breakfast, Lunch, Snack, Dinner) with food item search & add (by serving or grams)
-    - [x] Mifflin-St Jeor BMR & TDEE target calculator with gender, age, height, weight, activity level, and goal selection
-    - [x] Macro breakdown comparison against daily targets (progress rings & visual gauges)
-    - [x] Pre-workout intake tracking & Post-workout suggested nutrient range (with medical disclaimer)
-    - [x] MET exercise calorie burn calculator with common gym/cardio exercises
-    - [x] Net daily energy balance (Intake - TDEE - Exercise Burn) and ~7700 kcal/kg projected weight change
-    - [x] Enforced safe caloric minimums (1200 kcal women, 1500 kcal men) with clinical health warnings
-    - [x] Full offline/guest persistence in localStorage with instant zero-login usability
-  - [x] Dedicated BMI Calculator page (`/bmi`):
-    - [x] Metric & Imperial input toggles (cm/ft-in, kg/lbs) with age and gender
-    - [x] Instant BMI classification with dual WHO and South Asian specific risk thresholds
-    - [x] Visual multi-colored gauge bar with indicator
-    - [x] Healthy weight range calculation and athletic muscle-mass limitation disclaimer
-    - [x] Quick CTA to export metrics into `/calculator`
-  - [x] Quality & Verification:
-    - [x] Responsive design across 360px, 744px, and 1280px widths with real Playwright screenshots (0px overflow across all routes)
-    - [x] TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors/warnings), Vitest tests passing (22/22 tests), Next.js production build clean (24/24 static & dynamic routes)
-- [x] **Phase 5: Exercise Library & Workout Plans**
-  - [x] Exercise Library page (`/exercises`):
-    - [x] Muscle group filter tabs (All, Chest, Back, Shoulders, Arms, Legs, Core)
-    - [x] Equipment filter (All, Barbell, Dumbbell, Cable, Machine, Bodyweight)
-    - [x] Difficulty level filter (All, Beginner, Intermediate, Advanced)
-    - [x] Fast bilingual search input across Bangla and English names and muscle groups
-    - [x] Dynamic exercise cards with Free-Exercise-DB thumbnails, muscle tags, difficulty pill, and review status badge
-    - [x] Reviewing notice banner: Bangla guides transparently marked `reviewed: false` with notice explaining AI draft status pending certified trainer review
-  - [x] Exercise Detail pages (`/exercises/[slug]`):
-    - [x] Static prerendering for all 33 exercise routes (`generateStaticParams`)
-    - [x] Dynamic SEO metadata & Open Graph images (`generateMetadata`)
-    - [x] Free-Exercise-DB position gallery: side-by-side or toggleable Starting and Peak Contraction positions
-    - [x] Verified YouTube video embed: Privacy-friendly click-to-load facade via `youtube-nocookie.com`. All 33 exercises audited via HTTP; verified exact matching videos, and omitted video for unverified `ab-wheel-rollout`
-    - [x] Step-by-step execution instructions (Bangla default with English toggle support)
-    - [x] Common mistakes to avoid (highlighted with Tomato warning icons)
-    - [x] Pro trainer tips (highlighted in Lime cards)
-    - [x] Primary and secondary muscle activation tags
-  - [x] Workout Routine Chooser & Splits (`/plans`):
-    - [x] 3, 4, 5, and 6-day training splits (Full Body A/B/C, Upper/Lower, Hybrid, Push-Pull-Legs)
-    - [x] Days per week filter pills (All, 3 Days, 4 Days, 5 Days, 6 Days)
-    - [x] Pricing/routine card design system with target frequency, split badge, experience level, and weekly schedule outline
-    - [x] Active Routine selector: Users can choose their active split, persisted in `guestStorage` (localStorage) and highlighted with green checkmark
-  - [x] Workout Plan Detail pages (`/plans/[slug]`):
-    - [x] Static prerendering for all 4 workout splits (`generateStaticParams`)
-    - [x] Day switcher tabs (e.g. Day 1: Full Body A, Day 2: Full Body B, etc.)
-    - [x] Muscle focus indicator banner for each day
-    - [x] Exercise table/cards with target sets, reps, and direct links to `/exercises/[exerciseSlug]`
-    - [x] Interactive floating Rest Timer widget (`<RestTimer />`) with 45s/60s/90s/120s presets, countdown ring, and Web Audio API completion tone
-    - [x] Interactive exercise check-off checkboxes persisted in `guestStorage` by date
-  - [x] Copy & Legal Compliance:
-    - [x] Audited and removed the word 'authentic' from all site copy and tests
-    - [x] Recorded Free Exercise DB public domain license (The Unlicense) in `ATTRIBUTIONS.md`
-    - [x] Ensured zero leakage of `.env.local` contents or credentials
-  - [x] Quality & Verification:
-    - [x] Responsive design across 360px, 744px, and 1280px widths with real Playwright screenshots (0px overflow across all routes)
-    - [x] Strict TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors, 0 warnings), Vitest (25/25 tests passing), Next.js production build clean (63 static & dynamic routes prerendered)
+  - [x] Guest storage abstraction (`src/lib/guest-storage.ts` for localStorage persistence)
+  - [x] Interactive Food Database page (`/foods`) with real-time search, category filters, macro badges, and serving converter
+  - [x] Interactive Meal Planner & Calorie Burn Calculator (`/calculator`)
+  - [x] Dedicated BMI & Body Health Status page (`/bmi`)
+- [x] **Phase 5: Exercise Library & Workout Plans (Reviewed Guides)**
+  - [x] Exercise Library (`/exercises`) with muscle and equipment filters
+  - [x] Exercise Detail Pages (`/exercises/[slug]`) with reviewed badge, muscle anatomy badges, form checkpoints, and verified video embeds
+  - [x] Workout Plans (`/plans` and `/plans/[slug]`)
 - [x] **Phase 6: Auth, Guest Merge, Dashboard & Weight Tracking**
-  - [x] Authentication & Authorization:
-    - [x] Auth.js v5 (`next-auth@beta`) configured strictly with Google Sign-In (`src/lib/auth.ts`, `src/app/api/auth/[...nextauth]/route.ts`)
-    - [x] No email/password sign-in allowed
-    - [x] Admin role strictly verified on server against `ADMIN_EMAILS` environment variable
-    - [x] Every API route handler derives `userId` securely from server session (`session.user.id`), never from request bodies or URL parameters
-  - [x] Guest-to-Account Seamless Migration:
-    - [x] `guestStorage` localStorage migration service (`POST /api/user/merge`)
-    - [x] Deduplicated meal migration checking `(userId, date, slot, foodNameEn, grams)`
-    - [x] Deduplicated weight entries and biometrics migration without data loss
-    - [x] Silent auto-sync listener (`<GuestSyncListener />`) triggered automatically upon user login
-  - [x] User Dashboard (`/dashboard`):
-    - [x] Real-time caloric balance ring (consumed vs target kcal)
-    - [x] Macronutrient distribution breakdown (Protein, Carbs, Fat)
-    - [x] Exercise calorie burn tally
-    - [x] 7-day Caloric Balance trend chart using Recharts
-    - [x] Weight quick-log modal and streak status widget
-    - [x] Guest fallback view with direct Google sign-in CTA
-  - [x] Meal & Activity Logger (`/log`):
-    - [x] Date switcher with quick buttons (Yesterday, Today, Tomorrow) and date picker
-    - [x] Meal categorization (Breakfast, Lunch, Snack, Dinner)
-    - [x] Integrated `FoodPickerModal` with instant portion grams and macro preview
-    - [x] Dynamic item deletion and instant total calorie recalc
-    - [x] Seamless dual operation: reads/writes to MongoDB when logged in, persists in `guestStorage` when guest
-  - [x] Weight Tracking & Progress (`/progress`):
-    - [x] Key metrics: Current weight, starting weight, 30-day delta, and total delta
-    - [x] Interactive Recharts Area/Line chart with tooltip and target weight line
-    - [x] Weight entry form with custom date, notes, and instant validation
-    - [x] Chronological weight log history with delete action
-  - [x] Profile Settings & Account Deletion (`/settings`):
-    - [x] Biometric update form (age, gender, height, weight, activity level, custom calorie target)
-    - [x] "Delete My Account" permanent data wiper (`DELETE /api/user/delete-account`): permanently wipes records across `User`, `MealLog`, `WorkoutLog`, `DailySummary`, `WeightLog`, and `Streak` collections
-    - [x] Confirmation dialog requiring typing "DELETE" to prevent accidental data loss
-  - [x] Mobile Navigation:
-    - [x] Fixed bottom navigation bar (`<MobileBottomNav />`) on mobile viewports for authenticated users
-  - [x] Quality & Verification:
-    - [x] Strict TypeScript clean (`tsc --noEmit` 0 errors)
-    - [x] Clean ESLint (0 errors, 0 warnings)
-    - [x] Vitest suite: 27/27 tests passing (`services.test.ts` with `isAdminEmail` checks)
-    - [x] Next.js production build: 69 static & dynamic routes compiled cleanly
-    - [x] Playwright responsive screenshots at 360px, 744px, and 1280px widths across all 13 routes (0px horizontal overflow)
-- [x] **Phase 7: Streaks, Progress Card, Challenges & Leaderboard**
-  - [x] Streak Tracking:
-    - [x] Evaluated strictly in `Asia/Dhaka` timezone (UTC+6) via `getDhakaDateString` and `calculateStreak`
-    - [x] Meal logs, workout sessions, and merged guest logs increment and maintain Dhaka day streaks
-    - [x] Unit tested for multi-day consecutive runs, same-day multiple entries, and graceful 1-day preservation
-  - [x] Nicknames & Privacy Guarantee:
-    - [x] Default nicknames generated randomly (3-20 characters, e.g. `Hero_4829`, `Athlete_9124`)
-    - [x] User-editable nickname setting with Zod validation (3-20 chars)
-    - [x] Google real name, email, and Google avatar are NEVER exposed on public leaderboards, challenges, or social share cards
-  - [x] Community Leaderboard (`/leaderboard`):
-    - [x] 100% Opt-in via user profile (`optInLeaderboard`)
-    - [x] Ranks by active streak or weight loss percentage, NEVER raw kg
-    - [x] Custom medal indicators for Top 3 (🥇, 🥈, 🥉) and personalized pinned rank banner for the logged-in athlete
-  - [x] Server-Generated Dynamic Progress Card (`/api/og/progress`):
-    - [x] Rendered with `next/og` (`ImageResponse`) in 1080x1080 (Square) and 1080x1350 (Story) formats
-    - [x] Displays Wordmark, Nickname, Streak, Workouts completed, and 30-day percentage delta
-    - [x] Raw kg weight remains strictly hidden unless the user explicitly toggles "Show weight on card"
-    - [x] In-app `<ProgressShareModal />` with Web Share API, direct PNG download, and WhatsApp fallbacks
-  - [x] Friend Challenges (`/challenges` and `/c/[code]`):
-    - [x] Unguessable 8-character invite codes generated with `crypto.randomBytes` (over 1.09 trillion combinations)
-    - [x] Strictly capped at 10 participants maximum
-    - [x] Duration choices: 7, 14, or 30 days
-    - [x] Metrics supported: `streak`, `workouts`, or `weight_loss_pct`
-    - [x] Dedicated `/c/[code]` screen with standings, 1-click invite link copying, and "Leave Challenge" capability
-  - [x] Security, Rate Limiting & Account Deletion:
-    - [x] Built sliding-window in-memory Rate Limiter utility (`src/server/utils/rate-limiter.ts`)
-    - [x] Audited and added Zod validation + Rate Limiting to EVERY write endpoint in the app (12 endpoints total)
-    - [x] Extended `DELETE /api/user/delete-account` to remove user from all challenge participant lists and clean up empty challenges
-  - [x] Quality & Verification:
-    - [x] Strict TypeScript clean (`tsc --noEmit` 0 errors)
-    - [x] Clean ESLint (0 errors, 0 warnings)
-    - [x] Vitest suite: 33/33 tests passing (including challenge codes, default nicknames, and Zod schemas)
-    - [x] Next.js production build: 75 static & dynamic routes compiled cleanly
-    - [x] Playwright responsive screenshots at 360px, 744px, and 1280px across all 16 routes (0px horizontal overflow)
-- [ ] **Phase 8: PWA, Web Push & Announcements**
+  - [x] Google OAuth via Auth.js (NextAuth v5 beta)
+  - [x] Guest-to-Account seamless merge engine (`POST /api/user/merge`)
+  - [x] Authenticated Personal Dashboard (`/dashboard`)
+  - [x] Activity Logging Hub (`/log`)
+  - [x] Weight Tracking & Progress (`/progress`)
+  - [x] User Settings (`/settings`) with Account Deletion (`DELETE /api/user/delete-account`)
+- [x] **Phase 7: Streak Engine, Progress Card, Challenges & Leaderboard**
+  - [x] Streak tracking engine based strictly on `Asia/Dhaka` timezone
+  - [x] Opt-in Public Leaderboard (`/leaderboard`) ranking by streak and capped weight loss percentage
+  - [x] Privacy-first athlete profiles (randomized default nicknames, private weight)
+  - [x] Server-Generated Dynamic Progress Card (`/api/og/progress`) with Bangla font support
+  - [x] Friend Challenges (`/challenges` and `/c/[code]`) with unguessable 8-character codes
+  - [x] Sliding-window rate limiting on all write endpoints
+- [x] **Phase 8: PWA, Web Push & Announcements**
+  - [x] **Preliminary Fixes**:
+    - [x] Removed 'verified athlete' badge from the leaderboard.
+    - [x] Made `streak` the default leaderboard metric.
+    - [x] Added healthy-pace advisory note to weight loss leaderboard, capped displayed percentage at 20.0%, and hid users with BMI < 18.5.
+    - [x] Embedded Bengali TrueType font (`NotoSansBengali-Bold.ttf`) in `next/og` progress card route handler and verified generated PNG (`public/progress-card-bangla-preview.png`).
+    - [x] Decoupled rate limiter behind the `IRateLimiterStore` interface (`InMemoryRateLimiterStore`, `setRateLimiterStore()`) allowing distributed shared stores (e.g. Redis/Upstash) to be plugged in.
+  - [x] **PWA Manifest & Icons**:
+    - [x] Generated manifest `public/manifest.json` strictly derived from `APP_CONFIG` (`name: 'Z-Gym Helper'`, `short_name: 'Z-Gym'`).
+    - [x] Generated standard icons (192x192, 512x512), maskable icon (512x512), and apple-touch-icon with the Z lightning bolt brand mark on `#0F1412` background.
+    - [x] Wired manifest and icon metadata into `src/app/layout.tsx`.
+    - [x] In-app `<PwaInstallPrompt />` with `beforeinstallprompt` handling and explicit Apple iOS Safari instructions (`Add to Home Screen`).
+  - [x] **Serwist Service Worker & Caching Rules**:
+    - [x] Service worker source: `src/app/sw.ts` bundled with esbuild into `public/sw.js`.
+    - [x] **Enforced Strict Rule**: Never cache authenticated API endpoints (`/api/*` matches `NetworkOnly`).
+    - [x] **Enforced Strict Rule**: Never serve stale cached authenticated personal pages (`/dashboard`, `/log`, `/progress`, `/settings`, `/admin`, `/challenges` use `NetworkFirst` with short network timeout).
+    - [x] Static assets, fonts, and images use cached strategies.
+    - [x] Built-in push event listener and notification click handler in `sw.ts`.
+    - [x] Registered via `<ServiceWorkerRegister />` in root layout.
+  - [x] **FCM & Push Reminders**:
+    - [x] `src/server/services/fcm.service.ts`: Safely decodes `FIREBASE_SERVICE_ACCOUNT_BASE64` server-side only in memory; never logs or prints credentials; handles missing or invalid env gracefully with zero crashes.
+    - [x] User notification preferences: workout reminder time (HH:00), meal reminder time (HH:00), and notifications opt-out toggle.
+    - [x] Settings UI (`/settings`) provides notification controls and required Apple iOS advisory note (requires iOS 16.4+ and Home Screen installation).
+    - [x] Created `PushTokenModel` and route `POST /api/user/push-token` & `DELETE /api/user/push-token`.
+    - [x] Extended `userService.deleteUserAccount()` to purge push tokens from `PushTokenModel`.
+  - [x] **Announcements System**:
+    - [x] Created `AnnouncementModel` and `announcementService`.
+    - [x] On creation, dispatches a single FCM topic push to `announcements` (`/topics/announcements`).
+    - [x] In-app announcement bell (`<AnnouncementBell />`) in Navbar (both desktop and mobile) with unread badge count tracking `lastSeenAnnouncementAt` (and guest localStorage fallback).
+    - [x] Added `GET /api/announcements` and `POST /api/announcements/read`.
+  - [x] **Secured Cron Endpoint**:
+    - [x] `POST /api/cron/reminders` endpoint protected by `CRON_SECRET` using constant-time comparison (`crypto.timingSafeEqual`).
+    - [x] Evaluates users' local hours in their timezone (e.g. Asia/Dhaka) and sends workout and meal push reminders.
+    - [x] Created ready-to-use GitHub Actions workflow `.github/workflows/cron-reminders.yml` scheduled hourly.
+  - [x] **Verification**:
+    - [x] Vitest suite: 42/42 tests passing across 4 suites.
+    - [x] Strict TypeScript: clean (`tsc --noEmit` 0 errors).
+    - [x] ESLint: clean (0 errors, 0 warnings).
+    - [x] Next.js production build: clean (80 routes compiled).
+    - [x] Playwright screenshots: verified across 360px, 744px, and 1280px (0px horizontal overflow across all 16 views).
 - [ ] **Phase 9: Admin Dashboard**
 - [ ] **Phase 10: AdSlot, Legal Pages, SEO, A11y & Production Polish**
 
 ---
 
+## Environment Variables Reference
+
+Here is the complete checklist of all environment variables required by Z-Gym Helper:
+
+| Variable Name | Required For | Description & Example |
+| :--- | :--- | :--- |
+| `NEXT_PUBLIC_APP_URL` | General / SEO | Public base URL of the application, e.g. `https://zgym.app` |
+| `NEXT_PUBLIC_SHOW_PRODUCTS` | Spec / Feature flag | Flag for e-commerce products (must be `false` now) |
+| `NEXT_PUBLIC_ADS_ENABLED` | Spec / Feature flag | Flag for Google AdSense slots (must be `false` now) |
+| `MONGODB_URI` | Database | MongoDB Atlas connection string (e.g. `mongodb+srv://...`) |
+| `AUTH_SECRET` / `NEXTAUTH_SECRET` | Authentication | Cryptographic secret used by Auth.js to sign session cookies |
+| `AUTH_GOOGLE_ID` | OAuth | Google Cloud Console OAuth 2.0 Client ID |
+| `AUTH_GOOGLE_SECRET` | OAuth | Google Cloud Console OAuth 2.0 Client Secret |
+| `ADMIN_EMAILS` | Authorization | Comma-separated list of admin email addresses |
+| `FIREBASE_SERVICE_ACCOUNT_BASE64` | Web Push (FCM) | **Phase 8:** Base64-encoded JSON string of the Firebase service account private key. Decoded in memory on the server only. |
+| `CRON_SECRET` | Cron Security | **Phase 8:** Secret bearer token for authenticating scheduled reminder cron dispatches via GitHub Actions or external cron services. |
+
+---
+
 ## Current Status
 
-- **Current focus:** Completed Phase 7 (Streaks, Progress Card, Challenges & Leaderboard). Ready for Phase 8 (PWA, Web Push & Announcements).
+- **Current focus:** Completed Phase 8 (PWA, Web Push & Announcements). Ready for Phase 9 (Admin Dashboard).
 - **Next 3 steps:**
-  1. Configure Serwist PWA manifest, service worker caching, and install prompt banner.
-  2. Implement Web Push notifications via Firebase Cloud Messaging (FCM) topics.
-  3. Build in-app Announcements collection and bell indicator.
+  1. Build admin route guards checking `ADMIN_EMAILS` on the server.
+  2. Implement admin dashboard analytics (users count, active daily streaks, food items, logs volume).
+  3. Provide admin management UI for announcements, food verification status, and exercise review.
 - **Decisions made:**
-  - Nicknames default to randomly generated tags (`Hero_XXXX`, `Athlete_XXXX`) to protect user privacy from Google profile defaults.
-  - Public leaderboard and social cards never expose raw kg weights or Google account identifiers.
-  - All write endpoints (12 total) have strict Zod validation and in-memory rate limiting.
-  - Challenge invite codes are 8-character cryptographically random strings with unambiguous characters, capped at 10 participants.
-  - Next.js 16 cacheComponents compatibility: dynamic routes await params within Suspense boundaries.
-- **Env vars needed:**
-  - `NEXT_PUBLIC_APP_URL`
-  - `NEXT_PUBLIC_SHOW_PRODUCTS=false`
-  - `NEXT_PUBLIC_ADS_ENABLED=false`
-  - `MONGODB_URI`
-  - `AUTH_SECRET` / `NEXTAUTH_SECRET`
-  - `ADMIN_EMAILS`
-  - `AUTH_GOOGLE_ID`
-  - `AUTH_GOOGLE_SECRET`
+  - `FIREBASE_SERVICE_ACCOUNT_BASE64` is decoded only on the server, wrapped in try/catch, and returns graceful fallback without crashing if unset or invalid.
+  - Rate limiter is placed behind `IRateLimiterStore` interface so Redis/Upstash can replace in-memory storage in multi-region deployments.
+  - Authenticated personal routes and `/api/*` are strictly excluded from service worker caching (`NetworkOnly` / `NetworkFirst`), guaranteeing no stale user data is served.
+  - Cron endpoint uses `crypto.timingSafeEqual` with byte buffers to avoid timing vulnerability attacks.
+- **Logged-in screens note for Playwright:**
+  - Automated screenshots for `/dashboard`, `/log`, `/progress`, `/settings`, and `/c/preview` were checked in the unauthenticated guest view (which displays the guest login prompts / guest local data). Authenticated user session views require live Google OAuth login which cannot be automated headlessly without real Google credentials.
 - **Known issues:**
   - Nutrition values need human verification against certified food composition tables (all 308 seeded items are transparently set to `verified: false`).
-- **Last updated:** 2026-11-03 15:30 UTC+6
-- **Env vars needed:**
-  - `NEXT_PUBLIC_APP_URL`
-  - `NEXT_PUBLIC_SHOW_PRODUCTS=false`
-  - `NEXT_PUBLIC_ADS_ENABLED=false`
-  - `MONGODB_URI`
-  - `AUTH_SECRET` / `NEXTAUTH_SECRET`
-  - `ADMIN_EMAILS`
-  - `AUTH_GOOGLE_ID`
-  - `AUTH_GOOGLE_SECRET`
-- **Known issues:**
-  - Nutrition values need human verification against certified food composition tables (all 308 seeded items are transparently set to `verified: false`).
-- **Last updated:** 2026-11-03 14:30 UTC+6
+- **Last updated:** 2026-11-03 17:00 UTC+6

@@ -10,6 +10,7 @@ import { Menu, X, ArrowRight, User, LogOut, LayoutDashboard } from 'lucide-react
 import { Wordmark } from '@/components/ui/wordmark';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { LanguageToggle } from '@/components/ui/language-toggle';
+import { AnnouncementBell } from '@/components/layout/announcement-bell';
 import { PillButton } from '@/components/motion/pill-button';
 import { APP_CONFIG } from '@/config/app';
 import { useLanguage } from '@/lib/language-context';
@@ -98,6 +99,7 @@ export function Navbar() {
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-3">
+          <AnnouncementBell />
           <LanguageToggle />
           <ThemeToggle />
           {isAuthenticated ? (
@@ -143,6 +145,7 @@ export function Navbar() {
 
         {/* Mobile Hamburger Button */}
         <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
+          <AnnouncementBell />
           <LanguageToggle className="px-2.5 sm:px-3 text-[11px] sm:text-xs" />
           <ThemeToggle />
           <button

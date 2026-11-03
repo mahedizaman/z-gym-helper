@@ -10,6 +10,10 @@ import {
   CheckCircle2,
   AlertTriangle,
   Sparkles,
+  Bell,
+  Clock,
+  Smartphone,
+  BellOff,
 } from 'lucide-react';
 
 interface UserData {
@@ -20,6 +24,11 @@ interface UserData {
   avatar?: string;
   timezone: string;
   optInLeaderboard?: boolean;
+  notificationPreferences?: {
+    workoutReminderTime?: string;
+    mealReminderTime?: string;
+    notificationsOptOut: boolean;
+  };
   profile: {
     gender: 'male' | 'female';
     weightKg: number;
@@ -66,6 +75,11 @@ export function SettingsClient() {
   });
   const [optInLeaderboard, setOptInLeaderboard] = useState<boolean>(false);
 
+  // Notification Preferences
+  const [workoutReminderTime, setWorkoutReminderTime] = useState<string>('18:00');
+  const [mealReminderTime, setMealReminderTime] = useState<string>('13:00');
+  const [notificationsOptOut, setNotificationsOptOut] = useState<boolean>(false);
+
   // Delete account confirmation modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
@@ -76,6 +90,17 @@ export function SettingsClient() {
     setNickname(u.nickname || '');
     if (typeof u.optInLeaderboard === 'boolean') {
       setOptInLeaderboard(u.optInLeaderboard);
+    }
+    if (u.notificationPreferences) {
+      if (u.notificationPreferences.workoutReminderTime) {
+        setWorkoutReminderTime(u.notificationPreferences.workoutReminderTime);
+      }
+      if (u.notificationPreferences.mealReminderTime) {
+        setMealReminderTime(u.notificationPreferences.mealReminderTime);
+      }
+      if (typeof u.notificationPreferences.notificationsOptOut === 'boolean') {
+        setNotificationsOptOut(u.notificationPreferences.notificationsOptOut);
+      }
     }
     if (u.profile) {
       setGender(u.profile.gender || 'male');
@@ -153,6 +178,17 @@ export function SettingsClient() {
             activityLevel,
             calorieTarget: calorieTargetVal,
             optInLeaderboard,
+          }),
+        });
+
+        // Also update notification preferences
+        await fetch('/api/user/notification-preferences', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            workoutReminderTime,
+            mealReminderTime,
+            notificationsOptOut,
           }),
         });
 
@@ -430,6 +466,125 @@ export function SettingsClient() {
           </button>
         </div>
       </form>
+
+      {/* Push Reminders & Notifications Card */}
+      <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 space-y-6 shadow-sm">
+        <div className="flex items-center justify-between pb-4 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-lime-brand/10 border border-lime-brand/30 flex items-center justify-center text-lime-brand">
+              <Bell className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-display font-black text-xl text-foreground">
+                {t('পুশ রিমাইন্ডার ও নোটিফিকেশন', 'Push Reminders & Alerts')}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                {t(
+                  'ওয়ার্কআউট ও খাবারের সময় মতো নোটিফিকেশন পান (টাইমজোন: Asia/Dhaka)',
+                  'Timely workout and nutrition reminders in your local timezone'
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Opt-out Toggle */}
+        <div className="flex items-center justify-between p-4 rounded-2xl bg-secondary/40 border border-border">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              {notificationsOptOut ? (
+                <BellOff className="w-4 h-4 text-tomato-base" />
+              ) : (
+                <Bell className="w-4 h-4 text-lime-brand" />
+              )}
+              <span className="font-bold text-sm text-foreground">
+                {t('নোটিফিকেশন চালু রাখুন', 'Enable Push Notifications')}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t(
+                'বন্ধ করলে আপনি কোনো ধরনের রিমাইন্ডার পাবেন না',
+                'Disable to mute all automated workout and meal alerts'
+              )}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setNotificationsOptOut(!notificationsOptOut)}
+            className={`w-12 h-7 rounded-full p-1 transition-colors duration-200 ease-in-out cursor-pointer ${
+              !notificationsOptOut ? 'bg-lime-brand' : 'bg-muted'
+            }`}
+            aria-label="Toggle notifications"
+          >
+            <div
+              className={`w-5 h-5 rounded-full bg-ink-base transition-transform duration-200 ease-in-out ${
+                !notificationsOptOut ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Reminder Time Selectors */}
+        {!notificationsOptOut && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Workout Reminder */}
+            <div className="p-4 rounded-2xl bg-secondary/30 border border-border space-y-2">
+              <label className="text-xs font-bold text-foreground flex items-center gap-2">
+                <Clock className="w-4 h-4 text-lime-brand" />
+                <span>{t('ওয়ার্কআউট রিমাইন্ডার সময়', 'Workout Reminder Time')}</span>
+              </label>
+              <select
+                value={workoutReminderTime}
+                onChange={(e) => setWorkoutReminderTime(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-lime-brand cursor-pointer"
+              >
+                {['06:00', '07:00', '08:00', '09:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'].map(
+                  (time) => (
+                    <option key={time} value={time}>
+                      {time} ({time.startsWith('0') || parseInt(time) < 12 ? 'সকাল / Morning' : 'বিকাল/রাত / Evening'})
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+
+            {/* Meal Reminder */}
+            <div className="p-4 rounded-2xl bg-secondary/30 border border-border space-y-2">
+              <label className="text-xs font-bold text-foreground flex items-center gap-2">
+                <Clock className="w-4 h-4 text-pink-brand" />
+                <span>{t('খাবারের পুষ্টি রিমাইন্ডার সময়', 'Meal Reminder Time')}</span>
+              </label>
+              <select
+                value={mealReminderTime}
+                onChange={(e) => setMealReminderTime(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-lime-brand cursor-pointer"
+              >
+                {['08:00', '12:00', '13:00', '14:00', '19:00', '20:00', '21:00'].map((time) => (
+                  <option key={time} value={time}>
+                    {time} ({time === '12:00' || time === '13:00' || time === '14:00' ? 'দুপুর / Lunch' : 'রাত / Dinner'})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
+        {/* iOS Notice (Required by spec) */}
+        <div className="p-4 rounded-2xl bg-secondary/20 border border-border/80 flex items-start gap-3">
+          <Smartphone className="w-5 h-5 text-lime-brand shrink-0 mt-0.5" />
+          <div className="space-y-1 text-xs text-muted-foreground leading-relaxed">
+            <span className="font-bold text-foreground block">
+              {t('অ্যাপল iOS (iPhone/iPad) ব্যবহারকারীদের জন্য নোট:', 'Note for Apple iOS (iPhone/iPad) Users:')}
+            </span>
+            <p>
+              {t(
+                'আইফোনে পুশ নোটিফিকেশন পেতে হলে iOS 16.4 বা পরবর্তী সংস্করণ প্রয়োজন এবং Z-Gym অ্যাপটি Safari ব্রাউজারের Share বাটনে ট্যাপ করে "Add to Home Screen" করে নিতে হবে।',
+                'To receive push notifications on iOS, iOS 16.4+ is required and Z-Gym must be added to your Home Screen first (Safari Share > Add to Home Screen).'
+              )}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Danger Zone: Delete My Account (Logged-in only) */}
       {status === 'authenticated' && (

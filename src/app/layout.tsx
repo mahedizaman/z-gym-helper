@@ -5,6 +5,8 @@ import { RootProvider } from '@/components/providers/root-provider';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav';
+import { PwaInstallPrompt } from '@/components/pwa/pwa-install-prompt';
+import { ServiceWorkerRegister } from '@/components/pwa/service-worker-register';
 import { APP_CONFIG } from '@/config/app';
 
 const sairaCondensed = Saira_Condensed({
@@ -59,6 +61,12 @@ export const metadata: Metadata = {
     title: `${APP_CONFIG.name} — ${APP_CONFIG.taglineBn}`,
     description: APP_CONFIG.descriptionBn,
   },
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/icons/icon-192x192.png',
+    shortcut: '/icons/icon-192x192.png',
+    apple: '/icons/apple-touch-icon.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -96,10 +104,12 @@ export default function RootLayout({
     >
       <body className="min-h-[100dvh] flex flex-col antialiased overflow-x-clip selection:bg-lime-brand selection:text-ink-base">
         <RootProvider>
+          <ServiceWorkerRegister />
           <Navbar />
           <main className="flex-1 flex flex-col">{children}</main>
           <Footer />
           <MobileBottomNav />
+          <PwaInstallPrompt />
         </RootProvider>
       </body>
     </html>

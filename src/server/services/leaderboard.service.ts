@@ -37,16 +37,20 @@ export const leaderboardService = {
     // Only users who explicitly opted in
     const optedInUsers = await UserModel.find(
       { optInLeaderboard: true, disabled: { $ne: true } },
-      { _id: 1, nickname: 1 }
+      { _id: 1, nickname: 1, profile: 1 }
     ).lean();
 
     if (optedInUsers.length === 0) {
       return { metric: params.metric, totalOptedIn: 0, entries: [], userRank: null };
     }
 
-    const userMap = new Map<string, string>();
+    const userMap = new Map<string, { nickname: string; heightCm: number; profileWeight: number }>();
     for (const u of optedInUsers) {
-      userMap.set(String(u._id), u.nickname || 'Athlete');
+      userMap.set(String(u._id), {
+        nickname: u.nickname || 'Athlete',
+        heightCm: u.profile?.heightCm || 172,
+        profileWeight: u.profile?.weightKg || 70,
+      });
     }
     const userIds = Array.from(userMap.keys());
 
@@ -60,10 +64,11 @@ export const leaderboardService = {
       }
 
       scoredList = userIds.map((uid) => {
+        const u = userMap.get(uid);
         const score = streakMap.get(uid) || 0;
         return {
           userId: uid,
-          nickname: userMap.get(uid) || 'Athlete',
+          nickname: u?.nickname || 'Athlete',
           score,
           formattedScore: `${score} দিন`,
         };
@@ -88,23 +93,38 @@ export const leaderboardService = {
         }
       }
 
-      scoredList = userIds.map((uid) => {
+      const validScored: { userId: string; nickname: string; score: number; formattedScore: string }[] = [];
+
+      for (const uid of userIds) {
+        const u = userMap.get(uid);
         const w = userWeights.get(uid);
+        const heightM = (u?.heightCm || 172) / 100;
+        const currentWeight = w?.current ?? u?.profileWeight ?? 70;
+        const currentBmi = heightM > 0 ? currentWeight / (heightM * heightM) : 22;
+
+        // Health Safety: Hide weight loss leaderboard for underweight users (BMI < 18.5)
+        if (currentBmi < 18.5) {
+          continue;
+        }
+
         let pct = 0;
         if (w && w.start > 0) {
-          // Weight loss percent = ((start - current) / start) * 100
           pct = Math.max(0, ((w.start - w.current) / w.start) * 100);
           pct = Math.round(pct * 10) / 10;
         }
 
-        return {
-          userId: uid,
-          nickname: userMap.get(uid) || 'Athlete',
-          score: pct,
-          formattedScore: `${pct}%`,
-        };
-      });
+        // Cap displayed percentage at 20.0% to discourage unhealthy crash dieting
+        const cappedPct = Math.min(20.0, pct);
 
+        validScored.push({
+          userId: uid,
+          nickname: u?.nickname || 'Athlete',
+          score: cappedPct,
+          formattedScore: `${cappedPct}%`,
+        });
+      }
+
+      scoredList = validScored;
       // Sort by percent desc
       scoredList.sort((a, b) => b.score - a.score);
     }
