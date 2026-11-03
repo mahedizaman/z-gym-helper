@@ -8,6 +8,13 @@ const widths = [
   { name: '1280', width: 1280, height: 900 },
 ];
 
+const routes = [
+  { slug: 'home', path: '/' },
+  { slug: 'foods', path: '/foods' },
+  { slug: 'calculator', path: '/calculator' },
+  { slug: 'bmi', path: '/bmi' },
+];
+
 async function main() {
   const outDir = path.resolve(process.cwd(), 'docs/screenshots');
   if (!fs.existsSync(outDir)) {
@@ -18,31 +25,32 @@ async function main() {
     headless: true,
   });
 
-  for (const { name, width, height } of widths) {
-    console.log(`Taking screenshot at ${width}x${height}...`);
-    const page = await browser.newPage({
-      viewport: { width, height },
-    });
+  for (const route of routes) {
+    for (const { name, width, height } of widths) {
+      console.log(`Taking screenshot for ${route.slug} at ${width}x${height}...`);
+      const page = await browser.newPage({
+        viewport: { width, height },
+      });
 
-    await page.goto('http://localhost:3000', { waitUntil: 'networkidle' });
-    // Allow Framer Motion / GSAP animations to settle
-    await page.waitForTimeout(2000);
+      await page.goto(`http://localhost:3000${route.path}`, { waitUntil: 'networkidle' });
+      // Allow client hydration and motion animations to settle
+      await page.waitForTimeout(1000);
 
-    const screenshotPath = path.join(outDir, `landing-${name}.png`);
-    await page.screenshot({ path: screenshotPath, fullPage: true });
-    console.log(`Saved screenshot: ${screenshotPath}`);
+      const screenshotPath = path.join(outDir, `${route.slug}-${name}.png`);
+      await page.screenshot({ path: screenshotPath, fullPage: true });
 
-    // Check for horizontal overflow
-    const overflowX = await page.evaluate(() => {
-      return document.documentElement.scrollWidth > window.innerWidth;
-    });
-    console.log(`Width ${name}px: horizontal overflow = ${overflowX}`);
+      // Check for horizontal overflow
+      const overflowX = await page.evaluate(() => {
+        return document.documentElement.scrollWidth > window.innerWidth;
+      });
+      console.log(`[${route.slug}] Width ${name}px: horizontal overflow = ${overflowX}`);
 
-    await page.close();
+      await page.close();
+    }
   }
 
   await browser.close();
-  console.log('All screenshots completed.');
+  console.log('All screenshots completed successfully.');
 }
 
 main().catch((err) => {

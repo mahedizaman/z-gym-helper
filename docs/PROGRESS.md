@@ -82,7 +82,32 @@
     - `GET /api/seed` (secure seed endpoint)
   - [x] Unit Tests for services, validation, and data transformations (19/19 tests passing)
   - [x] Verification (TypeScript clean, ESLint clean, Vitest passing, Next.js build clean)
-- [ ] **Phase 4: Foods Database, Meal Calculator & BMI (Guest-first)**
+- [x] **Phase 4: Foods Database, Meal Calculator & BMI (Guest-first)**
+  - [x] Guest storage abstraction (`src/lib/guest-storage.ts` for localStorage persistence of meals, profile, and calculations)
+  - [x] Interactive Food Database page (`/foods`):
+    - [x] Real-time search with bilingual support (Bangla & English) and category filters (Grains, Fish, Meat, Lentils, Vegetables/Bhorta, Sweets/Dairy, Fruits, Snacks)
+    - [x] Food catalog cards with per 100g calories & macro badges (Protein, Carbs, Fat, Fiber, Sodium, Potassium, Calcium)
+    - [x] Serving size converter drawer/modal (bowl, piece, spoon, and custom grams) with instant macro recalculation
+    - [x] Transparent verification flag (`verified: false` pending clinical review) and source citation
+    - [x] Sort options (Highest Protein, Lowest Calorie, Highest Fiber, Name A-Z) and pagination/load more
+  - [x] Interactive Meal Planner & Calorie Burn Calculator (`/calculator`):
+    - [x] Meal slots (Breakfast, Lunch, Snack, Dinner) with food item search & add (by serving or grams)
+    - [x] Mifflin-St Jeor BMR & TDEE target calculator with gender, age, height, weight, activity level, and goal selection
+    - [x] Macro breakdown comparison against daily targets (progress rings & visual gauges)
+    - [x] Pre-workout intake tracking & Post-workout suggested nutrient range (with medical disclaimer)
+    - [x] MET exercise calorie burn calculator with common gym/cardio exercises
+    - [x] Net daily energy balance (Intake - TDEE - Exercise Burn) and ~7700 kcal/kg projected weight change
+    - [x] Enforced safe caloric minimums (1200 kcal women, 1500 kcal men) with clinical health warnings
+    - [x] Full offline/guest persistence in localStorage with instant zero-login usability
+  - [x] Dedicated BMI Calculator page (`/bmi`):
+    - [x] Metric & Imperial input toggles (cm/ft-in, kg/lbs) with age and gender
+    - [x] Instant BMI classification with dual WHO and South Asian specific risk thresholds
+    - [x] Visual multi-colored gauge bar with indicator
+    - [x] Healthy weight range calculation and athletic muscle-mass limitation disclaimer
+    - [x] Quick CTA to export metrics into `/calculator`
+  - [x] Quality & Verification:
+    - [x] Responsive design across 360px, 744px, and 1280px widths with real Playwright screenshots (0px overflow across all routes)
+    - [x] TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors/warnings), Vitest tests passing (22/22 tests), Next.js production build clean (24/24 static & dynamic routes)
 - [ ] **Phase 5: Exercise Library & Workout Plans**
 - [ ] **Phase 6: Auth, Guest Merge, Dashboard & Weight Tracking**
 - [ ] **Phase 7: Streaks, Progress Card, Challenges & Leaderboard**
@@ -94,11 +119,11 @@
 
 ## Current Status
 
-- **Current focus:** Phase 4 Preparation (Foods Database, Meal Calculator & BMI - Guest-first)
+- **Current focus:** Completed Phase 4 (Foods Database, Meal Calculator & BMI - Guest-first). Ready for Phase 5 (Exercise Library & Workout Plans).
 - **Next 3 steps:**
-  1. Build `/foods` page with virtualized/paginated Bangladeshi food catalog, search bar, fuzzy filter, category pills, nutrient badges, and serving converter drawer.
-  2. Build `/calculator` meal planner with meal slots (Breakfast, Lunch, Snack, Dinner), pre/post workout nutrition, live macro totals vs target, and calorie burn estimator.
-  3. Build `/bmi` interactive calculator with WHO/South-Asian BMI classifications and safety disclaimers.
+  1. Build `/exercises` library page with muscle group filters (Chest, Back, Shoulders, Arms, Legs, Core), equipment filter, search bar, and exercise card grid.
+  2. Build `/exercises/[slug]` detail page with step-by-step Bengali instructions, common mistakes, YouTube facade video embed (`youtube-nocookie.com`), and muscle maps.
+  3. Build `/plans` workout routine chooser for 3, 4, 5, 6-day splits with daily exercises, sets x reps, rest timers, and day check-offs.
 - **Decisions made:**
   - Database connection cached globally for serverless/Edge-compatible Node.js environments.
   - MealLog and WorkoutLog schemas configured with 30-day MongoDB TTL index (`expireAfterSeconds: 2592000`).
@@ -110,6 +135,11 @@
     - Bangladeshi food dataset audit: All 308 items set to `verified: false`. Fabricated BIRDEM citations eliminated from models, seeds, FAQ, about page, and attributions.
     - Landing page audit: Replaced demo '21 Days Active' with actual database inventory (308 Foods, 32 Exercises), removed fake badges, and stamped social card as sample preview.
     - Mobile 360px overflow audit: Identified 5px overflow caused by mobile navbar control cluster; fixed by condensing wordmark to 'Z-GYM' on mobile, tightening gaps, and adding `overflow-x-clip` to HTML and body shells.
+  - Phase 4 Decisions:
+    - Guest storage abstraction implemented via `guestStorage` in `src/lib/guest-storage.ts` using localStorage, completely decoupled and ready for MongoDB account merging in Phase 6.
+    - Food database page (`/foods`) features fast client-side fuzzy search over 308 authentic items with portion converter accordion directly on each card and instant "+ মিলে যোগ করুন" meal slot logger.
+    - Calorie calculator (`/calculator`) enforces WHO/clinical minimums (1200 kcal women, 1500 kcal men) with medical advisory banners on aggressive deficits.
+    - BMI calculator (`/bmi`) features dual classifications: Standard international WHO cutoffs alongside South Asian specific risk thresholds (normal cutoff <= 22.9).
 - **Env vars needed:**
   - `NEXT_PUBLIC_APP_URL`
   - `NEXT_PUBLIC_SHOW_PRODUCTS=false`
@@ -119,4 +149,4 @@
   - `ADMIN_EMAILS`
 - **Known issues:**
   - Nutrition values need human verification against certified food composition tables (all 308 seeded items are transparently set to `verified: false`).
-- **Last updated:** 2026-11-03 12:45 UTC+6
+- **Last updated:** 2026-11-03 13:16 UTC+6

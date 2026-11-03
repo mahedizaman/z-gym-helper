@@ -14,15 +14,29 @@ export type ActivityLevel =
   | 'sedentary' // 1.2
   | 'light' // 1.375
   | 'moderate' // 1.55
-  | 'very_active' // 1.725
+  | 'active' // 1.725
+  | 'very_active' // 1.725 or 1.9
   | 'extra_active'; // 1.9
 
-export const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
+export const ACTIVITY_MULTIPLIERS: Record<string, number> = {
   sedentary: 1.2,
   light: 1.375,
   moderate: 1.55,
-  very_active: 1.725,
+  active: 1.725,
+  very_active: 1.9,
   extra_active: 1.9,
+};
+
+export type Goal = 'maintain' | 'mild_loss' | 'loss' | 'extreme_loss' | 'muscle_gain';
+
+export const MET_VALUES: Record<string, number> = {
+  weightlifting: 5.0,
+  running_8kmh: 8.3,
+  cycling_moderate: 6.0,
+  jump_rope: 10.0,
+  walking_brisk: 3.8,
+  swimming: 7.0,
+  calisthenics: 8.0,
 };
 
 /**
@@ -30,24 +44,147 @@ export const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
  * Male: BMR = 10 * weight(kg) + 6.25 * height(cm) - 5 * age(y) + 5
  * Female: BMR = 10 * weight(kg) + 6.25 * height(cm) - 5 * age(y) - 161
  */
-export function calculateBMR({ weightKg, heightCm, age, gender }: BMRParams): number {
-  if (weightKg <= 0 || heightCm <= 0 || age <= 0) {
-    throw new Error('Weight, height, and age must be positive values');
+export function calculateBMR(
+  paramsOrWeight: BMRParams | number,
+  heightCm?: number,
+  age?: number,
+  gender?: 'male' | 'female'
+): number {
+  if (typeof paramsOrWeight === 'object') {
+    const { weightKg, heightCm: h, age: a, gender: g } = paramsOrWeight;
+    if (weightKg <= 0 || h <= 0 || a <= 0) {
+      throw new Error('Weight, height, and age must be positive values');
+    }
+    const base = 10 * weightKg + 6.25 * h - 5 * a;
+    return Math.round(g === 'male' ? base + 5 : base - 161);
+  } else {
+    const weightKg = paramsOrWeight;
+    const h = heightCm || 0;
+    const a = age || 0;
+    const g = gender || 'male';
+    if (weightKg <= 0 || h <= 0 || a <= 0) {
+      throw new Error('Weight, height, and age must be positive values');
+    }
+    const base = 10 * weightKg + 6.25 * h - 5 * a;
+    return Math.round(g === 'male' ? base + 5 : base - 161);
   }
-
-  const base = 10 * weightKg + 6.25 * heightCm - 5 * age;
-  const bmr = gender === 'male' ? base + 5 : base - 161;
-
-  return Math.round(bmr);
 }
 
 /**
  * Total Daily Energy Expenditure (TDEE)
  */
-export function calculateTDEE(bmr: number, activityLevel: ActivityLevel): number {
+export function calculateTDEE(bmr: number, activityLevel: ActivityLevel | string): number {
   if (bmr <= 0) throw new Error('BMR must be positive');
   const multiplier = ACTIVITY_MULTIPLIERS[activityLevel] || 1.2;
   return Math.round(bmr * multiplier);
+}
+
+/**
+ * Caloric Target based on goal with clinical safety floor enforcement.
+ * Safety floor: 1200 kcal for women, 1500 kcal for men.
+ */
+export function calculateCaloricTarget(
+  tdee: number,
+  goal: Goal = 'maintain',
+  gender: 'male' | 'female' = 'male'
+): number {
+  let target = tdee;
+  switch (goal) {
+    case 'mild_loss':
+      target = tdee - 250;
+      break;
+    case 'loss':
+      target = tdee - 500;
+      break;
+    case 'extreme_loss':
+      target = tdee - 750;
+      break;
+    case 'muscle_gain':
+      target = tdee + 300;
+      break;
+    case 'maintain':
+    default:
+      target = tdee;
+      break;
+  }
+
+  const safeFloor = gender === 'female' ? 1200 : 1500;
+  return Math.max(safeFloor, Math.round(target));
+}
+
+export interface MacroSplit {
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
+/**
+ * Macro Distribution Split based on target calories, bodyweight, and goal.
+ */
+export function calculateMacroSplit(
+  targetKcal: number,
+  weightKg: number,
+  goal: Goal = 'maintain'
+): MacroSplit {
+  const proteinPerKg =
+    goal === 'muscle_gain' ? 2.0 : goal === 'loss' || goal === 'extreme_loss' ? 1.8 : 1.6;
+  const proteinGrams = Math.round(weightKg * proteinPerKg);
+  const proteinKcal = proteinGrams * 4;
+
+  const fatKcal = targetKcal * 0.25;
+  const fatGrams = Math.round(fatKcal / 9);
+
+  const remainingKcal = Math.max(0, targetKcal - proteinKcal - fatGrams * 9);
+  const carbsGrams = Math.round(remainingKcal / 4);
+
+  return {
+    protein: proteinGrams,
+    carbs: carbsGrams,
+    fat: fatGrams,
+  };
+}
+
+/**
+ * Net daily energy balance: Intake minus (TDEE + Exercise Burn)
+ */
+export function calculateDailyBalance(
+  intakeKcal: number,
+  tdee: number,
+  exerciseBurnKcal: number = 0
+): number {
+  return Math.round(intakeKcal - (tdee + exerciseBurnKcal));
+}
+
+/**
+ * Weekly weight delta estimation using 7700 kcal / kg body fat rule.
+ */
+export function estimateWeightChange(dailyBalance: number, days: number = 7): number {
+  const totalCalorieDiff = dailyBalance * days;
+  return Number((totalCalorieDiff / 7700).toFixed(2));
+}
+
+export function getBMICategory(bmi: number): {
+  category: 'underweight' | 'healthy' | 'overweight' | 'obese';
+  labelBn: string;
+  labelEn: string;
+} {
+  if (bmi < 18.5) {
+    return { category: 'underweight', labelBn: 'কম ওজন (আন্ডারওয়েট)', labelEn: 'Underweight' };
+  } else if (bmi >= 18.5 && bmi < 25) {
+    return { category: 'healthy', labelBn: 'স্বাভাবিক ওজন (হেলদি)', labelEn: 'Healthy Weight' };
+  } else if (bmi >= 25 && bmi < 30) {
+    return { category: 'overweight', labelBn: 'অতিরিক্ত ওজন (ওভারওয়েট)', labelEn: 'Overweight' };
+  } else {
+    return { category: 'obese', labelBn: 'স্থূলতা (ওবিজ)', labelEn: 'Obese' };
+  }
+}
+
+export function getHealthyWeightRange(heightCm: number): { minKg: number; maxKg: number } {
+  const heightM = heightCm / 100;
+  return {
+    minKg: Math.round(18.5 * heightM * heightM * 10) / 10,
+    maxKg: Math.round(24.9 * heightM * heightM * 10) / 10,
+  };
 }
 
 /**

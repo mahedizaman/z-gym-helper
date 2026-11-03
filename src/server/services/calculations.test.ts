@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest';
 import {
   calculateBMR,
   calculateTDEE,
+  calculateCaloricTarget,
+  calculateDailyBalance,
+  estimateWeightChange,
   calculateBMI,
   calculateExerciseBurn,
   calculateWeightDelta,
@@ -92,5 +95,24 @@ describe('Domain Math & Health Calculations', () => {
     // broken streak (inactive for 2+ days)
     const brokenStreak = calculateStreak([twoDaysAgo], fixedNow);
     expect(brokenStreak.currentStreak).toBe(0);
+  });
+
+  it('enforces clinical safe caloric floors for male and female targets', () => {
+    // Very low TDEE of 1400 kcal with extreme deficit (-750 kcal)
+    const femaleTarget = calculateCaloricTarget(1400, 'extreme_loss', 'female');
+    expect(femaleTarget).toBe(1200); // Enforces 1200 kcal floor
+
+    const maleTarget = calculateCaloricTarget(1600, 'extreme_loss', 'male');
+    expect(maleTarget).toBe(1500); // Enforces 1500 kcal floor
+  });
+
+  it('calculates daily energy balance and projects ~7700 kcal/kg weight delta', () => {
+    // 2000 kcal intake - (2200 TDEE + 300 exercise burn) = -500 kcal deficit/day
+    const balance = calculateDailyBalance(2000, 2200, 300);
+    expect(balance).toBe(-500);
+
+    // 7 days at -500 kcal/day = -3500 kcal -> -3500 / 7700 = -0.45 kg
+    const projectedChange = estimateWeightChange(balance, 7);
+    expect(projectedChange).toBe(-0.45);
   });
 });
