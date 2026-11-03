@@ -54,8 +54,8 @@ export default function AboutPage() {
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {t(
-                'বারডেম (BIRDEM) ও USDA বৈজ্ঞানিক ডেটাবেজের ভিত্তিতে সংগৃহীত খাঁটি দেশি খাবারের পুষ্টিমান।',
-                'Bangladeshi food macros referenced directly from BIRDEM tables and verified food science data.'
+                'উন্মুক্ত খাদ্য পুষ্টি ডেটাবেজ ও রেসিপি অনুমানের ভিত্তিতে প্রস্তুত দেশি খাবারের পুষ্টিমান।',
+                'Bangladeshi food macros referenced from open food science data and culinary estimation models.'
               )}
             </p>
           </div>
@@ -103,7 +103,7 @@ export default function AboutPage() {
               • <strong className="text-foreground">Free Exercise DB</strong>: Exercise demonstration imagery sourced from the public domain dataset.
             </li>
             <li>
-              • <strong className="text-foreground">BIRDEM & USDA Open Data</strong>: Bangladeshi food composition tables.
+              • <strong className="text-foreground">Open Food & Culinary Data</strong>: Bangladeshi food composition estimates and USDA FoodData Central open references.
             </li>
           </ul>
         </div>

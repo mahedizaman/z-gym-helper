@@ -13,6 +13,11 @@ describe('Data Layer & Decoupled Service Suite', () => {
       expect(BANGLADESHI_FOODS_DATA.length).toBeGreaterThanOrEqual(300);
     });
 
+    it('marks all seeded food items as verified:false pending clinical human review', () => {
+      const verifiedCount = BANGLADESHI_FOODS_DATA.filter((f) => f.verified).length;
+      expect(verifiedCount).toBe(0);
+    });
+
     it('returns paginated food items with default limits', async () => {
       const result = await foodService.searchFoods({ page: 1, limit: 10 });
       expect(result.foods.length).toBe(10);

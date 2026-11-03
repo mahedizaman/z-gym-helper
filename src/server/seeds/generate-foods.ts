@@ -1,6 +1,6 @@
 /**
  * Generator for 300+ Bangladeshi Foods Dataset
- * Based on BIRDEM Food Composition Tables and USDA FoodData Central
+ * Standard Bangladeshi Food Composition & Recipe Estimates (Pending verification)
  */
 
 export interface SeedFood {
@@ -54,8 +54,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '১ মাঝারি বাটি (১৫০ গ্রাম)', labelEn: '1 Medium Bowl (150g)', grams: 150 },
         { labelBn: '১ বড় প্লেট (২৫০ গ্রাম)', labelEn: '1 Large Plate (250g)', grams: 250 },
       ],
-      source: 'BIRDEM Table 1.1',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'সিদ্ধ বাসমতী চালের ভাত',
@@ -67,7 +67,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '১ মাঝারি বাটি (১৫০ গ্রাম)', labelEn: '1 Medium Bowl (150g)', grams: 150 },
       ],
       source: 'USDA FoodData Central #169704',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'লাল চালের ভাত (ঢেঁকি ছাঁটা)',
@@ -78,8 +78,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       servings: [
         { labelBn: '১ মাঝারি বাটি (১৫০ গ্রাম)', labelEn: '1 Medium Bowl (150g)', grams: 150 },
       ],
-      source: 'BIRDEM Table 1.2',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'আতপ চালের ভাত',
@@ -88,8 +88,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 132, protein: 2.6, carbs: 28.8, fat: 0.3, fiber: 0.3 },
       servings: [{ labelBn: '১ বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 }],
-      source: 'BIRDEM Table 1.3',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'পান্থা ভাত',
@@ -98,8 +98,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 118, protein: 2.4, carbs: 26.0, fat: 0.2, fiber: 0.5, iron: 1.2 },
       servings: [{ labelBn: '১ বাটি (২০০ গ্রাম)', labelEn: '1 Bowl (200g)', grams: 200 }],
-      source: 'BIRDEM Nutritional Analysis 2018',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ভুনা খিচুড়ি (চাল ও ডাল)',
@@ -110,8 +110,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       servings: [
         { labelBn: '১ প্লেট (২৫০ গ্রাম)', labelEn: '1 Plate (250g)', grams: 250 },
       ],
-      source: 'BIRDEM Mixed Dishes #12',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'পাতলা খিচুড়ি (সবজি সহ)',
@@ -120,8 +120,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 112, protein: 3.8, carbs: 19.5, fat: 2.2, fiber: 2.0 },
       servings: [{ labelBn: '১ বাটি (২০০ গ্রাম)', labelEn: '1 Bowl (200g)', grams: 200 }],
-      source: 'BIRDEM Mixed Dishes #14',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'চিকেন বিরিয়ানি (সাধারণ রেস্তোরাঁ)',
@@ -130,8 +130,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 215, protein: 9.8, carbs: 24.5, fat: 8.5, fiber: 1.1 },
       servings: [{ labelBn: '১ প্লেট (৩৫০ গ্রাম)', labelEn: '1 Plate (350g)', grams: 350 }],
-      source: 'BIRDEM Restaurant Sample Study',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'বিফ তেহারি (সরিষার তেল)',
@@ -140,8 +140,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 242, protein: 11.2, carbs: 23.4, fat: 11.5, fiber: 0.9 },
       servings: [{ labelBn: '১ প্লেট (৩৫০ গ্রাম)', labelEn: '1 Plate (350g)', grams: 350 }],
-      source: 'BIRDEM Restaurant Sample Study',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'মোরগ পোলাও',
@@ -150,8 +150,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 228, protein: 10.5, carbs: 25.0, fat: 9.2, fiber: 0.8 },
       servings: [{ labelBn: '১ প্লেট (৩০০ গ্রাম)', labelEn: '1 Plate (300g)', grams: 300 }],
-      source: 'BIRDEM Traditional Dishes',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'হাতে তৈরি আটার লাল রুটি',
@@ -163,8 +163,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '১টি মাঝারি রুটি (৪০ গ্রাম)', labelEn: '1 Medium Roti (40g)', grams: 40 },
         { labelBn: '২টি রুটি (৮০ গ্রাম)', labelEn: '2 Rotis (80g)', grams: 80 },
       ],
-      source: 'BIRDEM Table 2.1',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ময়দার পরোটা (তেলে ভাজা)',
@@ -173,8 +173,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 340, protein: 6.8, carbs: 46.5, fat: 14.5, fiber: 2.2 },
       servings: [{ labelBn: '১টি পরোটা (৭০ গ্রাম)', labelEn: '1 Paratha (70g)', grams: 70 }],
-      source: 'BIRDEM Table 2.4',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'লুচি (ময়দার ফুলকো)',
@@ -183,8 +183,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 385, protein: 6.2, carbs: 48.0, fat: 19.0, fiber: 1.5 },
       servings: [{ labelBn: '২টি ছোট লুচি (৫০ গ্রাম)', labelEn: '2 Small Luchis (50g)', grams: 50 }],
-      source: 'BIRDEM Table 2.6',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'চিঁড়া (শুকনো)',
@@ -195,8 +195,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       servings: [
         { labelBn: '১ কাপ ভেজানো (৫০ গ্রাম)', labelEn: '1 Cup Soaked (50g dry)', grams: 50 },
       ],
-      source: 'BIRDEM Table 1.9',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'মুড়ি (সাধারণ চালের)',
@@ -207,8 +207,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       servings: [
         { labelBn: '১ মাঝারি বাটি (৩০ গ্রাম)', labelEn: '1 Medium Bowl (30g)', grams: 30 },
       ],
-      source: 'BIRDEM Table 1.11',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'খই (পপড রাইস)',
@@ -217,8 +217,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 370, protein: 7.0, carbs: 81.5, fat: 1.0, fiber: 1.8 },
       servings: [{ labelBn: '১ বাটি (২৫ গ্রাম)', labelEn: '1 Bowl (25g)', grams: 25 }],
-      source: 'BIRDEM Table 1.12',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ওটস (রান্না করা পরিজ)',
@@ -228,7 +228,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 71, protein: 2.5, carbs: 12.0, fat: 1.4, fiber: 1.7 },
       servings: [{ labelBn: '১ বাটি (২০০ গ্রাম)', labelEn: '1 Bowl (200g)', grams: 200 }],
       source: 'USDA FoodData Central #173904',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'চিঁড়া ভাজা (মচমচে)',
@@ -237,8 +237,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 460, protein: 6.2, carbs: 68.0, fat: 18.5, fiber: 2.5 },
       servings: [{ labelBn: '১ মুঠি (৪০ গ্রাম)', labelEn: '1 Handful (40g)', grams: 40 }],
-      source: 'BIRDEM Snacks Table',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'সাদা পাউরুটি (বেকারি)',
@@ -248,7 +248,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 265, protein: 8.8, carbs: 49.0, fat: 3.2, fiber: 2.7 },
       servings: [{ labelBn: '২ পিস (৬০ গ্রাম)', labelEn: '2 Slices (60g)', grams: 60 }],
       source: 'USDA FoodData Central #172685',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'ব্রাউন ব্রেড (লাল আটার পাউরুটি)',
@@ -258,7 +258,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 247, protein: 12.0, carbs: 42.0, fat: 3.4, fiber: 6.0 },
       servings: [{ labelBn: '২ পিস (৬০ গ্রাম)', labelEn: '2 Slices (60g)', grams: 60 }],
       source: 'USDA FoodData Central #172688',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'সুজির হালুয়া (ঘিয়ে ভাজা)',
@@ -267,8 +267,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 285, protein: 4.2, carbs: 44.0, fat: 10.5, fiber: 1.2 },
       servings: [{ labelBn: '১ বাটি (১০০ গ্রাম)', labelEn: '1 Bowl (100g)', grams: 100 }],
-      source: 'BIRDEM Sweets #5',
-      verified: true,
+      source: 'Traditional sweetmeat estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'চিতই পিঠা',
@@ -277,8 +277,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 180, protein: 3.6, carbs: 38.5, fat: 0.8, fiber: 1.0 },
       servings: [{ labelBn: '১টি পিঠা (৭৫ গ্রাম)', labelEn: '1 Piece (75g)', grams: 75 }],
-      source: 'BIRDEM Pitha Survey',
-      verified: true,
+      source: 'Traditional sweetmeat estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ভাপা পিঠা (গুড় ও নারিকেল)',
@@ -287,8 +287,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'grains',
       per100g: { kcal: 235, protein: 3.2, carbs: 46.0, fat: 4.5, fiber: 1.6 },
       servings: [{ labelBn: '১টি মাঝারি পিঠা (১০০ গ্রাম)', labelEn: '1 Piece (100g)', grams: 100 }],
-      source: 'BIRDEM Pitha Survey',
-      verified: true,
+      source: 'Traditional sweetmeat estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'নুডুলস (সবজি ও ডিম দিয়ে ভাজা)',
@@ -298,7 +298,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 165, protein: 6.2, carbs: 24.0, fat: 5.2, fiber: 1.5 },
       servings: [{ labelBn: '১ বাটি (২০০ গ্রাম)', labelEn: '1 Bowl (200g)', grams: 200 }],
       source: 'Open Food Facts BD',
-      verified: true,
+      verified: false,
     },
   ];
   foods.push(...grains);
@@ -315,8 +315,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '১ মাঝারি বাটি (১৫০ গ্রাম)', labelEn: '1 Medium Bowl (150g)', grams: 150 },
         { labelBn: '১ কাপ ডাল (২০০ গ্রাম)', labelEn: '1 Cup Dal (200g)', grams: 200 },
       ],
-      source: 'BIRDEM Table 3.1',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ঘন মসুর ডাল ভুনা',
@@ -325,8 +325,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'lentils',
       per100g: { kcal: 162, protein: 11.2, carbs: 18.0, fat: 5.2, fiber: 4.5 },
       servings: [{ labelBn: '১ বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 }],
-      source: 'BIRDEM Table 3.2',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'মুগ ডাল ভুনা (ভাজা মুগ)',
@@ -335,8 +335,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'lentils',
       per100g: { kcal: 145, protein: 9.8, carbs: 19.0, fat: 3.8, fiber: 4.2 },
       servings: [{ labelBn: '১ বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 }],
-      source: 'BIRDEM Table 3.4',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ছোলার ডাল (রান্না)',
@@ -345,8 +345,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'lentils',
       per100g: { kcal: 164, protein: 8.9, carbs: 24.5, fat: 3.5, fiber: 5.4 },
       servings: [{ labelBn: '১ বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 }],
-      source: 'BIRDEM Table 3.6',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ছোলা ভুনা (ইফতারি ছোলা বুট)',
@@ -355,8 +355,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'lentils',
       per100g: { kcal: 198, protein: 9.2, carbs: 26.0, fat: 6.8, fiber: 6.2 },
       servings: [{ labelBn: '১ বাটি (১০০ গ্রাম)', labelEn: '1 Bowl (100g)', grams: 100 }],
-      source: 'BIRDEM Table 3.7',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'কাঁচা ভেজানো ছোলা',
@@ -366,7 +366,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 164, protein: 8.8, carbs: 27.4, fat: 2.6, fiber: 7.6 },
       servings: [{ labelBn: '১ মুঠি (৫০ গ্রাম)', labelEn: '1 Handful (50g)', grams: 50 }],
       source: 'USDA FoodData Central #173757',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'মাষকলাইয়ের ডাল',
@@ -375,8 +375,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'lentils',
       per100g: { kcal: 138, protein: 9.4, carbs: 21.0, fat: 1.8, fiber: 4.8 },
       servings: [{ labelBn: '১ বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 }],
-      source: 'BIRDEM Table 3.9',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'অড়হর ডাল (রান্না)',
@@ -385,8 +385,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'lentils',
       per100g: { kcal: 128, protein: 8.5, carbs: 20.2, fat: 1.4, fiber: 4.0 },
       servings: [{ labelBn: '১ বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 }],
-      source: 'BIRDEM Table 3.11',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'মটর ডাল (রান্না)',
@@ -395,8 +395,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'lentils',
       per100g: { kcal: 122, protein: 8.3, carbs: 21.5, fat: 0.6, fiber: 4.3 },
       servings: [{ labelBn: '১ বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 }],
-      source: 'BIRDEM Table 3.12',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ডালপুরি (তেলে ভাজা)',
@@ -405,8 +405,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'lentils',
       per100g: { kcal: 320, protein: 7.8, carbs: 42.0, fat: 14.0, fiber: 3.2 },
       servings: [{ labelBn: '১টি পুরি (৬০ গ্রাম)', labelEn: '1 Puri (60g)', grams: 60 }],
-      source: 'BIRDEM Snacks Table',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
   ];
   foods.push(...lentils);
@@ -420,8 +420,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 285, protein: 21.8, carbs: 1.2, fat: 21.5, fiber: 0, potassium: 320, calcium: 180 },
       servings: [{ labelBn: '১ পিস পেটি বা গাদা (৮০ গ্রাম)', labelEn: '1 Piece (80g)', grams: 80 }],
-      source: 'BIRDEM Fish Section Table 4.1',
-      verified: true,
+      source: 'Fish market culinary estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ইলিশ মাছ ভাজা (কড়া ভাজা)',
@@ -430,8 +430,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 310, protein: 23.5, carbs: 0, fat: 24.0, fiber: 0 },
       servings: [{ labelBn: '১ পিস (৭০ গ্রাম)', labelEn: '1 Piece (70g)', grams: 70 }],
-      source: 'BIRDEM Table 4.2',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'রুই মাছের কারি (ঝোল)',
@@ -440,8 +440,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 142, protein: 18.2, carbs: 1.5, fat: 7.0, fiber: 0.2, calcium: 110 },
       servings: [{ labelBn: '১ পিস ঝোল সহ (১০০ গ্রাম)', labelEn: '1 Piece with Gravy (100g)', grams: 100 }],
-      source: 'BIRDEM Table 4.5',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'রুই মাছ ভাজা',
@@ -450,8 +450,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 188, protein: 21.4, carbs: 0, fat: 11.2, fiber: 0 },
       servings: [{ labelBn: '১ পিস (৮০ গ্রাম)', labelEn: '1 Piece (80g)', grams: 80 }],
-      source: 'BIRDEM Table 4.6',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'কাতলা মাছের কালিয়া',
@@ -460,8 +460,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 155, protein: 17.8, carbs: 2.1, fat: 8.5, fiber: 0.2 },
       servings: [{ labelBn: '১ পিস (১০০ গ্রাম)', labelEn: '1 Piece (100g)', grams: 100 }],
-      source: 'BIRDEM Table 4.8',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'শিং মাছের পাতলা ঝোল (কাঁচকলা দিয়ে)',
@@ -470,8 +470,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 98, protein: 16.5, carbs: 1.0, fat: 3.2, fiber: 0.3, iron: 4.8 },
       servings: [{ labelBn: '১ বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 }],
-      source: 'BIRDEM Medicinal Fish Section',
-      verified: true,
+      source: 'Fish market culinary estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'মাগুর মাছের ঝোল',
@@ -480,8 +480,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 105, protein: 17.2, carbs: 0.8, fat: 3.6, fiber: 0.2, iron: 4.2 },
       servings: [{ labelBn: '১ পিস ঝোল সহ (১২০ গ্রাম)', labelEn: '1 Piece with Gravy (120g)', grams: 120 }],
-      source: 'BIRDEM Table 4.12',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'কৈ মাছ ভুনা',
@@ -490,8 +490,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 148, protein: 17.0, carbs: 1.2, fat: 8.2, fiber: 0 },
       servings: [{ labelBn: '১টি মাঝারি কৈ (৮০ গ্রাম)', labelEn: '1 Medium Fish (80g)', grams: 80 }],
-      source: 'BIRDEM Table 4.15',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'পাঙ্গাশ মাছের তরকারি',
@@ -500,8 +500,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 172, protein: 15.5, carbs: 1.0, fat: 12.0, fiber: 0 },
       servings: [{ labelBn: '১ পিস (১০০ গ্রাম)', labelEn: '1 Piece (100g)', grams: 100 }],
-      source: 'BIRDEM Table 4.18',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'তেলাপিয়া মাছ ফ্রাই',
@@ -511,7 +511,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 152, protein: 22.0, carbs: 0, fat: 7.2, fiber: 0 },
       servings: [{ labelBn: '১ মাঝারি তেলাপিয়া (১২০ গ্রাম)', labelEn: '1 Fish (120g)', grams: 120 }],
       source: 'USDA FoodData Central #175176',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'গলদা চিংড়ি মালাইকারি',
@@ -520,8 +520,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 195, protein: 16.2, carbs: 3.5, fat: 13.0, fiber: 0.5 },
       servings: [{ labelBn: '২টি চিংড়ি ঝোল সহ (১২০ গ্রাম)', labelEn: '2 Prawns (120g)', grams: 120 }],
-      source: 'BIRDEM Festive Dishes',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ছোট চিংড়ি ভাজি (পেঁয়াজ দিয়ে)',
@@ -530,8 +530,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 160, protein: 21.0, carbs: 2.0, fat: 7.5, fiber: 0.4 },
       servings: [{ labelBn: '১ সার্ভিং (৭০ গ্রাম)', labelEn: '1 Serving (70g)', grams: 70 }],
-      source: 'BIRDEM Table 4.25',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ট্যাংরা মাছের চচ্চড়ি',
@@ -540,8 +540,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 128, protein: 17.5, carbs: 1.8, fat: 5.8, fiber: 0.4 },
       servings: [{ labelBn: '১ ছোট বাটি (৮০ গ্রাম)', labelEn: '1 Small Bowl (80g)', grams: 80 }],
-      source: 'BIRDEM Table 4.28',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'পাবদা মাছের ঝোল',
@@ -550,8 +550,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 135, protein: 16.8, carbs: 1.0, fat: 7.2, fiber: 0.2 },
       servings: [{ labelBn: '১টি পাবদা মাছ (৮০ গ্রাম)', labelEn: '1 Fish (80g)', grams: 80 }],
-      source: 'BIRDEM Table 4.30',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'মলা মাছ ভাজি (ছোট মাছ)',
@@ -560,8 +560,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 145, protein: 19.5, carbs: 1.2, fat: 6.8, fiber: 0, calcium: 850, iron: 5.2 },
       servings: [{ labelBn: '১ বাটি (৭০ গ্রাম)', labelEn: '1 Bowl (70g)', grams: 70 }],
-      source: 'BIRDEM Table 4.33 (High Calcium)',
-      verified: true,
+      source: 'Culinary recipe estimate (unverified - high calcium)',
+      verified: false,
     },
     {
       nameBn: 'কাচকি মাছের চচ্চড়ি',
@@ -570,8 +570,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'fish',
       per100g: { kcal: 130, protein: 18.0, carbs: 1.5, fat: 5.8, fiber: 0.3, calcium: 780 },
       servings: [{ labelBn: '১ বাটি (৮০ গ্রাম)', labelEn: '1 Bowl (80g)', grams: 80 }],
-      source: 'BIRDEM Table 4.35',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
   ];
   foods.push(...fish);
@@ -589,8 +589,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '১ পিস (৭০ গ্রাম)', labelEn: '1 Piece (70g)', grams: 70 },
         { labelBn: '১ বাটি কারি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 },
       ],
-      source: 'USDA FoodData Central #171077 & BIRDEM Meat Section',
-      verified: true,
+      source: 'USDA FoodData Central estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'মুরগির লেগ পিস কারি (রান সহ)',
@@ -599,8 +599,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'poultry_meat',
       per100g: { kcal: 205, protein: 24.2, carbs: 1.5, fat: 11.2, fiber: 0.2 },
       servings: [{ labelBn: '১টি লেগ পিস (১০০ গ্রাম)', labelEn: '1 Drumstick (100g)', grams: 100 }],
-      source: 'BIRDEM Table 5.2',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'দেশি মুরগির পাতলা ঝোল (আলু দিয়ে)',
@@ -609,8 +609,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'poultry_meat',
       per100g: { kcal: 152, protein: 19.5, carbs: 4.5, fat: 6.2, fiber: 0.5 },
       servings: [{ labelBn: '১ বাটি (২০০ গ্রাম)', labelEn: '1 Bowl (200g)', grams: 200 }],
-      source: 'BIRDEM Table 5.4',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'গরুর মাংস ভুনা (কম চর্বিযুক্ত)',
@@ -622,8 +622,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '৩-৪ টুকরা (১০০ গ্রাম)', labelEn: '3-4 Pieces (100g)', grams: 100 },
         { labelBn: '১ বাটি ভুনা (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 },
       ],
-      source: 'BIRDEM Table 5.6 & USDA Lean Beef',
-      verified: true,
+      source: 'USDA FoodData Central estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'গরুর কালাভুনা (চট্টগ্রামের ঐতিহ্যবাহী)',
@@ -632,8 +632,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'poultry_meat',
       per100g: { kcal: 295, protein: 27.0, carbs: 2.5, fat: 20.0, fiber: 0.5, iron: 3.4 },
       servings: [{ labelBn: '১ সার্ভিং (১০০ গ্রাম)', labelEn: '1 Serving (100g)', grams: 100 }],
-      source: 'BIRDEM Traditional Recipes Study',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'খাসির মাংস ভুনা (মাটন কারি)',
@@ -642,8 +642,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'poultry_meat',
       per100g: { kcal: 245, protein: 22.8, carbs: 1.5, fat: 16.5, fiber: 0.2, zinc: 4.8 },
       servings: [{ labelBn: '১ বাটি (১৩০ গ্রাম)', labelEn: '1 Bowl (130g)', grams: 130 }],
-      source: 'BIRDEM Table 5.9',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'মুরগির কলিজা ভুনা',
@@ -653,7 +653,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 172, protein: 24.5, carbs: 2.2, fat: 6.8, fiber: 0, iron: 11.5, potassium: 320 },
       servings: [{ labelBn: '১ বাটি (১০০ গ্রাম)', labelEn: '1 Bowl (100g)', grams: 100 }],
       source: 'USDA FoodData Central #171060 (High Iron)',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'গরুর কলিজা ভুনা',
@@ -662,8 +662,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'poultry_meat',
       per100g: { kcal: 185, protein: 26.2, carbs: 3.8, fat: 6.5, fiber: 0, iron: 17.8 },
       servings: [{ labelBn: '১ সার্ভিং (১০০ গ্রাম)', labelEn: '1 Serving (100g)', grams: 100 }],
-      source: 'BIRDEM Table 5.14 (High Iron)',
-      verified: true,
+      source: 'Culinary recipe estimate (unverified - high iron)',
+      verified: false,
     },
     {
       nameBn: 'হাঁসের মাংস ভুনা (নারিকেল দুধ সহ)',
@@ -672,8 +672,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'poultry_meat',
       per100g: { kcal: 265, protein: 21.0, carbs: 2.0, fat: 19.5, fiber: 0.3 },
       servings: [{ labelBn: '১ বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 }],
-      source: 'BIRDEM Table 5.16',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'চিকেন রোস্ট (বিয়ে বাড়ির স্টাইল)',
@@ -682,8 +682,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'poultry_meat',
       per100g: { kcal: 240, protein: 22.0, carbs: 4.8, fat: 14.8, fiber: 0.5 },
       servings: [{ labelBn: '১ পিস (১৩০ গ্রাম)', labelEn: '1 Piece (130g)', grams: 130 }],
-      source: 'BIRDEM Festive Dishes',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
   ];
   foods.push(...meat);
@@ -700,8 +700,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '১টি মাঝারি ডিম (৫০ গ্রাম)', labelEn: '1 Medium Egg (50g)', grams: 50 },
         { labelBn: '২টি সিদ্ধ ডিম (১০০ গ্রাম)', labelEn: '2 Boiled Eggs (100g)', grams: 100 },
       ],
-      source: 'USDA FoodData Central #171287 & BIRDEM Table 6.1',
-      verified: true,
+      source: 'USDA FoodData Central estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ডিম পোচ / ওমলেট (১ চামচ তেলে)',
@@ -710,8 +710,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'eggs_dairy',
       per100g: { kcal: 195, protein: 13.5, carbs: 1.5, fat: 15.0, fiber: 0 },
       servings: [{ labelBn: '১টি ডিমের ওমলেট (৬০ গ্রাম)', labelEn: '1 Egg Omelet (60g)', grams: 60 }],
-      source: 'BIRDEM Table 6.3',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'সিদ্ধ ডিমের সাদা অংশ (কুসুম ছাড়া)',
@@ -724,7 +724,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '৪টি ডিমের সাদা অংশ (১৩০ গ্রাম)', labelEn: '4 Egg Whites (130g)', grams: 130 },
       ],
       source: 'USDA FoodData Central #172183',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'হাঁসের ডিম (সিদ্ধ)',
@@ -733,8 +733,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'eggs_dairy',
       per100g: { kcal: 185, protein: 13.0, carbs: 1.4, fat: 14.2, fiber: 0, iron: 3.8 },
       servings: [{ labelBn: '১টি হাঁসের ডিম (৭০ গ্রাম)', labelEn: '1 Duck Egg (70g)', grams: 70 }],
-      source: 'BIRDEM Table 6.4',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'দেশি গরুর খাঁটি দুধ (তরল)',
@@ -746,8 +746,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '১ গ্লাস (২৫০ মিলি)', labelEn: '1 Glass (250ml)', grams: 250 },
         { labelBn: '১ কাপ (১৫০ মিলি)', labelEn: '1 Cup (150ml)', grams: 150 },
       ],
-      source: 'BIRDEM Table 7.1',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'টক দই (ঘরে তৈরি)',
@@ -759,8 +759,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '১ মাঝারি বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 },
         { labelBn: '২ টেবিল চামচ (৫০ গ্রাম)', labelEn: '2 Tablespoons (50g)', grams: 50 },
       ],
-      source: 'BIRDEM Table 7.4',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'মিষ্টি দই (বগুড়ার ঐতিহ্যবাহী)',
@@ -769,8 +769,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'eggs_dairy',
       per100g: { kcal: 145, protein: 3.8, carbs: 22.5, fat: 4.5, fiber: 0, calcium: 130 },
       servings: [{ labelBn: '১ কাপ (১০০ গ্রাম)', labelEn: '1 Cup (100g)', grams: 100 }],
-      source: 'BIRDEM Sweets Survey',
-      verified: true,
+      source: 'Traditional sweetmeat estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'পনির / ছানা (টাটকা)',
@@ -779,8 +779,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'eggs_dairy',
       per100g: { kcal: 265, protein: 18.5, carbs: 3.2, fat: 20.0, fiber: 0, calcium: 350 },
       servings: [{ labelBn: '১ সার্ভিং (৫০ গ্রাম)', labelEn: '1 Serving (50g)', grams: 50 }],
-      source: 'BIRDEM Table 7.6',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
   ];
   foods.push(...dairyEggs);
@@ -797,8 +797,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '১ পরিবেশন (৫০ গ্রাম)', labelEn: '1 Serving (50g)', grams: 50 },
         { labelBn: '২ টেবিল চামচ (৩৫ গ্রাম)', labelEn: '2 Tablespoons (35g)', grams: 35 },
       ],
-      source: 'BIRDEM Bhorta Analysis',
-      verified: true,
+      source: 'Traditional bhorta recipe estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'পোড়া বেগুন ভর্তা',
@@ -807,8 +807,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'vegetables_bhorta',
       per100g: { kcal: 82, protein: 1.6, carbs: 7.2, fat: 5.5, fiber: 2.8 },
       servings: [{ labelBn: '১ পরিবেশন (৬০ গ্রাম)', labelEn: '1 Serving (60g)', grams: 60 }],
-      source: 'BIRDEM Bhorta Analysis',
-      verified: true,
+      source: 'Traditional bhorta recipe estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'শুটকি মাছের ঝাল ভর্তা (চেপা / লইট্টা)',
@@ -817,8 +817,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'vegetables_bhorta',
       per100g: { kcal: 185, protein: 28.5, carbs: 4.2, fat: 6.2, fiber: 1.5, calcium: 420 },
       servings: [{ labelBn: '২ টেবিল চামচ (৪০ গ্রাম)', labelEn: '2 Tablespoons (40g)', grams: 40 }],
-      source: 'BIRDEM High Protein Analysis',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'সিদ্ধ ডিমের ভর্তা (পেঁয়াজ ও সরিষার তেল)',
@@ -827,8 +827,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'vegetables_bhorta',
       per100g: { kcal: 178, protein: 11.8, carbs: 3.5, fat: 12.8, fiber: 0.6 },
       servings: [{ labelBn: '১ পরিবেশন (৭০ গ্রাম)', labelEn: '1 Serving (70g)', grams: 70 }],
-      source: 'BIRDEM Bhorta Analysis',
-      verified: true,
+      source: 'Traditional bhorta recipe estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'টমেটো পোড়া ভর্তা',
@@ -837,8 +837,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'vegetables_bhorta',
       per100g: { kcal: 65, protein: 1.2, carbs: 5.8, fat: 4.2, fiber: 1.5 },
       servings: [{ labelBn: '১ পরিবেশন (৬০ গ্রাম)', labelEn: '1 Serving (60g)', grams: 60 }],
-      source: 'BIRDEM Bhorta Analysis',
-      verified: true,
+      source: 'Traditional bhorta recipe estimate (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ইলিশের লেজা ভর্তা',
@@ -847,8 +847,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'vegetables_bhorta',
       per100g: { kcal: 230, protein: 22.0, carbs: 2.5, fat: 14.8, fiber: 0.5 },
       servings: [{ labelBn: '১ পরিবেশন (৫০ গ্রাম)', labelEn: '1 Serving (50g)', grams: 50 }],
-      source: 'BIRDEM Mawa Ghat Sample',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'তাজা লাল শাক ভাজি',
@@ -857,8 +857,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'vegetables_bhorta',
       per100g: { kcal: 58, protein: 2.8, carbs: 4.5, fat: 3.4, fiber: 2.2, iron: 4.8, calcium: 230 },
       servings: [{ labelBn: '১ বাটি (১০০ গ্রাম)', labelEn: '1 Bowl (100g)', grams: 100 }],
-      source: 'BIRDEM Table 8.1',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'রসুন দিয়ে পালং শাক ভাজি',
@@ -867,8 +867,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'vegetables_bhorta',
       per100g: { kcal: 52, protein: 3.0, carbs: 3.8, fat: 3.0, fiber: 2.4, iron: 3.6 },
       servings: [{ labelBn: '১ বাটি (১০০ গ্রাম)', labelEn: '1 Bowl (100g)', grams: 100 }],
-      source: 'BIRDEM Table 8.4',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'পুঁই শাক দিয়ে আলু ও চিংড়ি চচ্চড়ি',
@@ -877,8 +877,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'vegetables_bhorta',
       per100g: { kcal: 85, protein: 4.8, carbs: 8.2, fat: 3.8, fiber: 2.8, calcium: 160 },
       servings: [{ labelBn: '১ বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 }],
-      source: 'BIRDEM Table 8.8',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'মিষ্টি লাউয়ের ঘণ্ট (ডালের বড়ি বা চিংড়ি সহ)',
@@ -887,8 +887,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'vegetables_bhorta',
       per100g: { kcal: 42, protein: 1.2, carbs: 5.4, fat: 1.8, fiber: 1.8 },
       servings: [{ labelBn: '১ বাটি (১৫০ গ্রাম)', labelEn: '1 Bowl (150g)', grams: 150 }],
-      source: 'BIRDEM Table 8.12',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'করলা ভাজি (আলু ও পেঁয়াজ দিয়ে)',
@@ -897,8 +897,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'vegetables_bhorta',
       per100g: { kcal: 82, protein: 1.8, carbs: 7.5, fat: 5.2, fiber: 2.5 },
       servings: [{ labelBn: '১ পরিবেশন (৭০ গ্রাম)', labelEn: '1 Serving (70g)', grams: 70 }],
-      source: 'BIRDEM Table 8.15',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ঢ্যাঁড়শ ভাজি',
@@ -907,8 +907,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'vegetables_bhorta',
       per100g: { kcal: 78, protein: 2.1, carbs: 6.8, fat: 4.8, fiber: 3.2 },
       servings: [{ labelBn: '১ বাটি (৮০ গ্রাম)', labelEn: '1 Bowl (80g)', grams: 80 }],
-      source: 'BIRDEM Table 8.18',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
   ];
   foods.push(...bhortasVeggies);
@@ -1049,8 +1049,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
         { labelBn: '১০০ গ্রাম', labelEn: '100g', grams: 100 },
         { labelBn: '১ মাঝারি পরিবেশন (১৫০ গ্রাম)', labelEn: '1 Medium Portion (150g)', grams: 150 },
       ],
-      source: 'BIRDEM Food Table & USDA Cross-Reference',
-      verified: true,
+      source: 'USDA FoodData Central estimate (unverified)',
+      verified: false,
     });
   }
 
@@ -1112,8 +1112,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
           { labelBn: '১ মাঝারি বাটি (১০০ গ্রাম)', labelEn: '1 Medium Bowl (100g)', grams: 100 },
           { labelBn: '১ কাপ রান্না করা (১৫০ গ্রাম)', labelEn: '1 Cup Cooked (150g)', grams: 150 },
         ],
-        source: 'BIRDEM Food Table (Vegetables Section)',
-        verified: true,
+        source: 'Local vegetable recipe estimate (unverified)',
+        verified: false,
       });
     }
   }
@@ -1128,7 +1128,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 567, protein: 25.8, carbs: 16.1, fat: 49.2, fiber: 8.5 },
       servings: [{ labelBn: '১ মুঠি (৩০ গ্রাম)', labelEn: '1 Handful (30g)', grams: 30 }],
       source: 'USDA FoodData Central #172430',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'ভাজা চিনা বাদাম (লবণ ছাড়া)',
@@ -1138,7 +1138,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 585, protein: 24.4, carbs: 21.3, fat: 49.7, fiber: 8.0 },
       servings: [{ labelBn: '১ মুঠি (৩০ গ্রাম)', labelEn: '1 Handful (30g)', grams: 30 }],
       source: 'USDA FoodData Central #174265',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'কাঠবাদাম (আমন্ড)',
@@ -1148,7 +1148,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 579, protein: 21.2, carbs: 21.6, fat: 49.9, fiber: 12.5 },
       servings: [{ labelBn: '১০টি বাদাম (১৫ গ্রাম)', labelEn: '10 Almonds (15g)', grams: 15 }],
       source: 'USDA FoodData Central #170567',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'কাজুবাদাম',
@@ -1158,7 +1158,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 553, protein: 18.2, carbs: 30.2, fat: 43.8, fiber: 3.3 },
       servings: [{ labelBn: '১০টি কাজু (১৫ গ্রাম)', labelEn: '10 Cashews (15g)', grams: 15 }],
       source: 'USDA FoodData Central #170162',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'পেস্তাবাদাম',
@@ -1168,7 +1168,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 562, protein: 20.2, carbs: 27.5, fat: 45.3, fiber: 10.3 },
       servings: [{ labelBn: '১ পরিবেশন (২০ গ্রাম)', labelEn: '1 Serving (20g)', grams: 20 }],
       source: 'USDA FoodData Central #170184',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'আখরোট',
@@ -1178,7 +1178,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 654, protein: 15.2, carbs: 13.7, fat: 65.2, fiber: 6.7 },
       servings: [{ labelBn: '১ সার্ভিং (২৫ গ্রাম)', labelEn: '1 Serving (25g)', grams: 25 }],
       source: 'USDA FoodData Central #170187',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'তিসি বীজ (ফ্ল্যাক্সসিড)',
@@ -1188,7 +1188,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 534, protein: 18.3, carbs: 28.9, fat: 42.2, fiber: 27.3 },
       servings: [{ labelBn: '১ টেবিল চামচ (১০ গ্রাম)', labelEn: '1 Tbsp (10g)', grams: 10 }],
       source: 'USDA FoodData Central #169414',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'চিয়া সিড (ভেজানো)',
@@ -1198,7 +1198,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 486, protein: 16.5, carbs: 42.1, fat: 30.7, fiber: 34.4 },
       servings: [{ labelBn: '১ টেবil চামচ শুকনো (১২ গ্রাম)', labelEn: '1 Tbsp Dry (12g)', grams: 12 }],
       source: 'USDA FoodData Central #170554',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'কুমড়ার বীজ (রোস্টেড)',
@@ -1208,7 +1208,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 559, protein: 30.2, carbs: 10.7, fat: 49.1, fiber: 6.0, zinc: 7.8 },
       servings: [{ labelBn: '১ মুঠি (২৫ গ্রাম)', labelEn: '1 Handful (25g)', grams: 25 }],
       source: 'USDA FoodData Central #170556 (High Zinc)',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'সূর্যমুখী ফুলের বীজ',
@@ -1218,7 +1218,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 584, protein: 20.8, carbs: 20.0, fat: 51.5, fiber: 8.6 },
       servings: [{ labelBn: '১ মুঠি (২৫ গ্রাম)', labelEn: '1 Handful (25g)', grams: 25 }],
       source: 'USDA FoodData Central #170562',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'সাদা তিল (তিল নাড়ু বা কাঁচা)',
@@ -1227,8 +1227,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'snacks_beverages',
       per100g: { kcal: 573, protein: 17.7, carbs: 23.4, fat: 49.7, fiber: 11.8, calcium: 975 },
       servings: [{ labelBn: '১ টেবিল চামচ (১০ গ্রাম)', labelEn: '1 Tbsp (10g)', grams: 10 }],
-      source: 'BIRDEM Table 9.2 (High Calcium)',
-      verified: true,
+      source: 'Culinary recipe estimate (unverified - high calcium)',
+      verified: false,
     },
     {
       nameBn: 'নারিকেলের টাটকা শাঁস',
@@ -1237,8 +1237,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'snacks_beverages',
       per100g: { kcal: 354, protein: 3.3, carbs: 15.2, fat: 33.5, fiber: 9.0 },
       servings: [{ labelBn: '১ টুকরা (৫০ গ্রাম)', labelEn: '1 Piece (50g)', grams: 50 }],
-      source: 'BIRDEM Table 9.5',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'ডাবের মিষ্টি পানি',
@@ -1247,8 +1247,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'snacks_beverages',
       per100g: { kcal: 19, protein: 0.7, carbs: 3.7, fat: 0.2, fiber: 1.1, potassium: 250 },
       servings: [{ labelBn: '১ গ্লাস (২৫০ মিলি)', labelEn: '1 Glass (250ml)', grams: 250 }],
-      source: 'BIRDEM Table 9.6 (High Potassium)',
-      verified: true,
+      source: 'Culinary recipe estimate (unverified - high potassium)',
+      verified: false,
     },
     {
       nameBn: 'গুড় (আখের খাঁটি গুড়)',
@@ -1257,8 +1257,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'snacks_beverages',
       per100g: { kcal: 383, protein: 0.4, carbs: 95.0, fat: 0.1, fiber: 0, iron: 2.6 },
       servings: [{ labelBn: '১ টুকরা (২০ গ্রাম)', labelEn: '1 Piece (20g)', grams: 20 }],
-      source: 'BIRDEM Table 10.1',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'খেজুরের পাটালি গুড়',
@@ -1267,8 +1267,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'snacks_beverages',
       per100g: { kcal: 380, protein: 1.5, carbs: 92.5, fat: 0.2, fiber: 0, iron: 3.2 },
       servings: [{ labelBn: '১ টুকরা (২৫ গ্রাম)', labelEn: '1 Piece (25g)', grams: 25 }],
-      source: 'BIRDEM Table 10.3',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'খাঁটি সরিষার তেল',
@@ -1278,7 +1278,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 884, protein: 0, carbs: 0, fat: 100.0, fiber: 0 },
       servings: [{ labelBn: '১ চা চামচ (৫ গ্রাম)', labelEn: '1 Tsp (5g)', grams: 5 }],
       source: 'USDA FoodData Central #171015',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'খাঁটি গাওয়া ঘি',
@@ -1287,8 +1287,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'eggs_dairy',
       per100g: { kcal: 890, protein: 0.3, carbs: 0, fat: 99.5, fiber: 0 },
       servings: [{ labelBn: '১ চা চামচ (৫ গ্রাম)', labelEn: '1 Tsp (5g)', grams: 5 }],
-      source: 'BIRDEM Dairy Table 7.8',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
     {
       nameBn: 'সয়াবিন তেল',
@@ -1298,7 +1298,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 884, protein: 0, carbs: 0, fat: 100.0, fiber: 0 },
       servings: [{ labelBn: '১ টেবিল চামচ (১৪ গ্রাম)', labelEn: '1 Tbsp (14g)', grams: 14 }],
       source: 'USDA FoodData Central #171016',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'তেঁতুলের ক্বাথ / চাটনি',
@@ -1308,7 +1308,7 @@ export function generateBangladeshiFoods(): SeedFood[] {
       per100g: { kcal: 239, protein: 2.8, carbs: 62.5, fat: 0.6, fiber: 5.1 },
       servings: [{ labelBn: '১ টেবিল চামচ (১৫ গ্রাম)', labelEn: '1 Tbsp (15g)', grams: 15 }],
       source: 'USDA FoodData Central #170568',
-      verified: true,
+      verified: false,
     },
     {
       nameBn: 'কাসুন্দি (সরিষার সস)',
@@ -1317,8 +1317,8 @@ export function generateBangladeshiFoods(): SeedFood[] {
       category: 'snacks_beverages',
       per100g: { kcal: 180, protein: 6.2, carbs: 12.5, fat: 12.0, fiber: 3.5 },
       servings: [{ labelBn: '১ টেবিল চামচ (১৫ গ্রাম)', labelEn: '1 Tbsp (15g)', grams: 15 }],
-      source: 'BIRDEM Condiment Survey',
-      verified: true,
+      source: 'Culinary recipe calculation (unverified)',
+      verified: false,
     },
   ];
   foods.push(...nutsSeeds);

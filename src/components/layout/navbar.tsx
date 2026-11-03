@@ -115,12 +115,12 @@ export function Navbar() {
         </div>
 
         {/* Mobile Hamburger Button */}
-        <div className="flex lg:hidden items-center gap-2">
-          <LanguageToggle />
+        <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
+          <LanguageToggle className="px-2.5 sm:px-3 text-[11px] sm:text-xs" />
           <ThemeToggle />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex items-center justify-center w-11 h-11 rounded-full border border-border/60 bg-secondary/70 text-foreground transition-transform active:scale-95 cursor-pointer"
+            className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-border/60 bg-secondary/70 text-foreground transition-transform active:scale-95 cursor-pointer shrink-0"
             aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
             type="button"
           >

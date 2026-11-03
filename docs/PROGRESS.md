@@ -105,6 +105,11 @@
   - DailySummary and WeightLog stored permanently.
   - In-memory fallback dataset bundled with services so public tools and searches remain 100% operational in guest mode and offline even without MongoDB connection!
   - Next.js 16 cacheComponents compatibility: dynamic query parameters dynamically bail out prerender naturally without requiring legacy `export const dynamic = 'force-dynamic'`.
+  - Fix Pass (Pre-Phase 4):
+    - `POST /api/seed` disabled in production and restricted in non-production. CLI `npm run db:seed` is the canonical seeding mechanism.
+    - Bangladeshi food dataset audit: All 308 items set to `verified: false`. Fabricated BIRDEM citations eliminated from models, seeds, FAQ, about page, and attributions.
+    - Landing page audit: Replaced demo '21 Days Active' with actual database inventory (308 Foods, 32 Exercises), removed fake badges, and stamped social card as sample preview.
+    - Mobile 360px overflow audit: Identified 5px overflow caused by mobile navbar control cluster; fixed by condensing wordmark to 'Z-GYM' on mobile, tightening gaps, and adding `overflow-x-clip` to HTML and body shells.
 - **Env vars needed:**
   - `NEXT_PUBLIC_APP_URL`
   - `NEXT_PUBLIC_SHOW_PRODUCTS=false`
@@ -113,5 +118,5 @@
   - `AUTH_SECRET` / `NEXTAUTH_SECRET`
   - `ADMIN_EMAILS`
 - **Known issues:**
-  - None.
-- **Last updated:** 2026-11-03 02:10 UTC+6
+  - Nutrition values need human verification against certified food composition tables (all 308 seeded items are transparently set to `verified: false`).
+- **Last updated:** 2026-11-03 12:45 UTC+6

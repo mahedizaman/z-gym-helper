@@ -24,11 +24,11 @@ export function StreakChallengeTeaser() {
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-lime-brand animate-ping" />
                   <span className="font-display font-extrabold text-xs uppercase tracking-widest text-lime-brand">
-                    Z-GYM PROGRESS
+                    {t('নমুনা কার্ড প্রিভিউ', 'SAMPLE CARD TEMPLATE')}
                   </span>
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-silver-500">
-                  ASIA/DHAKA
+                  ASIA/DHAKA (UTC+6)
                 </span>
               </div>
 
@@ -38,19 +38,19 @@ export function StreakChallengeTeaser() {
                   <Flame className="w-9 h-9 fill-pink-brand animate-pulse" />
                 </div>
                 <span className="font-display font-black text-6xl tracking-tight text-white">
-                  28
+                  --
                 </span>
                 <span className="font-display text-sm font-extrabold uppercase tracking-widest text-lime-brand mt-1">
-                  {t('দিনের অপরাজেয় স্ট্রিক', 'DAYS UNBROKEN STREAK')}
+                  {t('আপনার ব্যক্তিগত স্ট্রিক', 'YOUR PERSONAL STREAK')}
                 </span>
                 <p className="text-xs text-silver-300 mt-2 max-w-[220px]">
-                  {t('২৪টি ওয়ার্কআউট সম্পন্ন • ৯০% ম্যাক্রো গোল অর্জিত', '24 Workouts Done • 90% Macro Goals Hit')}
+                  {t('লগইন ও মিল লগের পর স্বয়ংক্রিয় আপডেট হবে', 'Dynamically generated from your real workout and meal logs')}
                 </p>
               </div>
 
               {/* Bottom Card Footer */}
               <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] text-silver-300">
-                <span className="font-bold text-white">@tanvir_fitness</span>
+                <span className="font-bold text-white">@your_username</span>
                 <span className="flex items-center gap-1 text-lime-brand font-black">
                   <Share2 className="w-3.5 h-3.5" />
                   <span>{t('ইনস্টাগ্রাম শেয়ার কার্ড', '1080×1350 Card')}</span>

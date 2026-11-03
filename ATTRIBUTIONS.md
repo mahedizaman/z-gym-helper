@@ -29,4 +29,4 @@ This document logs all open-source, free-licensed, or public domain assets used 
 ---
 
 ## 5. Nutrition Data
-- Bangladeshi food nutritional compositions: Open data from Bangladesh Institute of Research and Rehabilitation in Diabetes, Endocrine and Metabolic Disorders (BIRDEM) nutritional tables, USDA FoodData Central, and Open Food Facts under Open Database License (ODbL).
+- Bangladeshi food nutritional compositions: Standard culinary recipe estimations, USDA FoodData Central open references, and Open Food Facts under Open Database License (ODbL). All items are marked `verified: false` pending formal human review against certified clinical food composition tables.

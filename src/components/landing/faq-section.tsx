@@ -22,8 +22,8 @@ const FAQS: FAQItem[] = [
   {
     qBn: 'বাংলাদেশী খাবারের ক্যালোরি ও পুষ্টির তথ্য কোথা থেকে নেওয়া হয়েছে?',
     qEn: 'Where does the Bangladeshi food nutrition data come from?',
-    aBn: 'আমাদের পুষ্টিমান বারডেম (BIRDEM) ফুড কম্পোজিশন টেবিল, USDA FoodData Central এবং Open Food Facts-এর উন্মুক্ত ডেটাবেজ থেকে সংগৃহীত। প্রতিটি খাবারের সাথে তার নির্ভরযোগ্য উৎস ও পরিমাপের গ্রাম উল্লেখ রয়েছে।',
-    aEn: 'Our nutrition data is referenced from authentic open sources including BIRDEM nutritional charts, USDA FoodData Central, and Open Food Facts. Each food specifies its exact source and measured grams.',
+    aBn: 'আমাদের পুষ্টিমান উন্মুক্ত পুষ্টি ডেটাবেজ ও দেশীয় রান্নার মানসম্মত অনুমানের ভিত্তিতে সংকলিত। প্রতিটি খাবারের সাথে তার উৎস উল্লেখ রয়েছে এবং কোনটি বিশেষজ্ঞ দ্বারা যাচাইকৃত আর কোনটি প্রাথমিক অনুমান তা স্বচ্ছভাবে ফ্ল্যাগ করা রয়েছে।',
+    aEn: 'Our nutrition data is compiled from open food datasets and standardized culinary estimates. Each item notes its source and transparently indicates whether values are verified or preliminary estimates pending human review.',
   },
   {
     qBn: 'অ্যাকাউন্ট বা রেজিস্ট্রেশন না করেই কি আমি এটি ব্যবহার করতে পারব?',

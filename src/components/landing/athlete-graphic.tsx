@@ -126,7 +126,7 @@ export function AthleteGraphic() {
           </svg>
         </div>
 
-        {/* Floating Top Left Stat Badge */}
+        {/* Floating Top Left Real Metric Badge */}
         <motion.div
           animate={{ y: [0, -6, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
@@ -137,15 +137,15 @@ export function AthleteGraphic() {
           </div>
           <div className="flex flex-col text-left">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-              {t('দৈনিক স্ট্রিক', 'Active Streak')}
+              {t('ওপেন ডেটাবেজ', 'Seeded Database')}
             </span>
             <span className="font-display text-sm font-extrabold text-foreground">
-              {t('২১ দিন পূর্ণ', '21 Days Active')}
+              {t('৩০৮টি খাবার • ৩২টি ব্যায়াম', '308 Foods • 32 Exercises')}
             </span>
           </div>
         </motion.div>
 
-        {/* Floating Bottom Right Badge */}
+        {/* Floating Bottom Right Real Capability Badge */}
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
@@ -156,10 +156,10 @@ export function AthleteGraphic() {
           </div>
           <div className="flex flex-col text-left">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-              {t('ওপেন সোর্স ডেটা', 'Verified Open')}
+              {t('উন্মুক্ত ও ফ্রি', 'Open Platform')}
             </span>
             <span className="font-display text-sm font-extrabold text-foreground">
-              {t('১০০% ফ্রি ডেটাবেজ', '100% Free Data')}
+              {t('গেস্ট-ফার্স্ট • জিরো পেওয়াল', 'Guest-First • Zero Paywall')}
             </span>
           </div>
         </motion.div>

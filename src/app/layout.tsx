@@ -85,7 +85,7 @@ export default function RootLayout({
     <html
       lang="bn"
       suppressHydrationWarning
-      className={`${sairaCondensed.variable} ${hindSiliguri.variable} ${inter.variable}`}
+      className={`${sairaCondensed.variable} ${hindSiliguri.variable} ${inter.variable} overflow-x-clip`}
       style={
         {
           '--font-display': `var(--font-saira), var(--font-hind)`,
@@ -93,7 +93,7 @@ export default function RootLayout({
         } as React.CSSProperties
       }
     >
-      <body className="min-h-[100dvh] flex flex-col antialiased selection:bg-lime-brand selection:text-ink-base">
+      <body className="min-h-[100dvh] flex flex-col antialiased overflow-x-clip selection:bg-lime-brand selection:text-ink-base">
         <RootProvider>
           <Navbar />
           <main className="flex-1 flex flex-col">{children}</main>

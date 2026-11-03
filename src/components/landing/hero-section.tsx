@@ -118,7 +118,7 @@ export function HeroSection() {
                 size="lg"
                 icon="arrow"
               >
-                {t('ফ্রি শুরু করুন', 'Start Free Trial')}
+                {t('ফ্রি শুরু করুন', 'Start Free')}
               </PillButton>
 
               {/* Watch Video Button with click facade */}
