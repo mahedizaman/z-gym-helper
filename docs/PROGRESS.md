@@ -374,8 +374,25 @@ Here is the complete checklist of all environment variables required by Z-Gym He
      - Removed fallback to unowned domains across GitHub actions workflows and progress OG cards.
    - **Unit Tests**: Added 6 tests in `src/server/services/app-url-honest-copy.test.ts` verifying URL resolution and failure conditions.
 
-8. **Automated Verification & Build Status**:
-   - Unit tests: 75/75 passing across 9 test suites.
+8. **Fix Batch D: Menu Close Speed, Hydration, SW in Dev & Auth Guard**:
+   - **Mobile Menu Close Speed & 6x CPU Throttling**:
+     - Stripped out heavy `clipPath` calculations and reverse timelines. Exit animation now animates purely GPU `transform` and `opacity` in 50ms with an 80ms fallback safety timer.
+     - Removed slow overlay exit transitions. Body scroll lock (`document.body.style.overflow`) is released immediately upon close start.
+     - Tapping any navigation link triggers instant close (144ms under 6x CPU throttling).
+     - Verified with Playwright under 6x CPU slowdown: total close time measured at **197ms** (under 200ms target).
+   - **Hydration Warning Elimination**:
+     - Added `suppressHydrationWarning` to both `<html>` and `<body>` in `src/app/layout.tsx`.
+     - Hardened `LanguageProvider` ([`src/lib/language-context.tsx`](file:///home/ra-one/Documents/Z-Gym%20Helper/src/lib/language-context.tsx)): initial state is unconditionally identical on server and client (`APP_CONFIG.defaultLocale`), reading `localStorage` strictly after mount in a microtask. 0 hydration warnings detected.
+   - **Service Worker in Dev & Localhost Purge**:
+     - Service worker registration restricted strictly to production (`process.env.NODE_ENV === 'production'` and non-localhost).
+     - Added automatic one-time cleanup on localhost unregistering legacy service workers and purging CacheStorage entries.
+   - **Dynamic Routes Suspense Fix**:
+     - Wrapped dynamic params content on `/exercises/[slug]` and `/plans/[slug]` in `<Suspense>` boundaries with loading skeletons. Resolves Next.js 'URL data outside of Suspense' warnings while preserving static generation.
+   - **Localhost Auth URL Production Guard**:
+     - Production builds fail loudly with an informative error if `AUTH_URL` or `NEXTAUTH_URL` points to `localhost`, `127.0.0.1`, or `0.0.0.0`. Tested with Vitest unit tests in `src/server/services/app-url-honest-copy.test.ts`.
+
+9. **Automated Verification & Build Status**:
+   - Unit tests: 79/79 passing across 9 test suites.
    - TypeScript: Clean `tsc --noEmit`.
    - ESLint: Clean with 0 errors and 0 warnings.
    - Next.js production build: 90/90 static/dynamic routes compiled cleanly in Turbopack.
@@ -384,5 +401,5 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 
 ## Current Status
 
-- **Current focus:** Honest copy and canonical URL hardening complete.
-- **Last updated:** 2026-11-04 15:43 UTC+6
+- **Current focus:** Fix Batch D complete.
+- **Last updated:** 2026-11-04 23:54 UTC+6

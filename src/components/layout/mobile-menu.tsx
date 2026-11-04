@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
@@ -19,7 +19,6 @@ import {
   DialogPortal,
   DialogOverlay,
   DialogContent,
-  DialogClose,
   DialogTitle,
 } from '@radix-ui/react-dialog';
 import { Wordmark } from '@/components/ui/wordmark';
@@ -46,17 +45,21 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const curtainRef = useRef<HTMLDivElement>(null);
   const closeIconRef = useRef<HTMLButtonElement>(null);
   const isClosingRef = useRef(false);
+  const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Auto-close on route change
-  const [prevPathname, setPrevPathname] = useState(pathname);
-  if (prevPathname !== pathname) {
-    setPrevPathname(pathname);
-    if (isOpen) {
-      onClose();
+  const prevPathnameRef = useRef(pathname);
+  useEffect(() => {
+    if (prevPathnameRef.current !== pathname) {
+      prevPathnameRef.current = pathname;
+      if (isOpen) {
+        document.body.style.overflow = '';
+        onClose();
+      }
     }
-  }
+  }, [pathname, isOpen, onClose]);
 
-  // Lock body scroll while open
+  // Lock body scroll while open; immediately unlock when closing or unmounted
   useEffect(() => {
     if (isOpen) {
       const originalOverflow = document.body.style.overflow;
@@ -67,32 +70,66 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     }
   }, [isOpen]);
 
-  // Close handler with reverse GSAP curtain animation
+  // Clean up any pending fallback timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (fallbackTimeoutRef.current) {
+        clearTimeout(fallbackTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Instant close handler for link taps (zero animation delay)
+  const handleInstantClose = () => {
+    if (fallbackTimeoutRef.current) {
+      clearTimeout(fallbackTimeoutRef.current);
+      fallbackTimeoutRef.current = null;
+    }
+    isClosingRef.current = false;
+    document.body.style.overflow = '';
+    onClose();
+  };
+
+  // Fast close handler with snappy transform/opacity animation (< 200ms)
   const handleClose = () => {
     if (isClosingRef.current) return;
+    isClosingRef.current = true;
+
+    // Immediately release body scroll lock and restore focus responsiveness
+    document.body.style.overflow = '';
+
     const prefersReducedMotion =
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (prefersReducedMotion || !curtainRef.current) {
+    const finishClose = () => {
+      if (fallbackTimeoutRef.current) {
+        clearTimeout(fallbackTimeoutRef.current);
+        fallbackTimeoutRef.current = null;
+      }
+      isClosingRef.current = false;
       onClose();
+    };
+
+    if (prefersReducedMotion || !curtainRef.current) {
+      finishClose();
       return;
     }
 
-    isClosingRef.current = true;
+    // Safety fallback: unmount guaranteed after 80ms even if animation is halted
+    fallbackTimeoutRef.current = setTimeout(finishClose, 80);
+
+    // Fast exit animation: transform and opacity only (runs on GPU compositor in ~50ms)
     gsap.to(curtainRef.current, {
-      clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)',
       opacity: 0,
-      duration: 0.28,
-      ease: 'power3.in',
-      onComplete: () => {
-        isClosingRef.current = false;
-        onClose();
-      },
+      y: -10,
+      duration: 0.05,
+      ease: 'power2.in',
+      onComplete: finishClose,
     });
   };
 
-  // GSAP Curtain Reveal Timeline
+  // Entrance animation: fast transform and opacity only (180ms)
   useEffect(() => {
     if (!isOpen || !curtainRef.current) return;
     isClosingRef.current = false;
@@ -102,31 +139,30 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (prefersReducedMotion) {
-      gsap.set(curtainRef.current, { opacity: 1, clipPath: 'none' });
+      gsap.set(curtainRef.current, { opacity: 1, y: 0 });
       return;
     }
 
     const ctx = gsap.context(() => {
-      // Dramatic wipe-down clip-path curtain reveal
       gsap.fromTo(
         curtainRef.current,
         {
-          clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)',
-          opacity: 1,
+          opacity: 0,
+          y: -12,
         },
         {
-          clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-          duration: 0.42,
-          ease: 'power4.out',
+          opacity: 1,
+          y: 0,
+          duration: 0.18,
+          ease: 'power2.out',
         }
       );
 
-      // Rotate close icon into view
       if (closeIconRef.current) {
         gsap.fromTo(
           closeIconRef.current,
-          { rotate: -180, scale: 0.7, opacity: 0 },
-          { rotate: 0, scale: 1, opacity: 1, duration: 0.45, ease: 'back.out(1.7)', delay: 0.1 }
+          { opacity: 0, scale: 0.8 },
+          { opacity: 1, scale: 1, duration: 0.15, ease: 'power2.out' }
         );
       }
     }, curtainRef);
@@ -139,40 +175,36 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.2,
+        staggerChildren: 0.03,
+        delayChildren: 0.05,
       },
     },
     exit: {
       opacity: 0,
-      transition: {
-        staggerChildren: 0.03,
-        staggerDirection: -1,
-      },
+      transition: { duration: 0.08 },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 10 },
     show: {
       opacity: 1,
       y: 0,
       transition: {
-        type: 'spring' as const,
-        damping: 24,
-        stiffness: 280,
+        duration: 0.18,
+        ease: 'easeOut' as const,
       },
     },
-    exit: { opacity: 0, y: 12 },
+    exit: { opacity: 0, y: -6, transition: { duration: 0.06 } },
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogPortal>
-        {/* Completely solid backdrop preventing content bleeding */}
+        {/* Completely solid backdrop preventing content bleeding (instant unmount without sluggish exit transition) */}
         <DialogOverlay
           style={{ zIndex: Z_INDEX.overlay }}
-          className="fixed inset-0 bg-black/90 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+          className="fixed inset-0 bg-black/90 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-none"
         />
 
         {/* Full-viewport solid curtain sheet using CSS variable tokens */}
@@ -191,17 +223,15 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             <Wordmark size="md" forceShowHelper />
 
             <div className="flex items-center gap-2">
-              <DialogClose asChild>
-                <button
-                  ref={closeIconRef}
-                  onClick={handleClose}
-                  type="button"
-                  aria-label="Close Navigation Menu"
-                  className="w-11 h-11 rounded-full flex items-center justify-center bg-secondary hover:bg-muted text-foreground border border-border transition-transform active:scale-95 cursor-pointer shadow-sm"
-                >
-                  <X className="w-5 h-5 text-tomato-brand" />
-                </button>
-              </DialogClose>
+              <button
+                ref={closeIconRef}
+                onClick={handleClose}
+                type="button"
+                aria-label="Close Navigation Menu"
+                className="w-11 h-11 rounded-full flex items-center justify-center bg-secondary hover:bg-muted text-foreground border border-border transition-transform active:scale-95 cursor-pointer shadow-sm"
+              >
+                <X className="w-5 h-5 text-tomato-brand" />
+              </button>
             </div>
           </div>
 
@@ -228,7 +258,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   <motion.div key={link.href} variants={itemVariants}>
                     <Link
                       href={link.href}
-                      onClick={onClose}
+                      onClick={handleInstantClose}
                       className={cn(
                         'group relative flex items-center justify-between px-5 py-3.5 sm:py-4 rounded-3xl transition-all duration-200 border text-left',
                         isActive
@@ -268,7 +298,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   {session?.user?.role === 'admin' && (
                     <Link
                       href="/admin"
-                      onClick={onClose}
+                      onClick={handleInstantClose}
                       className="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-secondary border border-lime-brand/40 text-lime-brand font-bold text-sm shadow-xs"
                     >
                       <span className="flex items-center gap-2.5">
@@ -280,7 +310,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   )}
                   <Link
                     href="/dashboard"
-                    onClick={onClose}
+                    onClick={handleInstantClose}
                     className="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-lime-brand text-ink-base font-black font-display uppercase tracking-wide text-sm shadow-md"
                   >
                     <span className="flex items-center gap-2.5">
@@ -292,7 +322,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      onClose();
+                      handleInstantClose();
                       signOut({ callbackUrl: '/' });
                     }}
                     className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-border bg-card text-foreground font-bold text-xs uppercase tracking-wider hover:bg-secondary cursor-pointer transition-colors"
@@ -309,7 +339,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     size="md"
                     fullWidth
                     icon="arrow"
-                    onClick={onClose}
+                    onClick={handleInstantClose}
                   >
                     {t('ক্যালকুলেটর শুরু করুন', 'Start Calculator')}
                   </PillButton>
@@ -319,7 +349,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     size="md"
                     fullWidth
                     icon="none"
-                    onClick={onClose}
+                    onClick={handleInstantClose}
                   >
                     {t('লগইন / রেজিস্টার', 'Login / Register')}
                   </PillButton>

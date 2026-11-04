@@ -142,7 +142,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-[100dvh] flex flex-col antialiased overflow-x-clip selection:bg-lime-brand selection:text-ink-base">
+      <body
+        suppressHydrationWarning
+        className="min-h-[100dvh] flex flex-col antialiased overflow-x-clip selection:bg-lime-brand selection:text-ink-base"
+      >
         <RootProvider>
           <ServiceWorkerRegister />
           <Navbar />

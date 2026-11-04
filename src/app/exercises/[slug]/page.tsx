@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CORE_EXERCISES_DATA } from '@/server/seeds/exercises.data';
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ExerciseDetailPage({ params }: PageProps) {
+async function ExerciseDetailContent({ params }: PageProps) {
   const { slug } = await params;
   const exercise = CORE_EXERCISES_DATA.find((e) => e.slug === slug);
 
@@ -65,10 +65,20 @@ export default async function ExerciseDetailPage({ params }: PageProps) {
     images: getExerciseImages(exercise.slug),
   };
 
+  return <ExerciseDetailClient exercise={exerciseWithImages} />;
+}
+
+export default function ExerciseDetailPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-background py-10 sm:py-16">
       <div className="container mx-auto px-4 max-w-5xl">
-        <ExerciseDetailClient exercise={exerciseWithImages} />
+        <Suspense
+          fallback={
+            <div className="h-96 rounded-3xl bg-card animate-pulse border border-border" />
+          }
+        >
+          <ExerciseDetailContent params={params} />
+        </Suspense>
       </div>
     </div>
   );

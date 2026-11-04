@@ -1,8 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { APP_CONFIG, type Locale } from '@/config/app';
-import { useIsMounted } from '@/lib/use-mounted';
 
 interface LanguageContextType {
   locale: Locale;
@@ -16,24 +15,24 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 const STORAGE_KEY = 'zgym_language_preference';
 
-function getInitialLocale(): Locale {
-  if (typeof window === 'undefined') {
-    return APP_CONFIG.defaultLocale;
-  }
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY) as Locale | null;
-    if (saved && APP_CONFIG.supportedLocales.includes(saved)) {
-      return saved;
-    }
-  } catch {
-    // Local storage not available
-  }
-  return APP_CONFIG.defaultLocale;
-}
-
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
-  const mounted = useIsMounted();
+  // Always initialize to default locale so server render and initial client render match identically!
+  const [locale, setLocaleState] = useState<Locale>(APP_CONFIG.defaultLocale);
+
+  // Read saved language preference strictly after mount (never during initial render)
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY) as Locale | null;
+      if (saved && APP_CONFIG.supportedLocales.includes(saved) && saved !== APP_CONFIG.defaultLocale) {
+        queueMicrotask(() => {
+          setLocaleState(saved);
+          document.documentElement.lang = saved === 'en' ? 'en-US' : 'bn-BD';
+        });
+      }
+    } catch {
+      // Storage unavailable
+    }
+  }, []);
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
@@ -41,7 +40,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(STORAGE_KEY, newLocale);
       document.documentElement.lang = newLocale === 'bn' ? 'bn-BD' : 'en-US';
     } catch {
-      // storage unavailable
+      // Storage unavailable
     }
   };
 
@@ -51,20 +50,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   const t = (bn: string, en: string): string => {
-    if (!mounted) {
-      return APP_CONFIG.defaultLocale === 'bn' ? bn : en;
-    }
     return locale === 'bn' ? bn : en;
   };
 
   return (
     <LanguageContext.Provider
       value={{
-        locale: mounted ? locale : APP_CONFIG.defaultLocale,
+        locale,
         setLocale,
         toggleLocale,
         t,
-        isBangla: (mounted ? locale : APP_CONFIG.defaultLocale) === 'bn',
+        isBangla: locale === 'bn',
       }}
     >
       {children}

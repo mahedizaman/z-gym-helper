@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { resolveAppUrl, APP_CONFIG } from '@/config/app';
+import { validateAuthUrlForProduction } from '@/server/utils/auth-url-validator';
 
 describe('Canonical URL, OpenGraph & Environment Hardening', () => {
   const originalEnv = { ...process.env };
@@ -52,5 +53,33 @@ describe('Canonical URL, OpenGraph & Environment Hardening', () => {
   it('guarantees APP_CONFIG.url is non-empty and well-formed', () => {
     expect(APP_CONFIG.url).toMatch(/^https?:\/\//);
     expect(APP_CONFIG.url).not.toContain('zgym.app');
+  });
+
+  describe('AUTH_URL / NEXTAUTH_URL Production Validation', () => {
+    it('fails when AUTH_URL points to localhost', () => {
+      expect(() => validateAuthUrlForProduction('http://localhost:3000')).toThrowError(
+        /AUTH_URL or NEXTAUTH_URL cannot point to localhost in production/i
+      );
+    });
+
+    it('fails when AUTH_URL points to 127.0.0.1 or 0.0.0.0', () => {
+      expect(() => validateAuthUrlForProduction('http://127.0.0.1:3000')).toThrowError(
+        /AUTH_URL or NEXTAUTH_URL cannot point to localhost in production/i
+      );
+      expect(() => validateAuthUrlForProduction('https://0.0.0.0:8080')).toThrowError(
+        /AUTH_URL or NEXTAUTH_URL cannot point to localhost in production/i
+      );
+    });
+
+    it('passes when AUTH_URL is a valid production domain', () => {
+      expect(() => validateAuthUrlForProduction('https://zgym-helper.vercel.app')).not.toThrow();
+      expect(() => validateAuthUrlForProduction('https://mygym.com/api/auth')).not.toThrow();
+    });
+
+    it('safely ignores undefined or empty values', () => {
+      expect(() => validateAuthUrlForProduction(undefined)).not.toThrow();
+      expect(() => validateAuthUrlForProduction('')).not.toThrow();
+      expect(() => validateAuthUrlForProduction('   ')).not.toThrow();
+    });
   });
 });

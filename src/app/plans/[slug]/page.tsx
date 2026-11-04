@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { WORKOUT_PLANS_DATA } from '@/server/seeds/plans.data';
@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function PlanDetailPage({ params }: PageProps) {
+async function PlanDetailContent({ params }: PageProps) {
   const { slug } = await params;
   const plan = WORKOUT_PLANS_DATA.find((p) => p.slug === slug);
 
@@ -59,10 +59,20 @@ export default async function PlanDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  return <PlanDetailClient plan={plan} />;
+}
+
+export default function PlanDetailPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-background py-10 sm:py-16">
       <div className="container mx-auto px-4 max-w-5xl">
-        <PlanDetailClient plan={plan} />
+        <Suspense
+          fallback={
+            <div className="h-96 rounded-3xl bg-card animate-pulse border border-border" />
+          }
+        >
+          <PlanDetailContent params={params} />
+        </Suspense>
       </div>
     </div>
   );
