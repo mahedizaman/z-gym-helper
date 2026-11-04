@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useLanguage } from '@/lib/language-context';
 import { BANGLADESHI_FOODS_DATA, type SeedFood } from '@/server/seeds/foods.data';
 import { type MealSlotKey } from '@/lib/guest-storage';
+import { NumberField } from '@/components/ui/number-field';
 import { Search, X, Plus, Utensils } from 'lucide-react';
 
 interface FoodPickerModalProps {
@@ -23,7 +24,7 @@ export function FoodPickerModal({
   const [query, setQuery] = useState('');
   const [selectedFood, setSelectedFood] = useState<SeedFood | null>(null);
   const [selectedServingIdx, setSelectedServingIdx] = useState<number>(0);
-  const [customGrams, setCustomGrams] = useState<number>(100);
+  const [customGrams, setCustomGrams] = useState<string>('100');
   const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
   const [isPreWorkout, setIsPreWorkout] = useState<boolean>(false);
 
@@ -42,24 +43,25 @@ export function FoodPickerModal({
 
   if (!isOpen) return null;
 
+  const parsedCustomGrams = customGrams.trim() === '' ? 0 : parseFloat(customGrams);
   const currentGrams = isCustomMode
-    ? Math.max(1, customGrams || 1)
+    ? (!isNaN(parsedCustomGrams) && parsedCustomGrams > 0 ? parsedCustomGrams : 0)
     : selectedFood?.servings?.[selectedServingIdx]?.grams || 100;
 
   const currentServingLabel = isCustomMode
-    ? `${currentGrams} ${t('গ্রাম', 'g')}`
+    ? `${currentGrams || 0} ${t('গ্রাম', 'g')}`
     : locale === 'bn'
     ? selectedFood?.servings?.[selectedServingIdx]?.labelBn || `${currentGrams} গ্রাম`
     : selectedFood?.servings?.[selectedServingIdx]?.labelEn || `${currentGrams}g`;
 
-  const multiplier = currentGrams / 100;
+  const multiplier = currentGrams > 0 ? currentGrams / 100 : 0;
   const currentKcal = selectedFood ? Math.round(selectedFood.per100g.kcal * multiplier) : 0;
   const currentProtein = selectedFood ? Number((selectedFood.per100g.protein * multiplier).toFixed(1)) : 0;
   const currentCarbs = selectedFood ? Number((selectedFood.per100g.carbs * multiplier).toFixed(1)) : 0;
   const currentFat = selectedFood ? Number((selectedFood.per100g.fat * multiplier).toFixed(1)) : 0;
 
   const handleConfirm = () => {
-    if (!selectedFood) return;
+    if (!selectedFood || currentGrams <= 0) return;
     onSelectFood(targetSlot, selectedFood, currentGrams, currentServingLabel, isPreWorkout);
     onClose();
     setSelectedFood(null);
@@ -74,7 +76,7 @@ export function FoodPickerModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true">
       <div className="relative w-full max-w-2xl max-h-[90vh] bg-card border border-border rounded-3xl p-6 shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-border">
@@ -171,18 +173,19 @@ export function FoodPickerModal({
               </div>
 
               {isCustomMode && (
-                <div className="flex items-center gap-2 pt-1">
-                  <input
-                    type="number"
-                    min="1"
-                    max="2000"
+                <div className="pt-1">
+                  <NumberField
+                    id="food-picker-custom-grams"
+                    unit={t('গ্রাম', 'g')}
+                    min={1}
+                    max={2000}
+                    clampOnBlur
                     value={customGrams}
-                    onChange={(e) => setCustomGrams(Number(e.target.value))}
-                    className="w-28 px-3 py-1.5 rounded-xl bg-background border border-border text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand"
+                    onChange={(val) => setCustomGrams(val)}
+                    placeholder="100"
+                    containerClassName="w-32"
+                    aria-label="Custom grams"
                   />
-                  <span className="text-xs text-muted-foreground font-semibold">
-                    {t('গ্রাম (g)', 'grams (g)')}
-                  </span>
                 </div>
               )}
 
@@ -222,7 +225,7 @@ export function FoodPickerModal({
                     setSelectedFood(food);
                     setSelectedServingIdx(0);
                     setIsCustomMode(false);
-                    setCustomGrams(food.servings?.[0]?.grams || 100);
+                    setCustomGrams(String(food.servings?.[0]?.grams || 100));
                   }}
                   className="w-full p-3.5 flex items-center justify-between text-left hover:bg-secondary/60 transition-colors group cursor-pointer"
                 >

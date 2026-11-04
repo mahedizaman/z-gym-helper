@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import { DashboardClient } from '@/components/dashboard/dashboard-client';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { APP_CONFIG } from '@/config/app';
 
 export const metadata: Metadata = {
@@ -12,7 +13,9 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       <Suspense fallback={<div className="container mx-auto p-8 animate-pulse" />}>
-        <DashboardClient />
+        <ErrorBoundary sectionName="ড্যাশবোর্ড / Dashboard">
+          <DashboardClient />
+        </ErrorBoundary>
       </Suspense>
     </div>
   );

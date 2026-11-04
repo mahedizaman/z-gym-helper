@@ -84,13 +84,67 @@ const DEFAULT_PROFILE: GuestProfile = {
   goal: 'loss',
 };
 
+export function sanitizeGuestProfile(raw: unknown): GuestProfile {
+  if (!raw || typeof raw !== 'object') return DEFAULT_PROFILE;
+  const p = raw as Partial<GuestProfile>;
+
+  const gender = p.gender === 'female' ? 'female' : 'male';
+  const age =
+    typeof p.age === 'number' && !isNaN(p.age) && p.age >= 10 && p.age <= 100
+      ? Math.round(p.age)
+      : DEFAULT_PROFILE.age;
+  const heightCm =
+    typeof p.heightCm === 'number' && !isNaN(p.heightCm) && p.heightCm >= 100 && p.heightCm <= 250
+      ? Math.round(p.heightCm)
+      : DEFAULT_PROFILE.heightCm;
+  const weightKg =
+    typeof p.weightKg === 'number' && !isNaN(p.weightKg) && p.weightKg >= 30 && p.weightKg <= 300
+      ? Number(p.weightKg.toFixed(1))
+      : DEFAULT_PROFILE.weightKg;
+
+  const validActivityLevels: ActivityLevel[] = [
+    'sedentary',
+    'light',
+    'moderate',
+    'active',
+    'very_active',
+    'extra_active',
+  ];
+  const activityLevel =
+    p.activityLevel && validActivityLevels.includes(p.activityLevel)
+      ? p.activityLevel
+      : DEFAULT_PROFILE.activityLevel;
+
+  const validGoals: Goal[] = ['maintain', 'mild_loss', 'loss', 'extreme_loss', 'muscle_gain'];
+  const goal = p.goal && validGoals.includes(p.goal) ? p.goal : DEFAULT_PROFILE.goal;
+
+  const customCalorieTarget =
+    typeof p.customCalorieTarget === 'number' &&
+    !isNaN(p.customCalorieTarget) &&
+    p.customCalorieTarget >= 800 &&
+    p.customCalorieTarget <= 10000
+      ? Math.round(p.customCalorieTarget)
+      : undefined;
+
+  return {
+    gender,
+    age,
+    heightCm,
+    weightKg,
+    activityLevel,
+    goal,
+    customCalorieTarget,
+  };
+}
+
 export const guestStorage = {
   getDhakaDateString,
   getProfile(): GuestProfile {
     if (typeof window === 'undefined') return DEFAULT_PROFILE;
     try {
       const data = localStorage.getItem(STORAGE_KEYS.PROFILE);
-      return data ? JSON.parse(data) : DEFAULT_PROFILE;
+      if (!data) return DEFAULT_PROFILE;
+      return sanitizeGuestProfile(JSON.parse(data));
     } catch {
       return DEFAULT_PROFILE;
     }

@@ -7,6 +7,7 @@ import {
   type GuestExerciseBurn,
 } from '@/lib/guest-storage';
 import { calculateExerciseBurn } from '@/server/services/calculations';
+import { NumberField } from '@/components/ui/number-field';
 import { Flame, Plus, Trash2, Activity } from 'lucide-react';
 
 interface ExerciseBurnSectionProps {
@@ -32,24 +33,27 @@ export function ExerciseBurnSection({
 }: ExerciseBurnSectionProps) {
   const { t, locale } = useLanguage();
   const [selectedExId, setSelectedExId] = useState<string>('weightlifting');
-  const [durationMin, setDurationMin] = useState<number>(45);
+  const [durationMinStr, setDurationMinStr] = useState<string>('45');
 
   const selectedExercise =
     EXERCISE_OPTIONS.find((e) => e.id === selectedExId) || EXERCISE_OPTIONS[0];
 
-  const estimatedBurn = calculateExerciseBurn(
-    selectedExercise.met,
-    userWeightKg,
-    durationMin
-  );
+  const parsedDuration = durationMinStr.trim() === '' ? 0 : parseFloat(durationMinStr);
+  const durationMin = !isNaN(parsedDuration) && parsedDuration > 0 ? parsedDuration : 0;
+
+  const estimatedBurn =
+    durationMin > 0
+      ? calculateExerciseBurn(selectedExercise.met, userWeightKg, durationMin)
+      : 0;
 
   const handleAddBurn = () => {
+    if (durationMin <= 0) return;
     const date = guestStorage.getDhakaDateString();
     const updated = guestStorage.addExerciseBurn(date, {
       nameBn: selectedExercise.nameBn,
       nameEn: selectedExercise.nameEn,
       met: selectedExercise.met,
-      durationMinutes: durationMin,
+      durationMinutes: Math.round(durationMin),
       burnedKcal: estimatedBurn,
     });
     onBurnsUpdated(updated);
@@ -110,17 +114,17 @@ export function ExerciseBurnSection({
         </div>
 
         <div className="sm:col-span-3">
-          <label className="text-xs font-bold text-muted-foreground block mb-1">
-            {t('সময়কাল (মিনিট)', 'Duration (min)')}
-          </label>
-          <input
-            type="number"
-            min="5"
-            max="300"
-            step="5"
-            value={durationMin}
-            onChange={(e) => setDurationMin(Number(e.target.value))}
-            className="w-full px-3.5 py-2 rounded-xl bg-secondary/80 border border-border text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand"
+          <NumberField
+            id="exercise-duration"
+            label={<span className="text-xs font-bold text-muted-foreground">{t('সময়কাল (মিনিট)', 'Duration (min)')}</span>}
+            unit="min"
+            value={durationMinStr}
+            onChange={(val) => setDurationMinStr(val)}
+            min={1}
+            max={300}
+            clampOnBlur
+            placeholder="45"
+            aria-label="Exercise duration in minutes"
           />
         </div>
 

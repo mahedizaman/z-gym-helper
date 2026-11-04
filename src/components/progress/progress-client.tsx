@@ -14,6 +14,7 @@ import {
   Share2,
 } from 'lucide-react';
 import { ProgressShareModal } from '@/components/progress/progress-share-modal';
+import { NumberField } from '@/components/ui/number-field';
 import {
   ResponsiveContainer,
   LineChart,
@@ -287,22 +288,21 @@ export function ProgressClient() {
           </div>
 
           <form onSubmit={handleAddWeight} className="space-y-4">
-            <div>
-              <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
-                {t('ওজন (কেজি)', 'Weight (kg)')} *
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                min="20"
-                max="350"
-                required
-                value={weightInput}
-                onChange={(e) => setWeightInput(e.target.value)}
-                placeholder="70.5"
-                className="w-full px-4 py-3 rounded-2xl bg-background border border-border text-foreground text-base font-mono focus:outline-none focus:ring-2 focus:ring-lime-brand"
-              />
-            </div>
+            <NumberField
+              id="progress-weight-input"
+              label={<span className="text-xs font-semibold text-muted-foreground">{t('ওজন (কেজি)', 'Weight (kg)')} *</span>}
+              unit="kg"
+              allowDecimals
+              step="0.1"
+              min={20}
+              max={350}
+              required
+              value={weightInput}
+              onChange={(val) => setWeightInput(val)}
+              placeholder="70.5"
+              inputClassName="py-3 text-base font-mono rounded-2xl"
+              aria-label="Weight in kilograms"
+            />
 
             <div>
               <label className="text-xs font-semibold text-muted-foreground block mb-1.5">

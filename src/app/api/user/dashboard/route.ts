@@ -34,26 +34,46 @@ export async function GET() {
     return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
   }
 
-  // Calculate targets from user profile
-  const profile = user.profile || {
-    gender: 'male',
-    weightKg: 70,
-    heightCm: 172,
-    age: 26,
-    activityLevel: 'moderate',
+  // Calculate targets from user profile with safe fallback guards
+  const rawProfile = (user.profile || {}) as Record<string, unknown>;
+  const profile = {
+    gender: rawProfile.gender === 'female' ? ('female' as const) : ('male' as const),
+    weightKg:
+      typeof rawProfile.weightKg === 'number' && rawProfile.weightKg >= 30 && rawProfile.weightKg <= 300
+        ? rawProfile.weightKg
+        : 70,
+    heightCm:
+      typeof rawProfile.heightCm === 'number' && rawProfile.heightCm >= 100 && rawProfile.heightCm <= 250
+        ? rawProfile.heightCm
+        : 172,
+    age:
+      typeof rawProfile.age === 'number' && rawProfile.age >= 10 && rawProfile.age <= 100
+        ? rawProfile.age
+        : 26,
+    activityLevel:
+      typeof rawProfile.activityLevel === 'string' ? rawProfile.activityLevel : 'moderate',
+    calorieTarget:
+      typeof rawProfile.calorieTarget === 'number' ? rawProfile.calorieTarget : undefined,
   };
 
-  const bmr = calculateBMR({
-    weightKg: profile.weightKg,
-    heightCm: profile.heightCm,
-    age: profile.age,
-    gender: profile.gender,
-  });
+  let bmr = 1600;
+  let tdee = 2200;
+  let targetCalories = 1700;
 
-  const tdee = calculateTDEE(bmr, profile.activityLevel);
-  const targetCalories =
-    profile.calorieTarget ||
-    calculateCaloricTarget(tdee, 'maintain', profile.gender);
+  try {
+    bmr = calculateBMR({
+      weightKg: profile.weightKg,
+      heightCm: profile.heightCm,
+      age: profile.age,
+      gender: profile.gender,
+    });
+    tdee = calculateTDEE(bmr, profile.activityLevel);
+    targetCalories =
+      profile.calorieTarget ||
+      calculateCaloricTarget(tdee, 'maintain', profile.gender);
+  } catch {
+    // safe fallback
+  }
 
   // Today's summary & meals
   const todaySummary = (await DailySummaryModel.findOne({ userId, date: today }).lean()) || {

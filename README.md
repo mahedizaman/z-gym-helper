@@ -91,7 +91,7 @@ npm run db:seed
 3. Set the build configuration:
    - **Build command:** `npm run build`
    - **Publish directory:** `.next`
-4. In **Site Configuration > Environment Variables**, add all required production variables (`DATABASE_URL`, `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `ADMIN_EMAILS`, `NEXT_PUBLIC_APP_URL`, `CRON_SECRET`).
+4. In **Site Configuration > Environment Variables**, add all required production variables (`MONGODB_URI`, `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `ADMIN_EMAILS`, `NEXT_PUBLIC_APP_URL`, `CRON_SECRET`).
 5. Deploy site. Netlify automatically utilizes the official `@netlify/plugin-nextjs` adapter for Server Actions and Route Handlers.
 
 ### Option B: Deploying via Docker / Standalone Node.js

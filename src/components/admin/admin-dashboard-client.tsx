@@ -27,6 +27,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from 'recharts';
+import { NumberField } from '@/components/ui/number-field';
 import { useLanguage } from '@/lib/language-context';
 import type { AdminMetrics } from '@/server/services/admin.service';
 
@@ -1138,89 +1139,87 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
                   </div>
 
                   <div className="grid grid-cols-4 gap-2">
-                    <div>
-                      <label className="text-[10px] font-bold text-muted-foreground block mb-1">Kcal / 100g</label>
-                      <input
-                        type="number"
-                        required
-                        value={editingFood?.per100g?.kcal || 0}
-                        onChange={(e) =>
-                          setEditingFood({
-                            ...editingFood,
-                            per100g: {
-                              kcal: Number(e.target.value),
-                              protein: editingFood?.per100g?.protein ?? 0,
-                              carbs: editingFood?.per100g?.carbs ?? 0,
-                              fat: editingFood?.per100g?.fat ?? 0,
-                            },
-                          })
-                        }
-                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-xs font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-muted-foreground block mb-1">Protein (g)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        required
-                        value={editingFood?.per100g?.protein || 0}
-                        onChange={(e) =>
-                          setEditingFood({
-                            ...editingFood,
-                            per100g: {
-                              kcal: editingFood?.per100g?.kcal ?? 0,
-                              protein: Number(e.target.value),
-                              carbs: editingFood?.per100g?.carbs ?? 0,
-                              fat: editingFood?.per100g?.fat ?? 0,
-                            },
-                          })
-                        }
-                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-xs font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-muted-foreground block mb-1">Carbs (g)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        required
-                        value={editingFood?.per100g?.carbs || 0}
-                        onChange={(e) =>
-                          setEditingFood({
-                            ...editingFood,
-                            per100g: {
-                              kcal: editingFood?.per100g?.kcal ?? 0,
-                              protein: editingFood?.per100g?.protein ?? 0,
-                              carbs: Number(e.target.value),
-                              fat: editingFood?.per100g?.fat ?? 0,
-                            },
-                          })
-                        }
-                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-xs font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-muted-foreground block mb-1">Fat (g)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        required
-                        value={editingFood?.per100g?.fat || 0}
-                        onChange={(e) =>
-                          setEditingFood({
-                            ...editingFood,
-                            per100g: {
-                              kcal: editingFood?.per100g?.kcal ?? 0,
-                              protein: editingFood?.per100g?.protein ?? 0,
-                              carbs: editingFood?.per100g?.carbs ?? 0,
-                              fat: Number(e.target.value),
-                            },
-                          })
-                        }
-                        className="w-full px-2 py-1.5 rounded-lg bg-background border border-border text-xs font-mono"
-                      />
-                    </div>
+                    <NumberField
+                      label={<span className="text-[10px] font-bold text-muted-foreground">Kcal</span>}
+                      required
+                      value={editingFood?.per100g?.kcal ?? ''}
+                      onChange={(val) =>
+                        setEditingFood({
+                          ...editingFood,
+                          per100g: {
+                            kcal: val === '' ? 0 : Number(val),
+                            protein: editingFood?.per100g?.protein ?? 0,
+                            carbs: editingFood?.per100g?.carbs ?? 0,
+                            fat: editingFood?.per100g?.fat ?? 0,
+                          },
+                        })
+                      }
+                      placeholder="0"
+                      inputClassName="px-2 py-1.5 text-xs font-mono rounded-lg"
+                    />
+
+                    <NumberField
+                      label={<span className="text-[10px] font-bold text-muted-foreground">Protein (g)</span>}
+                      allowDecimals
+                      step="0.1"
+                      required
+                      value={editingFood?.per100g?.protein ?? ''}
+                      onChange={(val) =>
+                        setEditingFood({
+                          ...editingFood,
+                          per100g: {
+                            kcal: editingFood?.per100g?.kcal ?? 0,
+                            protein: val === '' ? 0 : Number(val),
+                            carbs: editingFood?.per100g?.carbs ?? 0,
+                            fat: editingFood?.per100g?.fat ?? 0,
+                          },
+                        })
+                      }
+                      placeholder="0"
+                      inputClassName="px-2 py-1.5 text-xs font-mono rounded-lg"
+                    />
+
+                    <NumberField
+                      label={<span className="text-[10px] font-bold text-muted-foreground">Carbs (g)</span>}
+                      allowDecimals
+                      step="0.1"
+                      required
+                      value={editingFood?.per100g?.carbs ?? ''}
+                      onChange={(val) =>
+                        setEditingFood({
+                          ...editingFood,
+                          per100g: {
+                            kcal: editingFood?.per100g?.kcal ?? 0,
+                            protein: editingFood?.per100g?.protein ?? 0,
+                            carbs: val === '' ? 0 : Number(val),
+                            fat: editingFood?.per100g?.fat ?? 0,
+                          },
+                        })
+                      }
+                      placeholder="0"
+                      inputClassName="px-2 py-1.5 text-xs font-mono rounded-lg"
+                    />
+
+                    <NumberField
+                      label={<span className="text-[10px] font-bold text-muted-foreground">Fat (g)</span>}
+                      allowDecimals
+                      step="0.1"
+                      required
+                      value={editingFood?.per100g?.fat ?? ''}
+                      onChange={(val) =>
+                        setEditingFood({
+                          ...editingFood,
+                          per100g: {
+                            kcal: editingFood?.per100g?.kcal ?? 0,
+                            protein: editingFood?.per100g?.protein ?? 0,
+                            carbs: editingFood?.per100g?.carbs ?? 0,
+                            fat: val === '' ? 0 : Number(val),
+                          },
+                        })
+                      }
+                      placeholder="0"
+                      inputClassName="px-2 py-1.5 text-xs font-mono rounded-lg"
+                    />
                   </div>
 
                   <div>

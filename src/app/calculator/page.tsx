@@ -24,6 +24,7 @@ import { ProfileTargetModal } from '@/components/calculator/profile-target-modal
 import { ExerciseBurnSection } from '@/components/calculator/exercise-burn-section';
 import { MedicalDisclaimer } from '@/components/legal/medical-disclaimer';
 import { AdSlot } from '@/components/ads/ad-slot';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 import {
   Calculator,
   Sliders,
@@ -47,20 +48,27 @@ export default function CalculatorPage() {
   const [activeSlotModal, setActiveSlotModal] = useState<MealSlotKey | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  // Compute Targets
-  const bmr = calculateBMR(
-    profile.weightKg,
-    profile.heightCm,
-    profile.age,
-    profile.gender
-  );
-  const tdee = calculateTDEE(bmr, profile.activityLevel);
-  const targetKcal = calculateCaloricTarget(tdee, profile.goal, profile.gender);
-  const targetMacros = calculateMacroSplit(
-    targetKcal,
-    profile.weightKg,
-    profile.goal
-  );
+  // Compute Targets with fallback guards
+  const safeWeight = profile.weightKg && profile.weightKg >= 30 ? profile.weightKg : 70;
+  const safeHeight = profile.heightCm && profile.heightCm >= 100 ? profile.heightCm : 172;
+  const safeAge = profile.age && profile.age >= 10 ? profile.age : 26;
+  const safeGender = profile.gender === 'female' ? 'female' : 'male';
+  const safeActivity = profile.activityLevel || 'moderate';
+  const safeGoal = profile.goal || 'loss';
+
+  let bmr = 1600;
+  let tdee = 2200;
+  let targetKcal = 1700;
+  let targetMacros = { protein: 140, carbs: 180, fat: 50 };
+
+  try {
+    bmr = calculateBMR(safeWeight, safeHeight, safeAge, safeGender);
+    tdee = calculateTDEE(bmr, safeActivity);
+    targetKcal = calculateCaloricTarget(tdee, safeGoal, safeGender);
+    targetMacros = calculateMacroSplit(targetKcal, safeWeight, safeGoal);
+  } catch {
+    // Fallback safe defaults if external calculation fails
+  }
 
   // Compute Consumed Totals across all slots
   const allMealItems: GuestMealItem[] = [
@@ -166,8 +174,9 @@ export default function CalculatorPage() {
   ];
 
   return (
-    <div className="min-h-screen py-10 md:py-16 px-4 sm:px-6">
-      <div className="container mx-auto max-w-7xl">
+    <ErrorBoundary sectionName={t('ক্যালকুলেটর', 'Calculator')}>
+      <div className="min-h-screen py-10 md:py-16 px-4 sm:px-6">
+        <div className="container mx-auto max-w-7xl">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-border">
           <div>
@@ -576,5 +585,6 @@ export default function CalculatorPage() {
         onSaveProfile={(updated) => setProfile(updated)}
       />
     </div>
+    </ErrorBoundary>
   );
 }

@@ -20,6 +20,7 @@ import {
   Share2,
 } from 'lucide-react';
 import { ProgressShareModal } from '@/components/progress/progress-share-modal';
+import { NumberField } from '@/components/ui/number-field';
 import {
   ResponsiveContainer,
   BarChart,
@@ -507,22 +508,21 @@ export function DashboardClient() {
               {t('আজকের ওজন রেকর্ড করুন', 'Record Today’s Weight')}
             </h3>
             <form onSubmit={handleQuickWeightSubmit} className="space-y-4">
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
-                  {t('ওজন (কেজি)', 'Weight (kg)')}
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="20"
-                  max="350"
-                  required
-                  value={newWeight}
-                  onChange={(e) => setNewWeight(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-background border border-border text-foreground font-mono text-lg focus:outline-none focus:ring-2 focus:ring-lime-brand"
-                  placeholder="e.g. 70.5"
-                />
-              </div>
+              <NumberField
+                id="quick-weight-input"
+                label={<span className="text-xs font-semibold text-muted-foreground">{t('ওজন (কেজি)', 'Weight (kg)')}</span>}
+                unit="kg"
+                allowDecimals
+                step="0.1"
+                min={20}
+                max={350}
+                required
+                value={newWeight}
+                onChange={(val) => setNewWeight(val)}
+                placeholder="70.5"
+                inputClassName="py-3 text-lg font-mono rounded-2xl"
+                aria-label="Today's weight in kilograms"
+              />
               <div className="flex items-center justify-end gap-3 pt-2">
                 <button
                   type="button"

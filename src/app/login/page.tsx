@@ -1,21 +1,39 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/lib/language-context';
 import { Wordmark } from '@/components/ui/wordmark';
 import {
   ShieldCheck,
   CheckCircle2,
   ArrowRight,
+  AlertTriangle,
+  HelpCircle,
 } from 'lucide-react';
 
 export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[85dvh] flex items-center justify-center py-12 px-4">
+          <div className="w-full max-w-md h-96 rounded-3xl border border-border bg-card p-8 animate-pulse" />
+        </div>
+      }
+    >
+      <LoginFormContent />
+    </Suspense>
+  );
+}
+
+function LoginFormContent() {
   const { t } = useLanguage();
   const { status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get('error');
   const [isLoading, setIsLoading] = useState(false);
 
   // If already authenticated, redirect to dashboard
@@ -34,13 +52,69 @@ export default function LoginPage() {
     }
   };
 
+  // Structured bilingual friendly error descriptions (never show raw code)
+  const getErrorMessage = (err: string | null) => {
+    if (!err) return null;
+
+    const lower = err.toLowerCase();
+    if (lower.includes('accessdenied') || lower.includes('access_denied')) {
+      return {
+        titleBn: 'অ্যাক্সেস সীমাবদ্ধ / সাইন-ইন বাতিল',
+        titleEn: 'Access Restricted / Sign-In Cancelled',
+        descBn:
+          'আপনি Google সাইন-ইন বাতিল করেছেন অথবা আপনার অ্যাকাউন্টটি অ্যাডমিন কর্তৃক সাময়িকভাবে নিষ্ক্রিয় রাখা হয়েছে। আপনি অতিথি (গেস্ট) হিসেবে সমস্ত ফিচার ব্যবহার করতে পারেন। কোনো ভুল মনে হলে যোগাযোগ করুন।',
+        descEn:
+          'You may have cancelled the sign-in request, or your account has been disabled by an administrator. You can freely use all features in Guest mode, or contact support if you need assistance.',
+        showContactLink: true,
+      };
+    }
+
+    if (
+      lower.includes('configuration') ||
+      lower.includes('invalid_client') ||
+      lower.includes('client_id')
+    ) {
+      return {
+        titleBn: 'Google সাইন-ইন সেবা প্রক্রিয়াধীন',
+        titleEn: 'Google Sign-In Notice',
+        descBn:
+          'ওয়েবসাইটের Google OAuth আইডি কনফিগারেশন আপডেট করা হচ্ছে। কোনো অ্যাকাউন্ট ছাড়াই আপনি অতিথি মোডে অ্যাপের সমস্ত ফিচার অবিলম্বে ব্যবহার করতে পারেন।',
+        descEn:
+          'Google OAuth credentials are being updated by the administrator. You can continue using all calculators and food tracking seamlessly as a guest.',
+        showContactLink: false,
+      };
+    }
+
+    if (lower.includes('verification')) {
+      return {
+        titleBn: 'অনুরোধের সময় শেষ',
+        titleEn: 'Verification Expired',
+        descBn: 'সাইন-ইন যাচাইকরণের সময় অতিক্রান্ত হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+        descEn: 'The sign-in verification session has expired. Please try signing in again.',
+        showContactLink: false,
+      };
+    }
+
+    return {
+      titleBn: 'সংযোগ সম্পন্ন করা যায়নি',
+      titleEn: 'Unable to Complete Sign-In',
+      descBn:
+        'Google সার্ভারের সাথে সংযোগ স্থাপন করা যায়নি। অনুগ্রহ করে আপনার নেটওয়ার্ক চেক করে আবার চেষ্টা করুন অথবা গেস্ট মোডে চালিয়ে যান।',
+      descEn:
+        'Could not complete connection to Google services. Please verify your connection and try again, or continue as a guest.',
+      showContactLink: true,
+    };
+  };
+
+  const friendlyError = getErrorMessage(errorParam);
+
   return (
     <div className="min-h-[85dvh] flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-2xl relative overflow-hidden">
         {/* Glow accent */}
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-lime-brand/15 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <div className="flex justify-center mb-4">
             <Wordmark size="md" />
           </div>
@@ -54,6 +128,37 @@ export default function LoginPage() {
             )}
           </p>
         </div>
+
+        {/* Friendly Error Banner if sign-in failed */}
+        {friendlyError && (
+          <div className="mb-6 p-4 rounded-2xl bg-tomato-brand/10 border border-tomato-brand/30 text-xs text-foreground space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="flex items-center gap-2 text-tomato-brand font-bold">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>{t(friendlyError.titleBn, friendlyError.titleEn)}</span>
+            </div>
+            <p className="text-muted-foreground leading-relaxed">
+              {t(friendlyError.descBn, friendlyError.descEn)}
+            </p>
+            <div className="pt-1 flex items-center gap-3">
+              <Link
+                href="/calculator"
+                className="inline-flex items-center gap-1 font-bold text-lime-brand hover:underline"
+              >
+                <span>{t('গেস্ট মোডে চলুন', 'Continue as Guest')}</span>
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+              {friendlyError.showContactLink && (
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-1 font-semibold text-muted-foreground hover:text-foreground"
+                >
+                  <HelpCircle className="w-3 h-3" />
+                  <span>{t('যোগাযোগ', 'Support')}</span>
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Benefits checklist */}
         <div className="space-y-2.5 mb-8 p-4 rounded-2xl bg-muted/40 border border-border/50 text-xs">

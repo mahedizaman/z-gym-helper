@@ -7,36 +7,66 @@ import { Scale, Info, Calculator, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { MedicalDisclaimer } from '@/components/legal/medical-disclaimer';
 import { AdSlot } from '@/components/ads/ad-slot';
+import { NumberField } from '@/components/ui/number-field';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 
 export default function BMIPage() {
   const { t } = useLanguage();
   const [unitSystem, setUnitSystem] = useState<'metric' | 'imperial'>('metric');
 
-  // Metric inputs
-  const [heightCm, setHeightCm] = useState<number>(172);
-  const [weightKg, setWeightKg] = useState<number>(68);
+  // Metric inputs as raw string states
+  const [heightCmStr, setHeightCmStr] = useState<string>('172');
+  const [weightKgStr, setWeightKgStr] = useState<string>('68');
 
-  // Imperial inputs
-  const [heightFeet, setHeightFeet] = useState<number>(5);
-  const [heightInches, setHeightInches] = useState<number>(8);
-  const [weightLbs, setWeightLbs] = useState<number>(150);
+  // Imperial inputs as raw string states
+  const [heightFeetStr, setHeightFeetStr] = useState<string>('5');
+  const [heightInchesStr, setHeightInchesStr] = useState<string>('8');
+  const [weightLbsStr, setWeightLbsStr] = useState<string>('150');
 
   // Age & Gender
-  const [age, setAge] = useState<number>(26);
+  const [ageStr, setAgeStr] = useState<string>('26');
   const [gender, setGender] = useState<'male' | 'female'>('male');
 
-  // Effective values for calculation
+  // Effective values for calculation guarded against NaN/undefined
+  const numHeightCm = heightCmStr.trim() === '' ? 172 : parseFloat(heightCmStr);
+  const numWeightKg = weightKgStr.trim() === '' ? 68 : parseFloat(weightKgStr);
+  const numHeightFeet = heightFeetStr.trim() === '' ? 5 : parseFloat(heightFeetStr);
+  const numHeightInches = heightInchesStr.trim() === '' ? 8 : parseFloat(heightInchesStr);
+  const numWeightLbs = weightLbsStr.trim() === '' ? 150 : parseFloat(weightLbsStr);
+
   const effectiveHeightCm =
     unitSystem === 'metric'
-      ? heightCm
-      : Math.round(heightFeet * 30.48 + heightInches * 2.54);
+      ? (!isNaN(numHeightCm) && numHeightCm > 0 ? numHeightCm : 172)
+      : Math.round(
+          (!isNaN(numHeightFeet) && numHeightFeet > 0 ? numHeightFeet : 5) * 30.48 +
+            (!isNaN(numHeightInches) && numHeightInches >= 0 ? numHeightInches : 0) * 2.54
+        );
 
   const effectiveWeightKg =
     unitSystem === 'metric'
-      ? weightKg
-      : Math.round(weightLbs * 0.453592 * 10) / 10;
+      ? (!isNaN(numWeightKg) && numWeightKg > 0 ? numWeightKg : 68)
+      : Math.round((!isNaN(numWeightLbs) && numWeightLbs > 0 ? numWeightLbs : 150) * 0.453592 * 10) / 10;
 
-  const bmiResult = calculateBMI(effectiveWeightKg, effectiveHeightCm);
+  let bmiResult: {
+    bmi: number;
+    category: 'underweight' | 'normal' | 'overweight' | 'obese';
+    categoryBn: string;
+    categoryEn: string;
+    healthyWeightRangeKg: { min: number; max: number };
+  } = {
+    bmi: 22.9,
+    category: 'normal',
+    categoryBn: 'স্বাভাবিক ওজন',
+    categoryEn: 'Normal weight',
+    healthyWeightRangeKg: { min: 54.7, max: 73.7 },
+  };
+
+  try {
+    bmiResult = calculateBMI(effectiveWeightKg, effectiveHeightCm);
+  } catch {
+    // Graceful fallback
+  }
+
   const bmi = bmiResult.bmi;
   const categoryInfo = getBMICategory(bmi);
   const healthyRange = getHealthyWeightRange(effectiveHeightCm);
@@ -60,8 +90,9 @@ export default function BMIPage() {
   const gaugePercent = Math.min(100, Math.max(0, ((bmi - 12) / (38 - 12)) * 100));
 
   return (
-    <div className="min-h-screen py-10 md:py-16 px-4 sm:px-6">
-      <div className="container mx-auto max-w-4xl">
+    <ErrorBoundary sectionName={t('BMI ক্যালকুলেটর', 'BMI Calculator')}>
+      <div className="min-h-screen py-10 md:py-16 px-4 sm:px-6">
+        <div className="container mx-auto max-w-4xl">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto pb-10">
           <div className="w-14 h-14 rounded-3xl bg-lime-soft text-ink-base mx-auto mb-4 flex items-center justify-center border border-lime-brand/30 shadow-sm">
@@ -145,105 +176,81 @@ export default function BMIPage() {
 
             {/* Height input */}
             {unitSystem === 'metric' ? (
-              <div>
-                <div className="flex justify-between items-center mb-1.5">
-                  <label className="text-xs font-bold text-muted-foreground">
-                    {t('উচ্চতা (সেন্টিমিটার)', 'Height (cm)')}
-                  </label>
-                  <span className="font-display font-extrabold text-sm text-foreground">
-                    {heightCm} cm
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="130"
-                  max="220"
-                  value={heightCm}
-                  onChange={(e) => setHeightCm(Number(e.target.value))}
-                  className="w-full accent-lime-brand cursor-pointer"
-                />
-              </div>
+              <NumberField
+                id="bmi-height-cm"
+                label={<span className="text-xs font-bold text-muted-foreground">{t('উচ্চতা (সেন্টিমিটার)', 'Height (cm)')}</span>}
+                unit="cm"
+                value={heightCmStr}
+                onChange={(val) => setHeightCmStr(val)}
+                min={100}
+                max={250}
+                placeholder="172"
+              />
             ) : (
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-bold text-muted-foreground block mb-1">
-                    {t('উচ্চতা (ফুট)', 'Height (ft)')}
-                  </label>
-                  <input
-                    type="number"
-                    min="3"
-                    max="7"
-                    value={heightFeet}
-                    onChange={(e) => setHeightFeet(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-secondary/80 border border-border text-sm font-bold text-foreground"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-muted-foreground block mb-1">
-                    {t('ইঞ্চি', 'Inches (in)')}
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="11"
-                    value={heightInches}
-                    onChange={(e) => setHeightInches(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-secondary/80 border border-border text-sm font-bold text-foreground"
-                  />
-                </div>
+                <NumberField
+                  id="bmi-height-ft"
+                  label={<span className="text-xs font-bold text-muted-foreground">{t('উচ্চতা (ফুট)', 'Height (ft)')}</span>}
+                  unit="ft"
+                  value={heightFeetStr}
+                  onChange={(val) => setHeightFeetStr(val)}
+                  min={3}
+                  max={8}
+                  placeholder="5"
+                />
+                <NumberField
+                  id="bmi-height-in"
+                  label={<span className="text-xs font-bold text-muted-foreground">{t('ইঞ্চি', 'Inches (in)')}</span>}
+                  unit="in"
+                  value={heightInchesStr}
+                  onChange={(val) => setHeightInchesStr(val)}
+                  min={0}
+                  max={11}
+                  placeholder="8"
+                />
               </div>
             )}
 
             {/* Weight input */}
             {unitSystem === 'metric' ? (
-              <div>
-                <div className="flex justify-between items-center mb-1.5">
-                  <label className="text-xs font-bold text-muted-foreground">
-                    {t('ওজন (কেজি)', 'Weight (kg)')}
-                  </label>
-                  <span className="font-display font-extrabold text-sm text-foreground">
-                    {weightKg} kg
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="35"
-                  max="180"
-                  value={weightKg}
-                  onChange={(e) => setWeightKg(Number(e.target.value))}
-                  className="w-full accent-lime-brand cursor-pointer"
-                />
-              </div>
+              <NumberField
+                id="bmi-weight-kg"
+                label={<span className="text-xs font-bold text-muted-foreground">{t('ওজন (কেজি)', 'Weight (kg)')}</span>}
+                unit="kg"
+                allowDecimals
+                step="0.1"
+                value={weightKgStr}
+                onChange={(val) => setWeightKgStr(val)}
+                min={30}
+                max={300}
+                placeholder="68.0"
+              />
             ) : (
-              <div>
-                <label className="text-xs font-bold text-muted-foreground block mb-1">
-                  {t('ওজন (পাউন্ড / lbs)', 'Weight (lbs)')}
-                </label>
-                <input
-                  type="number"
-                  min="75"
-                  max="400"
-                  value={weightLbs}
-                  onChange={(e) => setWeightLbs(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl bg-secondary/80 border border-border text-sm font-bold text-foreground"
-                />
-              </div>
+              <NumberField
+                id="bmi-weight-lbs"
+                label={<span className="text-xs font-bold text-muted-foreground">{t('ওজন (পাউন্ড / lbs)', 'Weight (lbs)')}</span>}
+                unit="lbs"
+                allowDecimals
+                step="0.5"
+                value={weightLbsStr}
+                onChange={(val) => setWeightLbsStr(val)}
+                min={60}
+                max={650}
+                placeholder="150"
+              />
             )}
 
             {/* Age input */}
-            <div>
-              <label className="text-xs font-bold text-muted-foreground block mb-1">
-                {t('বয়স (বছর)', 'Age (years)')}
-              </label>
-              <input
-                type="number"
-                min="14"
-                max="90"
-                value={age}
-                onChange={(e) => setAge(Number(e.target.value))}
-                className="w-full px-3.5 py-2 rounded-xl bg-secondary/80 border border-border text-sm font-bold text-foreground"
-              />
-            </div>
+            <NumberField
+              id="bmi-age"
+              label={<span className="text-xs font-bold text-muted-foreground">{t('বয়স (বছর)', 'Age (years)')}</span>}
+              unit="yrs"
+              value={ageStr}
+              onChange={(val) => setAgeStr(val)}
+              min={10}
+              max={100}
+              placeholder="26"
+            />
           </div>
 
           {/* Results Output Card */}
@@ -372,5 +379,6 @@ export default function BMIPage() {
         </div>
       </div>
     </div>
+    </ErrorBoundary>
   );
 }

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useLanguage } from '@/lib/language-context';
 import { guestStorage } from '@/lib/guest-storage';
+import { NumberField } from '@/components/ui/number-field';
 import {
   Trash2,
   Save,
@@ -51,9 +52,9 @@ export function SettingsClient() {
   // Form states with lazy initializers from guestStorage
   const [nickname, setNickname] = useState('');
   const [gender, setGender] = useState<'male' | 'female'>(() => guestStorage.getProfile().gender);
-  const [age, setAge] = useState<number>(() => guestStorage.getProfile().age);
-  const [heightCm, setHeightCm] = useState<number>(() => guestStorage.getProfile().heightCm);
-  const [weightKg, setWeightKg] = useState<number>(() => guestStorage.getProfile().weightKg);
+  const [ageStr, setAgeStr] = useState<string>(() => String(guestStorage.getProfile().age || 26));
+  const [heightCmStr, setHeightCmStr] = useState<string>(() => String(guestStorage.getProfile().heightCm || 172));
+  const [weightKgStr, setWeightKgStr] = useState<string>(() => String(guestStorage.getProfile().weightKg || 70));
   const [activityLevel, setActivityLevel] = useState<
     'sedentary' | 'light' | 'moderate' | 'very_active' | 'extra_active'
   >(() => {
@@ -104,9 +105,9 @@ export function SettingsClient() {
     }
     if (u.profile) {
       setGender(u.profile.gender || 'male');
-      setAge(u.profile.age || 26);
-      setHeightCm(u.profile.heightCm || 172);
-      setWeightKg(u.profile.weightKg || 70);
+      setAgeStr(String(u.profile.age || 26));
+      setHeightCmStr(String(u.profile.heightCm || 172));
+      setWeightKgStr(String(u.profile.weightKg || 70));
       setActivityLevel(
         u.profile.activityLevel === 'sedentary' ||
         u.profile.activityLevel === 'light' ||
@@ -155,8 +156,41 @@ export function SettingsClient() {
     };
   }, [status, applyUserData]);
 
+  const parsedAge = ageStr.trim() === '' ? undefined : parseFloat(ageStr);
+  const parsedHeight = heightCmStr.trim() === '' ? undefined : parseFloat(heightCmStr);
+  const parsedWeight = weightKgStr.trim() === '' ? undefined : parseFloat(weightKgStr);
+
+  const isAgeValid =
+    parsedAge !== undefined && !isNaN(parsedAge) && parsedAge >= 10 && parsedAge <= 100;
+  const isHeightValid =
+    parsedHeight !== undefined && !isNaN(parsedHeight) && parsedHeight >= 100 && parsedHeight <= 250;
+  const isWeightValid =
+    parsedWeight !== undefined && !isNaN(parsedWeight) && parsedWeight >= 30 && parsedWeight <= 300;
+  const isProfileValid = isAgeValid && isHeightValid && isWeightValid;
+
+  const ageError = !isAgeValid
+    ? ageStr.trim() === ''
+      ? t('বয়স প্রদান করুন', 'Age is required')
+      : t('বয়স ১০-১০০ এর মধ্যে হতে হবে', 'Age must be 10-100')
+    : undefined;
+
+  const heightError = !isHeightValid
+    ? heightCmStr.trim() === ''
+      ? t('উচ্চতা প্রদান করুন', 'Height is required')
+      : t('উচ্চতা ১০০-২৫০ সেমি হতে হবে', 'Height must be 100-250 cm')
+    : undefined;
+
+  const weightError = !isWeightValid
+    ? weightKgStr.trim() === ''
+      ? t('ওজন প্রদান করুন', 'Weight is required')
+      : t('ওজন ৩০-৩০০ কেজি হতে হবে', 'Weight must be 30-300 kg')
+    : undefined;
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isProfileValid || parsedAge === undefined || parsedHeight === undefined || parsedWeight === undefined) {
+      return;
+    }
     setSaving(true);
     setSaveSuccess(false);
 
@@ -172,9 +206,9 @@ export function SettingsClient() {
           body: JSON.stringify({
             nickname,
             gender,
-            age,
-            heightCm,
-            weightKg,
+            age: Math.round(parsedAge),
+            heightCm: Math.round(parsedHeight),
+            weightKg: Number(parsedWeight.toFixed(1)),
             activityLevel,
             calorieTarget: calorieTargetVal,
             optInLeaderboard,
@@ -208,9 +242,9 @@ export function SettingsClient() {
     // Guest profile update
     guestStorage.saveProfile({
       gender,
-      age,
-      heightCm,
-      weightKg,
+      age: Math.round(parsedAge),
+      heightCm: Math.round(parsedHeight),
+      weightKg: Number(parsedWeight.toFixed(1)),
       activityLevel,
       goal: 'loss',
       customCalorieTarget: calorieTargetVal || undefined,
@@ -368,53 +402,57 @@ export function SettingsClient() {
           </div>
 
           {/* Age */}
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
-              {t('বয়স (বছর)', 'Age (Years)')} *
-            </label>
-            <input
-              type="number"
-              min="14"
-              max="99"
-              required
-              value={age}
-              onChange={(e) => setAge(parseInt(e.target.value, 10))}
-              className="w-full px-4 py-2.5 rounded-2xl bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-lime-brand font-mono"
-            />
-          </div>
+          <NumberField
+            id="settings-age"
+            label={<span className="text-xs font-semibold text-muted-foreground">{t('বয়স (বছর)', 'Age (Years)')} *</span>}
+            unit="yrs"
+            value={ageStr}
+            onChange={(val) => setAgeStr(val)}
+            min={10}
+            max={100}
+            required
+            error={!isAgeValid}
+            errorMessage={ageError}
+            placeholder="26"
+            inputClassName="rounded-2xl font-mono"
+            aria-label="Age in years"
+          />
 
           {/* Height */}
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
-              {t('উচ্চতা (সেমি)', 'Height (cm)')} *
-            </label>
-            <input
-              type="number"
-              min="100"
-              max="240"
-              required
-              value={heightCm}
-              onChange={(e) => setHeightCm(parseFloat(e.target.value))}
-              className="w-full px-4 py-2.5 rounded-2xl bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-lime-brand font-mono"
-            />
-          </div>
+          <NumberField
+            id="settings-height"
+            label={<span className="text-xs font-semibold text-muted-foreground">{t('উচ্চতা (সেমি)', 'Height (cm)')} *</span>}
+            unit="cm"
+            value={heightCmStr}
+            onChange={(val) => setHeightCmStr(val)}
+            min={100}
+            max={250}
+            required
+            error={!isHeightValid}
+            errorMessage={heightError}
+            placeholder="172"
+            inputClassName="rounded-2xl font-mono"
+            aria-label="Height in centimeters"
+          />
 
           {/* Weight */}
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
-              {t('ওজন (কেজি)', 'Weight (kg)')} *
-            </label>
-            <input
-              type="number"
-              step="0.1"
-              min="30"
-              max="300"
-              required
-              value={weightKg}
-              onChange={(e) => setWeightKg(parseFloat(e.target.value))}
-              className="w-full px-4 py-2.5 rounded-2xl bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-lime-brand font-mono"
-            />
-          </div>
+          <NumberField
+            id="settings-weight"
+            label={<span className="text-xs font-semibold text-muted-foreground">{t('ওজন (কেজি)', 'Weight (kg)')} *</span>}
+            unit="kg"
+            allowDecimals
+            step="0.1"
+            value={weightKgStr}
+            onChange={(val) => setWeightKgStr(val)}
+            min={30}
+            max={300}
+            required
+            error={!isWeightValid}
+            errorMessage={weightError}
+            placeholder="70.0"
+            inputClassName="rounded-2xl font-mono"
+            aria-label="Weight in kilograms"
+          />
 
           {/* Activity Level */}
           <div>
@@ -439,26 +477,24 @@ export function SettingsClient() {
           </div>
 
           {/* Custom Calorie Target Override */}
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
-              {t('কাস্টম ক্যালোরি টার্গেট (ঐচ্ছিক)', 'Custom Calorie Target (Optional)')}
-            </label>
-            <input
-              type="number"
-              min="1200"
-              max="6000"
-              value={customCalorieTarget}
-              onChange={(e) => setCustomCalorieTarget(e.target.value)}
-              placeholder={t('স্বয়ংক্রিয় BMR/TDEE ব্যবহার করতে ফাঁকা রাখুন', 'Leave blank to use auto TDEE')}
-              className="w-full px-4 py-2.5 rounded-2xl bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-lime-brand font-mono"
-            />
-          </div>
+          <NumberField
+            id="settings-custom-calories"
+            label={<span className="text-xs font-semibold text-muted-foreground">{t('কাস্টম ক্যালোরি টার্গেট (ঐচ্ছিক)', 'Custom Calorie Target (Optional)')}</span>}
+            unit="kcal"
+            min={800}
+            max={10000}
+            value={customCalorieTarget}
+            onChange={(val) => setCustomCalorieTarget(val)}
+            placeholder={t('স্বয়ংক্রিয় BMR/TDEE ব্যবহার করতে ফাঁকা রাখুন', 'Leave blank to use auto TDEE')}
+            inputClassName="rounded-2xl font-mono"
+            aria-label="Custom calorie target in kcal"
+          />
         </div>
 
         <div className="pt-4 border-t border-border flex justify-end">
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || !isProfileValid}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-lime-brand hover:bg-lime-hover text-ink-base font-black text-xs uppercase tracking-wider transition-colors shadow-md disabled:opacity-50 cursor-pointer"
           >
             <Save className="w-4 h-4" />

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '@/lib/language-context';
 import { type SeedFood } from '@/server/seeds/generate-foods';
 import { guestStorage, type MealSlotKey } from '@/lib/guest-storage';
+import { NumberField } from '@/components/ui/number-field';
 import {
   Info,
   Plus,
@@ -21,16 +22,17 @@ export function FoodCard({ food, onAddToMeal }: FoodCardProps) {
   const { t, locale } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedServingIdx, setSelectedServingIdx] = useState<number>(0);
-  const [customGrams, setCustomGrams] = useState<number>(
-    food.servings?.[0]?.grams || 100
+  const [customGrams, setCustomGrams] = useState<string>(
+    String(food.servings?.[0]?.grams || 100)
   );
   const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
   const [targetSlot, setTargetSlot] = useState<MealSlotKey>('lunch');
   const [addedToast, setAddedToast] = useState<boolean>(false);
 
   // Current calculated portion grams
+  const parsedCustomGrams = customGrams.trim() === '' ? 0 : parseFloat(customGrams);
   const currentGrams = isCustomMode
-    ? Math.max(1, customGrams || 1)
+    ? (!isNaN(parsedCustomGrams) && parsedCustomGrams > 0 ? parsedCustomGrams : 0)
     : food.servings?.[selectedServingIdx]?.grams || 100;
 
   const currentLabel = isCustomMode
@@ -221,19 +223,18 @@ export function FoodCard({ food, onAddToMeal }: FoodCardProps) {
 
             {/* Custom grams input if customMode is active */}
             {isCustomMode && (
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  min="1"
-                  max="2000"
+              <div>
+                <NumberField
+                  unit={t('গ্রাম', 'g')}
+                  min={1}
+                  max={2000}
+                  clampOnBlur
                   value={customGrams}
-                  onChange={(e) => setCustomGrams(Number(e.target.value))}
-                  className="w-24 px-3 py-1.5 rounded-xl bg-background border border-border text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand"
+                  onChange={(val) => setCustomGrams(val)}
+                  placeholder="100"
+                  containerClassName="w-32"
                   aria-label="Custom grams"
                 />
-                <span className="text-xs text-muted-foreground font-semibold">
-                  {t('গ্রাম (g)', 'grams (g)')}
-                </span>
               </div>
             )}
 

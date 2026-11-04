@@ -216,6 +216,48 @@
     - [x] Clean ESLint (`npm run lint` - 0 errors, 0 warnings).
     - [x] Production build clean (90/90 static and dynamic routes compiled).
 
+- [x] **Bug-fix Batch A: Crash Prevention, Reusable NumberField & OAuth Error UX**
+  - [x] **0) Environment Names Verification**:
+    - [x] Replaced remaining `DATABASE_URL` in `README.md` with `MONGODB_URI`.
+    - [x] Verified full synchronization across `DEPLOY.md`, `README.md`, `.env.example`, and `docs/PROGRESS.md`.
+  - [x] **1) Profile Modal Crash Fix & Error Boundaries**:
+    - [x] Root cause identified and eliminated: clearing inputs previously cast `""` to `0`, causing `calculateBMR` to throw `Error("Weight, height, and age must be positive values")` during React render, crashing the page into "This page couldn't load".
+    - [x] Kept `ageStr`, `heightCmStr`, `weightKgStr` as raw string states while typing.
+    - [x] Allows fields to be completely empty without defaulting to 0 or crashing.
+    - [x] Never computes with `NaN`/`undefined`/0 (reactive BMR/TDEE/macros calculation guarded).
+    - [x] Strict validation on save only: Age 10-100, Height 100-250 cm, Weight 30-300 kg.
+    - [x] Save button disabled and short bilingual inline messages displayed when values are invalid.
+    - [x] Created `sanitizeGuestProfile()` in `src/lib/guest-storage.ts` and guarded `/api/user/dashboard` to protect against corrupted localStorage/DB values.
+    - [x] Created reusable `<ErrorBoundary>` (`src/components/ui/error-boundary.tsx`) with Reload button and root Next.js error fallback (`src/app/error.tsx`), wrapping calculators and dashboard.
+  - [x] **2) Reusable NumberField Component & Zero-Stripping**:
+    - [x] Built reusable `<NumberField>` component (`src/components/ui/number-field.tsx`):
+      - Internal string state, `inputMode` numeric or decimal.
+      - Strips leading zeros (e.g. `'015'` -> `'15'`, `'0200'` -> `'200'`, while preserving `'0.5'`).
+      - Select-all on focus (`onFocus={(e) => e.target.select()}`).
+      - Allows complete clearing/deletion to `""` without defaulting to `'0'`.
+      - Min/max clamp on blur for non-empty values.
+      - Integrated unit labels (`g`, `kg`, `cm`, `yrs`, `min`, `kcal`).
+    - [x] Adopted across EVERY numeric input in the application:
+      - Custom grams in meal calculator (`food-picker-modal.tsx`)
+      - Custom grams in food database cards (`food-card.tsx`)
+      - Profile modal age, height, weight (`profile-target-modal.tsx`)
+      - Exercise duration minutes (`exercise-burn-section.tsx`)
+      - BMI calculator height (cm/ft/in), weight (kg/lbs), age (`src/app/bmi/page.tsx`)
+      - Quick weight recording modal (`dashboard-client.tsx`)
+      - Weight history logging (`progress-client.tsx`)
+      - Account settings biometrics and custom calorie target (`settings-client.tsx`)
+      - Admin food macro creator/editor (`admin-dashboard-client.tsx`)
+  - [x] **3) Google OAuth Friendly Error Handling**:
+    - [x] Handled all OAuth error codes in `src/app/login/page.tsx` (`access_denied`, `invalid_client`, `Configuration`, `Verification`, etc.).
+    - [x] Display clear bilingual explanation cards with concrete user actions (Guest Mode continue, Support link, Try Again) instead of raw error strings.
+  - [x] **Automated Tests & Quality Checks**:
+    - [x] Unit test suite `src/server/services/bugfix-batch-a.test.ts` (8 new tests covering zero-stripping, decimal preservation, empty-field crash prevention, profile validation, and OAuth error mapping).
+    - [x] 66/66 unit tests passing across 8 suites (`npm test`).
+    - [x] Clean TypeScript (`npm run typecheck` - 0 errors).
+    - [x] Clean ESLint (`npm run lint` - 0 errors, 0 warnings).
+    - [x] Clean Next.js production build (90/90 static and dynamic routes compiled).
+    - [x] Real Playwright interactive verification script `scripts/verify-number-field-crash.mjs` verifying backspace/clear without crash, save disabled/re-enabled, zero-stripping on typing `'015'`/`'0200'`, Google OAuth error banner, and BMI inputs at 360px and 1280px in light and dark modes with 16 captured screenshots in `docs/screenshots/`.
+
 ---
 
 ## Environment Variables Reference
@@ -253,20 +295,18 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 
 ## Current Status
 
-- **Current focus:** Phase 11: Complete. Env var names verified & unified across all documentation, and header menu & notification panels re-engineered with clean solid portals, body scroll lock, and GSAP/Framer Motion curtain experience.
-- **Key milestones completed in Phase 11:**
-  1. Complete env var audit & synchronization (`MONGODB_URI`, `AUTH_SECRET`, `AUTH_TRUST_HOST`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `ADMIN_EMAILS`, `NEXT_PUBLIC_APP_URL`, `CRON_SECRET`, `FIREBASE_SERVICE_ACCOUNT_BASE64`, `NEXT_PUBLIC_FIREBASE_*`, `NEXT_PUBLIC_ADS_ENABLED`, `NEXT_PUBLIC_ADSENSE_CLIENT`, `ADSENSE_PUBLISHER_ID`, `NEXT_PUBLIC_SHOW_PRODUCTS`).
-  2. GitHub Actions secrets in `.github/workflows/cron-reminders.yml` explicitly listed (`APP_URL`, `CRON_SECRET`).
-  3. Stacking context trap fixed: rendered both mobile menu and notification panel through `document.body` portals via Radix Dialog/Sheet and Popover.
-  4. Solid opaque cards with clear border and shadow in light and dark modes — zero see-through overlap.
-  5. Body scroll locked on open, Esc key to dismiss, outside click to dismiss, focus trap and restoration.
-  6. Fancy curtain mobile menu with GSAP clip-path polygon wipe, Framer Motion staggered typography, light green active indicator with thunder-pink accent bar, rotating close icon, and language/theme toggles.
-  7. Legible Z-GYM wordmark redesign.
-  8. Default locale verified as Bangla (`bn`) on first visit.
-  9. Real Playwright interactive tests and screenshots across 360px, 744px, and 1280px in light and dark modes.
-  10. 58/58 unit tests passing, clean typecheck, clean lint, clean production build.
+- **Current focus:** Bug-fix Batch A: Complete. Root cause of profile modal crash resolved, reusable NumberField deployed across every numeric input in the app with zero leading zeros and full clear/retype support, error boundaries installed, and Google OAuth friendly error UX implemented.
+- **Key milestones completed in Bug-fix Batch A:**
+  1. Environment variable names fully aligned to `MONGODB_URI` across `README.md`, `DEPLOY.md`, `.env.example`, and `docs/PROGRESS.md`.
+  2. Profile modal crash fixed at the root by decoupling raw string input states from reactive domain math, permitting empty fields without NaN/0 computation, and strictly validating on save with inline bilingual errors.
+  3. Corrupted localStorage values sanitized via `sanitizeGuestProfile()`.
+  4. Friendly `<ErrorBoundary>` with Reload button wrapping calculators and dashboard, plus root Next.js `src/app/error.tsx`.
+  5. Built reusable `<NumberField>` component (strips leading zeros, select-all on focus, optional decimals, empty string support, unit labels) and integrated into all numeric inputs (grams, age, height, weight, BMI, duration minutes, target calories).
+  6. Google OAuth errors (`access_denied`, `invalid_client`, `Verification`, etc.) mapped to helpful bilingual user action cards with no raw errors.
+  7. Automated vitest suite expanded to 66/66 tests passing.
+  8. Real Playwright interactive verification script (`scripts/verify-number-field-crash.mjs`) ran at 360px and 1280px in both light and dark modes with 0 errors and 16 captured screenshots.
 - **Logged-in screens note for Playwright:**
   - Automated screenshots for `/dashboard`, `/log`, `/progress`, `/settings`, `/c/preview`, and `/admin` were captured in the unauthenticated guest view (which showcases the guest login prompt and 403 Forbidden access check on `/admin`). Authenticated user and admin session views require live Google OAuth login which cannot be automated headlessly without real Google credentials.
 - **Known issues:**
   - Nutrition values need human verification against certified food composition tables (all 308 seeded items are transparently set to `verified: false`).
-- **Last updated:** 2026-11-03 19:15 UTC+6
+- **Last updated:** 2026-11-04 13:55 UTC+6
