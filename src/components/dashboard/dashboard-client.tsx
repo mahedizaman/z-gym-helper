@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { ProgressShareModal } from '@/components/progress/progress-share-modal';
 import { NumberField } from '@/components/ui/number-field';
+import { Z_INDEX } from '@/config/z-index';
 import {
   ResponsiveContainer,
   BarChart,
@@ -502,8 +503,13 @@ export function DashboardClient() {
 
       {/* Quick Weight Entry Modal */}
       {showWeightModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm rounded-3xl bg-card border border-border p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{ zIndex: Z_INDEX.modal }}
+          className="fixed inset-0 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+        >
+          <div className="w-full max-w-sm rounded-3xl bg-card text-card-foreground border-2 border-border p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
             <h3 className="font-display font-black text-xl text-foreground">
               {t('আজকের ওজন রেকর্ড করুন', 'Record Today’s Weight')}
             </h3>

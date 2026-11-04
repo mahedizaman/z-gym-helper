@@ -28,6 +28,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { NumberField } from '@/components/ui/number-field';
+import { Z_INDEX } from '@/config/z-index';
 import { useLanguage } from '@/lib/language-context';
 import type { AdminMetrics } from '@/server/services/admin.service';
 
@@ -798,8 +799,13 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
 
           {/* Confirmation Modal */}
           {showConfirmSendModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-              <div className="w-full max-w-md rounded-3xl bg-card border border-border p-6 shadow-2xl space-y-4">
+            <div
+              role="dialog"
+              aria-modal="true"
+              style={{ zIndex: Z_INDEX.modal }}
+              className="fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+            >
+              <div className="w-full max-w-md rounded-3xl bg-card text-card-foreground border-2 border-border p-6 shadow-2xl space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-lime-brand/10 text-lime-brand flex items-center justify-center mx-auto">
                   <Megaphone className="w-6 h-6" />
                 </div>
@@ -1102,8 +1108,13 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
 
           {/* Food Edit / Create Modal */}
           {foodModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-              <div className="w-full max-w-lg rounded-3xl bg-card border border-border p-6 sm:p-7 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div
+              role="dialog"
+              aria-modal="true"
+              style={{ zIndex: Z_INDEX.modal }}
+              className="fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+            >
+              <div className="w-full max-w-lg rounded-3xl bg-card text-card-foreground border-2 border-border p-6 sm:p-7 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
                 <h3 className="font-display font-black text-xl text-foreground">
                   {editingFood?._id ? (isBn ? 'খাবার সম্পাদন করুন' : 'Edit Food Item') : isBn ? 'নতুন খাবার যোগ করুন' : 'Create Food Item'}
                 </h3>
@@ -1375,8 +1386,13 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
 
           {/* Exercise Modal */}
           {exerciseModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-              <div className="w-full max-w-lg rounded-3xl bg-card border border-border p-6 shadow-2xl space-y-4">
+            <div
+              role="dialog"
+              aria-modal="true"
+              style={{ zIndex: Z_INDEX.modal }}
+              className="fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+            >
+              <div className="w-full max-w-lg rounded-3xl bg-card text-card-foreground border-2 border-border p-6 shadow-2xl space-y-4">
                 <h3 className="font-display font-black text-xl text-foreground">
                   {editingExercise?._id ? 'Edit Exercise' : 'Create Exercise'}
                 </h3>

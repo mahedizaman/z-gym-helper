@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { AlertCircle, Stethoscope, ChevronRight, X } from 'lucide-react';
 import { useLanguage } from '@/lib/language-context';
+import { Z_INDEX } from '@/config/z-index';
 
 export function MedicalDisclaimer({ compact = false }: { compact?: boolean }) {
   const { locale } = useLanguage();
@@ -70,9 +71,10 @@ function MedicalDisclaimerModal({ onClose, isBn }: { onClose: () => void; isBn: 
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+      style={{ zIndex: Z_INDEX.modal }}
+      className="fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
     >
-      <div className="w-full max-w-lg rounded-3xl bg-card border border-border p-6 sm:p-7 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div className="w-full max-w-lg rounded-3xl bg-card text-card-foreground border-2 border-border p-6 sm:p-7 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between pb-3 border-b border-border">
           <div className="flex items-center gap-2.5 text-tomato-base font-bold">
             <Stethoscope className="w-5 h-5" />

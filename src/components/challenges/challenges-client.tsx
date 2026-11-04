@@ -17,6 +17,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
+import { Z_INDEX } from '@/config/z-index';
 
 interface ChallengeItem {
   code: string;
@@ -304,8 +305,13 @@ export function ChallengesClient() {
 
       {/* Create Challenge Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-base/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-3xl bg-card border border-border p-6 shadow-2xl space-y-6">
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{ zIndex: Z_INDEX.modal }}
+          className="fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+        >
+          <div className="relative w-full max-w-md rounded-3xl bg-card text-card-foreground border-2 border-border p-6 shadow-2xl space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <div className="flex items-center gap-2">
                 <Trophy className="w-5 h-5 text-thunder-base" />

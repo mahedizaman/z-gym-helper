@@ -6,6 +6,7 @@ import { BANGLADESHI_FOODS_DATA, type SeedFood } from '@/server/seeds/foods.data
 import { type MealSlotKey } from '@/lib/guest-storage';
 import { NumberField } from '@/components/ui/number-field';
 import { Search, X, Plus, Utensils } from 'lucide-react';
+import { Z_INDEX } from '@/config/z-index';
 
 interface FoodPickerModalProps {
   isOpen: boolean;
@@ -76,8 +77,13 @@ export function FoodPickerModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true">
-      <div className="relative w-full max-w-2xl max-h-[90vh] bg-card border border-border rounded-3xl p-6 shadow-2xl flex flex-col overflow-hidden">
+    <div
+      style={{ zIndex: Z_INDEX.modal }}
+      className="fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="relative w-full max-w-2xl max-h-[90vh] bg-card text-card-foreground border-2 border-border rounded-3xl p-6 shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-border">
           <div className="flex items-center gap-2.5">

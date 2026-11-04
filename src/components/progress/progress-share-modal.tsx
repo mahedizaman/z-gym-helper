@@ -200,7 +200,7 @@ export function ProgressShareModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-lg rounded-3xl bg-[#FFFFFF] dark:bg-[#1A211E] text-foreground border border-border p-6 sm:p-7 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
+      <div className="relative w-full max-w-lg rounded-3xl bg-card text-card-foreground border-2 border-border p-6 sm:p-7 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
         {/* Toast Notification Banner */}
         {toast && (
           <div

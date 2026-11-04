@@ -346,16 +346,32 @@ Here is the complete checklist of all environment variables required by Z-Gym He
        3. Direct WhatsApp link (`https://wa.me/?text=...`).
      - File-share unsupported fallback with bilingual hint and toast notifications on success/failure.
 
-6. **Automated Verification & Screenshots**:
+6. **Fix Batch C: Theme Variant, Menu & Notification Panel**:
+   - **Tailwind v4 Dark Variant**: Added `@custom-variant dark (&:where(.dark, .dark *));` in `src/app/globals.css`. Ensures all `dark:` utility classes consistently reflect `.dark` on `<html>` set by `next-themes`, decoupling them from host OS `prefers-color-scheme`.
+   - **Semantic CSS Token Migration**: Mapped theme tokens (`--color-background`, `--color-foreground`, `--color-card`, `--color-card-foreground`, `--color-popover`, `--color-popover-foreground`, `--color-border`, etc.) directly in `@theme`. Migrated all portal components, sheets, modals, and popovers to semantic CSS variable classes (`bg-background text-foreground`, `bg-card text-card-foreground`) to eliminate hardcoded color mismatches.
+   - **Notification Panel Overhaul** (`src/components/layout/announcement-bell.tsx`):
+     - Strict 640px breakpoint: below 640px renders as a bottom Sheet (`max-h-[70dvh]`, `rounded-t-3xl`, safe-area bottom padding, header close button, solid opaque `bg-card text-card-foreground`).
+     - 640px and above (tested at 744px, 935px, 1280px) renders as an anchored `Popover` under the bell (`w-[min(92vw,380px)]`, `collisionPadding={16}`, inner scrollable list, bilingual empty state, solid opaque surface).
+   - **Cookie / Consent Notice Layering & Suppression** (`src/components/legal/consent-notice.tsx` & `src/config/z-index.ts`):
+     - Assigned `cookieBanner: 35` (strictly below `header: 40`, `overlay: 60`, `sheet: 70`, `modal: 80`, `toast: 90`).
+     - Added CSS `:has()` rules and a `MutationObserver` checking for active dialogs/popovers to completely suppress the banner whenever any modal, sheet, or popover is open.
+     - Anchored above mobile bottom navigation bar (`bottom-[calc(60px+env(safe-area-inset-bottom))] lg:bottom-0`) with safe-area padding.
+   - **Wordmark & Mobile Menu Contrast**:
+     - Added `forceShowHelper` prop to `Wordmark` (`src/components/ui/wordmark.tsx`) so mobile menu displays full `Z-GYM HELPER` wordmark in both themes.
+     - Mobile menu panel, links, and buttons use semantic background/foreground tokens with computed text-to-background contrast ratio of **17.05 : 1** (WCAG AAA).
+   - **Automated Verification**:
+     - Playwright script (`scripts/verify-fix-batch-c.mjs`) verified at 360, 744, 935, and 1280 across all theme toggle states under both light and dark host OS settings.
+     - 28 screenshots captured and inspected in `screenshots/fix-batch-c/`.
+
+7. **Automated Verification & Build Status**:
    - Unit tests: 69/69 passing across 8 test suites.
    - TypeScript: Clean `tsc --noEmit`.
    - ESLint: Clean with 0 errors and 0 warnings.
-   - Next.js production build: 90/90 static/dynamic routes compiled cleanly in 3.0s.
-   - Playwright screenshots captured at 360, 744, and 1280 viewports in both light and dark modes in `screenshots/ui-batch-b/`.
+   - Next.js production build: 90/90 static/dynamic routes compiled cleanly.
 
 ---
 
 ## Current Status
 
-- **Current focus:** UI Batch B complete.
-- **Last updated:** 2026-11-04 14:25 UTC+6
+- **Current focus:** Fix Batch C complete.
+- **Last updated:** 2026-11-04 14:55 UTC+6

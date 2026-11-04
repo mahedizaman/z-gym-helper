@@ -18,6 +18,7 @@ import {
   Sparkles,
   AlertTriangle,
 } from 'lucide-react';
+import { Z_INDEX } from '@/config/z-index';
 
 interface Participant {
   nickname: string;
@@ -397,8 +398,13 @@ export function ChallengeDetailClient({ code }: { code: string }) {
 
       {/* Leave Challenge Confirmation Modal */}
       {showLeaveModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-base/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-sm rounded-3xl bg-card border border-border p-6 shadow-2xl space-y-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{ zIndex: Z_INDEX.modal }}
+          className="fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+        >
+          <div className="w-full max-w-sm rounded-3xl bg-card text-card-foreground border-2 border-border p-6 shadow-2xl space-y-4">
             <h3 className="font-display font-black text-xl text-foreground">
               {t('চ্যালেঞ্জ ত্যাগ করবেন?', 'Leave this Challenge?')}
             </h3>

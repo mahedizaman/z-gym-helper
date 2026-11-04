@@ -175,11 +175,11 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           className="fixed inset-0 bg-black/90 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
         />
 
-        {/* Full-viewport solid curtain sheet */}
+        {/* Full-viewport solid curtain sheet using CSS variable tokens */}
         <DialogContent
           ref={curtainRef}
           style={{ zIndex: Z_INDEX.sheet }}
-          className="fixed inset-0 w-full h-[100dvh] bg-[#F4F5F7] dark:bg-[#0F1412] text-foreground flex flex-col justify-between overflow-y-auto overflow-x-hidden outline-none select-none border-none"
+          className="fixed inset-0 w-full h-[100dvh] bg-background text-foreground flex flex-col justify-between overflow-y-auto overflow-x-hidden outline-none select-none border-none"
         >
           {/* Accessible Dialog Title for screen readers */}
           <DialogTitle className="sr-only">
@@ -187,8 +187,8 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           </DialogTitle>
 
           {/* Top Bar: Wordmark & Close Button with solid opaque background */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-border/80 bg-[#F4F5F7] dark:bg-[#0F1412] shrink-0">
-            <Wordmark size="md" />
+          <div className="flex items-center justify-between px-6 py-5 border-b border-border/80 bg-background shrink-0">
+            <Wordmark size="md" forceShowHelper />
 
             <div className="flex items-center gap-2">
               <DialogClose asChild>
@@ -197,7 +197,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   onClick={handleClose}
                   type="button"
                   aria-label="Close Navigation Menu"
-                  className="w-11 h-11 rounded-full flex items-center justify-center bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-transform active:scale-95 cursor-pointer shadow-sm"
+                  className="w-11 h-11 rounded-full flex items-center justify-center bg-secondary hover:bg-muted text-foreground border border-border transition-transform active:scale-95 cursor-pointer shadow-sm"
                 >
                   <X className="w-5 h-5 text-tomato-brand" />
                 </button>
@@ -233,7 +233,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                         'group relative flex items-center justify-between px-5 py-3.5 sm:py-4 rounded-3xl transition-all duration-200 border text-left',
                         isActive
                           ? 'bg-lime-brand text-ink-base border-lime-brand shadow-lg font-black'
-                          : 'bg-card text-foreground hover:bg-secondary/80 border-border/70 hover:border-lime-brand/40 shadow-xs'
+                          : 'bg-card text-card-foreground hover:bg-secondary border border-border/80 hover:border-lime-brand/50 shadow-xs'
                       )}
                     >
                       {/* Thunder-pink energetic accent line for active route */}
@@ -329,7 +329,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           </div>
 
           {/* Bottom Bar: Language & Theme Controls with solid opaque background */}
-          <div className="px-6 py-4 border-t border-border/80 bg-[#F4F5F7] dark:bg-[#0F1412] shrink-0 flex items-center justify-between max-w-xl mx-auto w-full">
+          <div className="px-6 py-4 border-t border-border/80 bg-background shrink-0 flex items-center justify-between max-w-xl mx-auto w-full">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                 {t('ভাষা:', 'Lang:')}

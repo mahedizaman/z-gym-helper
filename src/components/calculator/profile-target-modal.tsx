@@ -13,6 +13,7 @@ import {
 } from '@/server/services/calculations';
 import { NumberField } from '@/components/ui/number-field';
 import { X, Sliders, AlertTriangle } from 'lucide-react';
+import { Z_INDEX } from '@/config/z-index';
 
 interface ProfileTargetModalProps {
   isOpen: boolean;
@@ -118,12 +119,17 @@ export function ProfileTargetModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true">
-      <div className="relative w-full max-w-xl max-h-[90vh] bg-card border border-border rounded-3xl p-6 shadow-2xl flex flex-col overflow-hidden">
+    <div
+      style={{ zIndex: Z_INDEX.modal }}
+      className="fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="relative w-full max-w-xl max-h-[90vh] bg-card text-card-foreground border-2 border-border rounded-3xl p-6 shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-border">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-pink-soft text-pink-brand flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-pink-soft text-ink-base dark:bg-[#2A111E] dark:text-pink-soft flex items-center justify-center">
               <Sliders className="w-5 h-5" />
             </div>
             <div>

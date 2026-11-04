@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useLanguage } from '@/lib/language-context';
 import { guestStorage } from '@/lib/guest-storage';
 import { NumberField } from '@/components/ui/number-field';
+import { Z_INDEX } from '@/config/z-index';
 import {
   Trash2,
   Save,
@@ -649,8 +650,13 @@ export function SettingsClient() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-3xl bg-card border border-tomato-base/40 p-6 sm:p-7 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{ zIndex: Z_INDEX.modal }}
+          className="fixed inset-0 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+        >
+          <div className="w-full max-w-md rounded-3xl bg-card text-card-foreground border-2 border-tomato-base/50 p-6 sm:p-7 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
             <div className="w-12 h-12 rounded-2xl bg-tomato-base/10 text-tomato-base flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6 stroke-2" />
             </div>

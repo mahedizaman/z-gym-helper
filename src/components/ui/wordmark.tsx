@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 interface WordmarkProps {
   className?: string;
   showHelper?: boolean;
+  forceShowHelper?: boolean;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   asLink?: boolean;
 }
@@ -14,6 +15,7 @@ interface WordmarkProps {
 export function Wordmark({
   className,
   showHelper = true,
+  forceShowHelper = false,
   size = 'md',
   asLink = true,
 }: WordmarkProps) {
@@ -54,7 +56,12 @@ export function Wordmark({
       </span>
 
       {showHelper && (
-        <span className="hidden sm:inline-flex text-lime-brand text-[0.65em] font-bold px-1.5 py-0.5 rounded-full bg-lime-brand/10 border border-lime-brand/20 ml-0.5 tracking-wider">
+        <span
+          className={cn(
+            'text-lime-brand text-[0.65em] font-bold px-1.5 py-0.5 rounded-full bg-lime-brand/10 border border-lime-brand/20 ml-0.5 tracking-wider',
+            forceShowHelper ? 'inline-flex' : 'hidden sm:inline-flex'
+          )}
+        >
           HELPER
         </span>
       )}

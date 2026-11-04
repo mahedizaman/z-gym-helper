@@ -1,6 +1,31 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
   --color-silver-50: #F4F5F7;
   --color-silver-100: #E6E8EB;
   --color-silver-300: #C0C5CB;
@@ -201,6 +226,13 @@ h1, h2, h3, .font-display {
 :focus-visible {
   outline: 2px solid #A9F26B;
   outline-offset: 2px;
+}
+
+/* Cookie banner suppression when modal, sheet, menu or popover is active */
+body:has([role="dialog"]) [aria-label="Cookie and Privacy Consent"],
+body:has([data-state="open"]) [aria-label="Cookie and Privacy Consent"],
+body:has([data-radix-popper-content-wrapper]) [aria-label="Cookie and Privacy Consent"] {
+  display: none !important;
 }
 
 /* Reduced Motion Compliance */

@@ -11,6 +11,8 @@ export const Z_INDEX = {
   base: 0,
   /** Floating badges, card chips, relative overlays */
   raised: 10,
+  /** Cookie and privacy consent notice banner */
+  cookieBanner: 35,
   /** Sticky header bar and fixed bottom navigation */
   header: 40,
   bottomNav: 40,
