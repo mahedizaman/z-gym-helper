@@ -138,7 +138,7 @@ export function FeaturesGrid() {
                           isLime
                             ? 'bg-lime-soft border border-lime-brand/40 text-ink-base'
                             : isPink
-                            ? 'bg-pink-soft border border-pink-brand/40 text-pink-brand'
+                            ? 'bg-pink-soft border border-pink-brand/40 text-ink-base dark:bg-[#2A111E] dark:text-pink-soft'
                             : 'bg-tomato-brand/10 border border-tomato-brand/40 text-tomato-brand'
                         }`}
                       >

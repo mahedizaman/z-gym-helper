@@ -280,18 +280,25 @@ export function ExerciseDetailClient({ exercise }: ExerciseDetailClientProps) {
             </div>
           )}
 
-          {/* Pro Tips Card */}
+          {/* Pro Tips Card - High Contrast WCAG AAA Compliant */}
           {tips && (
-            <div className="rounded-3xl border border-lime-brand/40 bg-lime-soft/40 dark:bg-lime-brand/10 p-6 sm:p-7 space-y-3">
-              <div className="flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-lime-brand" />
-                <h3 className="font-display font-black text-xl text-ink-base dark:text-foreground">
+            <div className="rounded-3xl border-2 border-lime-brand/60 bg-[#E4FBCB] dark:bg-[#1A211E] dark:border-lime-brand/50 p-6 sm:p-7 space-y-3.5 shadow-sm">
+              <div className="flex items-center gap-2.5">
+                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-lime-brand text-ink-base shrink-0 shadow-xs">
+                  <Lightbulb className="w-4 h-4 text-ink-base fill-ink-base" />
+                </div>
+                <h3 className="font-display font-black text-xl text-[#0F1412] dark:text-[#A9F26B] tracking-tight">
                   {t('প্রো ট্রেইনার টিপস', 'Trainer Pro-Tip')}
                 </h3>
               </div>
-              <p className="text-sm sm:text-base text-ink-base dark:text-foreground/90 leading-relaxed font-medium">
-                {tips}
-              </p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2.5 text-base leading-relaxed text-[#0F1412] dark:text-zinc-100 font-medium">
+                  <span className="text-[#0F1412] dark:text-lime-brand font-black text-lg leading-none shrink-0 mt-0.5">
+                    •
+                  </span>
+                  <span>{tips}</span>
+                </li>
+              </ul>
             </div>
           )}
 

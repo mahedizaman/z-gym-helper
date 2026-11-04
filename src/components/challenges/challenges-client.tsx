@@ -138,8 +138,8 @@ export function ChallengesClient() {
       {/* Page Title & Actions */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pink-soft text-thunder-base border border-thunder-base/30 text-xs font-bold uppercase tracking-wider mb-3 shadow-xs">
-            <Trophy className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pink-soft text-ink-base dark:bg-[#2A111E] dark:text-pink-soft border border-thunder-base/40 text-xs font-bold uppercase tracking-wider mb-3 shadow-xs">
+            <Trophy className="w-3.5 h-3.5 text-thunder-base dark:text-pink-soft" />
             <span>{t('গ্রুপ ও ফ্রেন্ডস চ্যালেঞ্জ', 'Group & Friend Challenges')}</span>
           </div>
           <h1 className="font-display font-black text-3xl sm:text-4xl uppercase tracking-tight text-foreground">
@@ -255,7 +255,7 @@ export function ChallengesClient() {
                     </h3>
 
                     <div className="flex flex-wrap items-center gap-2 text-xs">
-                      <span className="px-2.5 py-1 rounded-full bg-pink-soft text-thunder-base font-bold flex items-center gap-1">
+                      <span className="px-2.5 py-1 rounded-full bg-pink-soft text-ink-base dark:bg-[#2A111E] dark:text-pink-soft border border-thunder-base/30 font-bold flex items-center gap-1">
                         {c.metric === 'streak' ? (
                           <>
                             <Flame className="w-3.5 h-3.5 fill-current" />

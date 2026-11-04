@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import {
   Bell,
   X,
@@ -37,10 +38,17 @@ interface AnnouncementItem {
 }
 
 export function AnnouncementBell() {
+  const pathname = usePathname();
   const { locale } = useLanguage();
   const isBn = locale === 'bn';
 
   const [isOpen, setIsOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setIsOpen(false);
+  }
+
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isMobile, setIsMobile] = useState(false);

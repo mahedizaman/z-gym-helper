@@ -30,7 +30,7 @@ export interface GuestDayMeals {
   };
 }
 
-import { type ActivityLevel, type Goal } from '@/server/services/calculations';
+import { type ActivityLevel, type Goal, calculateStreak } from '@/server/services/calculations';
 
 export interface GuestProfile {
   gender: 'male' | 'female';
@@ -329,5 +329,45 @@ export const guestStorage = {
       }
     }
     return progress;
+  },
+
+  getAllActiveDates(): string[] {
+    if (typeof window === 'undefined') return [];
+    const activeDates = new Set<string>();
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+        if (key.startsWith(STORAGE_KEYS.MEALS_PREFIX)) {
+          const date = key.replace(STORAGE_KEYS.MEALS_PREFIX, '');
+          const data = localStorage.getItem(key);
+          if (data) {
+            try {
+              const parsed = JSON.parse(data);
+              const totalItems = Object.values(parsed.slots || {}).flat().length;
+              if (totalItems > 0) activeDates.add(date);
+            } catch {
+              // ignore
+            }
+          }
+        } else if (key.startsWith(STORAGE_KEYS.BURNS_PREFIX)) {
+          const date = key.replace(STORAGE_KEYS.BURNS_PREFIX, '');
+          const data = localStorage.getItem(key);
+          if (data && data !== '[]') activeDates.add(date);
+        } else if (key.startsWith(STORAGE_KEYS.PLAN_PROGRESS_PREFIX)) {
+          const parts = key.replace(STORAGE_KEYS.PLAN_PROGRESS_PREFIX, '').split('_');
+          const date = parts[parts.length - 1];
+          if (date && date.length === 10) activeDates.add(date);
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return Array.from(activeDates);
+  },
+
+  getGuestStreak(): { currentStreak: number; longestStreak: number; isActiveToday: boolean } {
+    const dates = this.getAllActiveDates();
+    return calculateStreak(dates);
   },
 };

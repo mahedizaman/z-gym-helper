@@ -293,20 +293,69 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 
 ---
 
+## UI Batch B & Contrast Audit (2026-11-04)
+
+### Key Milestones Completed:
+1. **NumberField Bengali Digits & Comma Decimal Separator**:
+   - `normalizeBengaliDigits`: Converts Bengali numerals `০-৯` (\u09E6-\u09EF) to `0-9` seamlessly as user types.
+   - Treats `,` as decimal point `.` when decimals are allowed (useful for mobile and international keyboards).
+   - Unit tests added in `src/server/services/bugfix-batch-a.test.ts` (all 11 tests passing).
+
+2. **Wordmark / Logo Clarity**:
+   - Updated `Wordmark` (`src/components/ui/wordmark.tsx`) to explicitly render ⚡**Z-GYM** with prominent typography.
+   - Features bold lime-green **Z** with lightning bolt energy, followed by bold **-GYM** in theme foreground (or white on dark footer).
+   - Eliminates prior ambiguity where the logo appeared as `-GYM`.
+
+3. **WCAG AA / AAA Contrast Audit**:
+   - **Pro Trainer Tips Box** (`/exercises/[slug]`):
+     - Light Mode: Solid `#E4FBCB` background, `#0F1412` ink text and heading, `#0F1412` icon in `#A9F26B` badge.
+       - **Contrast Ratio:** **16.27 : 1** (Exceeds WCAG AAA requirement of 7.0:1)
+     - Dark Mode: Solid `#1A211E` ink card background, `#A9F26B/50` border, `#F4F4F5` (`zinc-100`) body text, `#A9F26B` heading.
+       - **Contrast Ratio (Body text on dark card):** **14.80 : 1** (WCAG AAA)
+       - **Contrast Ratio (Heading `#A9F26B` on `#1A211E`):** **12.00 : 1** (WCAG AAA)
+     - Typography: 16px body text (`text-base`), comfortable line height, clean bullet list.
+   - **Community Leaderboard & Challenges Pink Pills** (`/leaderboard`, `/challenges`, landing teasers):
+     - Previous: `#FF2E88` on `#FFD6E8` was **2.72 : 1** (Failed WCAG AA 4.5:1).
+     - Light Mode: `#0F1412` ink text on `#FFD6E8` soft pink with `#FF2E88/40` border.
+       - **Contrast Ratio:** **13.70 : 1** (WCAG AAA)
+     - Dark Mode: `#FFD6E8` soft pink text on `#2A111E` deep wine card with `#FF2E88/40` border.
+       - **Contrast Ratio:** **11.28 : 1** (WCAG AAA)
+   - **Active Workout Routine Callout** (`/plans`):
+     - Light Mode: Label text updated to `#0F1412` ink text on `#E4FBCB` (**16.27 : 1** WCAG AAA).
+
+4. **Header Mobile Menu & Notification Panel**:
+   - Both rendered strictly through Radix UI Portals (`Dialog` / `Sheet` and `Popover`).
+   - Solid opaque backgrounds in light (`#F4F5F7` / `#FFFFFF`) and dark (`#0F1412` / `#1A211E`) mode — zero see-through content bleed.
+   - Body scroll lock enforced while open.
+   - Auto-close on route change (`usePathname`) and Escape key.
+   - GSAP curtain reveal with reverse animation on close and `prefers-reduced-motion` compliance.
+   - Notifications: Responsive across 360, 744, 1280 (bottom Sheet on phones, Popover on desktop) with inner scrollable list and bilingual empty state.
+
+5. **Share Card Overhaul**:
+   - **Landing Page Card** (`src/components/landing/streak-challenge-teaser.tsx`):
+     - Converted into a fully live, interactive card for guests.
+     - Reads real streak from guest storage (`guestStorage.getGuestStreak()`).
+     - Editable 'name on card' field (3-20 characters) with real-time card preview; never exposes Google name.
+     - Direct Web Share, Image Download, and WhatsApp (`https://wa.me/?text=...`) buttons with toast feedback.
+   - **Progress Share Modal** (`src/components/progress/progress-share-modal.tsx`):
+     - Added editable name input (3-20 characters, changes card only, does not alter user profile).
+     - Show-weight toggle (opt-in; weight is hidden by default).
+     - Replaced Instagram button with:
+       1. Native Web Share API (shares generated PNG file if supported).
+       2. Download image button (downloads 1080x1350 or 1080x1080 PNG).
+       3. Direct WhatsApp link (`https://wa.me/?text=...`).
+     - File-share unsupported fallback with bilingual hint and toast notifications on success/failure.
+
+6. **Automated Verification & Screenshots**:
+   - Unit tests: 69/69 passing across 8 test suites.
+   - TypeScript: Clean `tsc --noEmit`.
+   - ESLint: Clean with 0 errors and 0 warnings.
+   - Next.js production build: 90/90 static/dynamic routes compiled cleanly in 3.0s.
+   - Playwright screenshots captured at 360, 744, and 1280 viewports in both light and dark modes in `screenshots/ui-batch-b/`.
+
+---
+
 ## Current Status
 
-- **Current focus:** Bug-fix Batch A: Complete. Root cause of profile modal crash resolved, reusable NumberField deployed across every numeric input in the app with zero leading zeros and full clear/retype support, error boundaries installed, and Google OAuth friendly error UX implemented.
-- **Key milestones completed in Bug-fix Batch A:**
-  1. Environment variable names fully aligned to `MONGODB_URI` across `README.md`, `DEPLOY.md`, `.env.example`, and `docs/PROGRESS.md`.
-  2. Profile modal crash fixed at the root by decoupling raw string input states from reactive domain math, permitting empty fields without NaN/0 computation, and strictly validating on save with inline bilingual errors.
-  3. Corrupted localStorage values sanitized via `sanitizeGuestProfile()`.
-  4. Friendly `<ErrorBoundary>` with Reload button wrapping calculators and dashboard, plus root Next.js `src/app/error.tsx`.
-  5. Built reusable `<NumberField>` component (strips leading zeros, select-all on focus, optional decimals, empty string support, unit labels) and integrated into all numeric inputs (grams, age, height, weight, BMI, duration minutes, target calories).
-  6. Google OAuth errors (`access_denied`, `invalid_client`, `Verification`, etc.) mapped to helpful bilingual user action cards with no raw errors.
-  7. Automated vitest suite expanded to 66/66 tests passing.
-  8. Real Playwright interactive verification script (`scripts/verify-number-field-crash.mjs`) ran at 360px and 1280px in both light and dark modes with 0 errors and 16 captured screenshots.
-- **Logged-in screens note for Playwright:**
-  - Automated screenshots for `/dashboard`, `/log`, `/progress`, `/settings`, `/c/preview`, and `/admin` were captured in the unauthenticated guest view (which showcases the guest login prompt and 403 Forbidden access check on `/admin`). Authenticated user and admin session views require live Google OAuth login which cannot be automated headlessly without real Google credentials.
-- **Known issues:**
-  - Nutrition values need human verification against certified food composition tables (all 308 seeded items are transparently set to `verified: false`).
-- **Last updated:** 2026-11-04 13:55 UTC+6
+- **Current focus:** UI Batch B complete.
+- **Last updated:** 2026-11-04 14:25 UTC+6

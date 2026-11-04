@@ -2,6 +2,54 @@
 
 import React, { forwardRef } from 'react';
 
+/**
+ * Converts Bengali numerals (০-৯) to standard Western Arabic numerals (0-9).
+ */
+export function normalizeBengaliDigits(input: string): string {
+  const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  return input.replace(/[০-৯]/g, (char) => {
+    const idx = bengaliDigits.indexOf(char);
+    return idx !== -1 ? String(idx) : char;
+  });
+}
+
+/**
+ * Normalizes input string by converting Bengali digits, treating commas as decimal
+ * points when decimals are allowed, and enforcing single decimal / digits only.
+ */
+export function normalizeNumberInput(
+  raw: string,
+  allowDecimals: boolean = false,
+  stripLeadingZeros: boolean = true
+): string {
+  if (raw === '') return '';
+
+  // 1. Convert Bengali numerals (০-৯) to 0-9
+  let cleaned = normalizeBengaliDigits(raw);
+
+  if (allowDecimals) {
+    // 2. Treat comma (',') as decimal separator on phone keyboards
+    cleaned = cleaned.replace(/,/g, '.');
+    // Allow digits and at most one decimal point
+    cleaned = cleaned.replace(/[^0-9.]/g, '');
+    const parts = cleaned.split('.');
+    if (parts.length > 2) {
+      cleaned = parts[0] + '.' + parts.slice(1).join('');
+    }
+  } else {
+    // Strictly digits only (commas are stripped)
+    cleaned = cleaned.replace(/[^0-9]/g, '');
+  }
+
+  // 3. Strip leading zeros (e.g. '015' -> '15', '0200' -> '200', '00' -> '0')
+  // but preserve '0' or '0.' or '0.5'
+  if (stripLeadingZeros && cleaned.length > 1) {
+    cleaned = cleaned.replace(/^0+(?=\d)/, '');
+  }
+
+  return cleaned;
+}
+
 export interface NumberFieldProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'min' | 'max' | 'step'> {
   value: string | number | undefined | null;
@@ -76,24 +124,7 @@ export const NumberField = forwardRef<HTMLInputElement, NumberFieldProps>(
         return;
       }
 
-      let cleaned = raw;
-      if (shouldAllowDecimals) {
-        // Allow digits and at most one decimal point
-        cleaned = raw.replace(/[^0-9.]/g, '');
-        const parts = cleaned.split('.');
-        if (parts.length > 2) {
-          cleaned = parts[0] + '.' + parts.slice(1).join('');
-        }
-      } else {
-        // Strictly digits only
-        cleaned = raw.replace(/[^0-9]/g, '');
-      }
-
-      // Strip leading zeros (e.g. '015' -> '15', '0200' -> '200', '00' -> '0')
-      // but preserve '0' or '0.' or '0.5'
-      if (stripLeadingZeros && cleaned.length > 1) {
-        cleaned = cleaned.replace(/^0+(?=\d)/, '');
-      }
+      const cleaned = normalizeNumberInput(raw, shouldAllowDecimals, stripLeadingZeros);
 
       if (cleaned === '' || cleaned === '.') {
         onChange(cleaned, undefined);

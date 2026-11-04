@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
@@ -45,15 +45,64 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
   const curtainRef = useRef<HTMLDivElement>(null);
   const closeIconRef = useRef<HTMLButtonElement>(null);
+  const isClosingRef = useRef(false);
+
+  // Auto-close on route change
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    if (isOpen) {
+      onClose();
+    }
+  }
+
+  // Lock body scroll while open
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
+
+  // Close handler with reverse GSAP curtain animation
+  const handleClose = () => {
+    if (isClosingRef.current) return;
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion || !curtainRef.current) {
+      onClose();
+      return;
+    }
+
+    isClosingRef.current = true;
+    gsap.to(curtainRef.current, {
+      clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)',
+      opacity: 0,
+      duration: 0.28,
+      ease: 'power3.in',
+      onComplete: () => {
+        isClosingRef.current = false;
+        onClose();
+      },
+    });
+  };
 
   // GSAP Curtain Reveal Timeline
   useEffect(() => {
     if (!isOpen || !curtainRef.current) return;
+    isClosingRef.current = false;
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (prefersReducedMotion) {
-      gsap.set(curtainRef.current, { opacity: 1 });
+      gsap.set(curtainRef.current, { opacity: 1, clipPath: 'none' });
       return;
     }
 
@@ -118,34 +167,34 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogPortal>
         {/* Completely solid backdrop preventing content bleeding */}
         <DialogOverlay
           style={{ zIndex: Z_INDEX.overlay }}
-          className="fixed inset-0 bg-black/85 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+          className="fixed inset-0 bg-black/90 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
         />
 
         {/* Full-viewport solid curtain sheet */}
         <DialogContent
           ref={curtainRef}
           style={{ zIndex: Z_INDEX.sheet }}
-          className="fixed inset-0 w-full h-[100dvh] bg-[#F4F5F7] dark:bg-[#0F1412] text-foreground flex flex-col justify-between overflow-y-auto overflow-x-hidden outline-none select-none"
+          className="fixed inset-0 w-full h-[100dvh] bg-[#F4F5F7] dark:bg-[#0F1412] text-foreground flex flex-col justify-between overflow-y-auto overflow-x-hidden outline-none select-none border-none"
         >
           {/* Accessible Dialog Title for screen readers */}
           <DialogTitle className="sr-only">
             {isBn ? 'মোবাইল নেভিগেশন মেনু' : 'Mobile Navigation Menu'}
           </DialogTitle>
 
-          {/* Top Bar: Wordmark & Close Button */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-border/80 bg-background/95 shrink-0">
+          {/* Top Bar: Wordmark & Close Button with solid opaque background */}
+          <div className="flex items-center justify-between px-6 py-5 border-b border-border/80 bg-[#F4F5F7] dark:bg-[#0F1412] shrink-0">
             <Wordmark size="md" />
 
             <div className="flex items-center gap-2">
               <DialogClose asChild>
                 <button
                   ref={closeIconRef}
-                  onClick={onClose}
+                  onClick={handleClose}
                   type="button"
                   aria-label="Close Navigation Menu"
                   className="w-11 h-11 rounded-full flex items-center justify-center bg-secondary hover:bg-secondary/80 text-foreground border border-border transition-transform active:scale-95 cursor-pointer shadow-sm"
@@ -279,8 +328,8 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </div>
           </div>
 
-          {/* Bottom Bar: Language & Theme Controls */}
-          <div className="px-6 py-4 border-t border-border/80 bg-background/95 shrink-0 flex items-center justify-between max-w-xl mx-auto w-full">
+          {/* Bottom Bar: Language & Theme Controls with solid opaque background */}
+          <div className="px-6 py-4 border-t border-border/80 bg-[#F4F5F7] dark:bg-[#0F1412] shrink-0 flex items-center justify-between max-w-xl mx-auto w-full">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                 {t('ভাষা:', 'Lang:')}

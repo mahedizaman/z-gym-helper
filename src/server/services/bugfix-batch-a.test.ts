@@ -1,61 +1,53 @@
 import { describe, it, expect } from 'vitest';
 import { sanitizeGuestProfile } from '@/lib/guest-storage';
 import { calculateBMR } from './calculations';
+import { normalizeBengaliDigits, normalizeNumberInput } from '@/components/ui/number-field';
 
-describe('Bug-Fix Batch A: NumberField, Crash Prevention & Profile Guards', () => {
-  describe('NumberField String Manipulation & Zero-Stripping Logic', () => {
-    // Replicating the core transformation logic of NumberField
-    function processInput(
-      raw: string,
-      allowDecimals: boolean = false,
-      stripLeadingZeros: boolean = true
-    ): { text: string; num: number | undefined } {
-      if (raw === '') return { text: '', num: undefined };
+describe('Bug-Fix Batch A & B: NumberField, Crash Prevention & Bengali Support', () => {
+  describe('NumberField String Manipulation, Bengali Digits & Comma Separator', () => {
+    it('normalizes Bengali digits (০-৯) to 0-9', () => {
+      expect(normalizeBengaliDigits('০১২৩৪৫৬৭৮৯')).toBe('0123456789');
+      expect(normalizeBengaliDigits('বয়স ২৫ বছর')).toBe('বয়স 25 বছর');
+      expect(normalizeBengaliDigits('০')).toBe('0');
+      expect(normalizeBengaliDigits('৭৫.৫')).toBe('75.5');
+    });
 
-      let cleaned = raw;
-      if (allowDecimals) {
-        cleaned = raw.replace(/[^0-9.]/g, '');
-        const parts = cleaned.split('.');
-        if (parts.length > 2) {
-          cleaned = parts[0] + '.' + parts.slice(1).join('');
-        }
-      } else {
-        cleaned = raw.replace(/[^0-9]/g, '');
-      }
+    it('treats comma as decimal separator on phone keyboards when decimals allowed', () => {
+      expect(normalizeNumberInput('75,5', true)).toBe('75.5');
+      expect(normalizeNumberInput('12,3,4', true)).toBe('12.34');
+      expect(normalizeNumberInput('0,25', true)).toBe('0.25');
+      // If decimals not allowed, comma is stripped
+      expect(normalizeNumberInput('75,5', false)).toBe('755');
+    });
 
-      if (stripLeadingZeros && cleaned.length > 1) {
-        cleaned = cleaned.replace(/^0+(?=\d)/, '');
-      }
-
-      if (cleaned === '' || cleaned === '.') {
-        return { text: cleaned, num: undefined };
-      }
-
-      const parsed = parseFloat(cleaned);
-      return { text: cleaned, num: isNaN(parsed) ? undefined : parsed };
-    }
+    it('handles mixed Bengali digits and commas correctly', () => {
+      expect(normalizeNumberInput('৭৫,৫', true)).toBe('75.5');
+      expect(normalizeNumberInput('০,৭৫', true)).toBe('0.75');
+      expect(normalizeNumberInput('০১৫', false)).toBe('15');
+      expect(normalizeNumberInput('০২০০', false)).toBe('200');
+    });
 
     it('strips leading zeros from integer inputs without creating NaN', () => {
-      expect(processInput('015')).toEqual({ text: '15', num: 15 });
-      expect(processInput('0200')).toEqual({ text: '200', num: 200 });
-      expect(processInput('007')).toEqual({ text: '7', num: 7 });
-      expect(processInput('00')).toEqual({ text: '0', num: 0 });
-      expect(processInput('0')).toEqual({ text: '0', num: 0 });
+      expect(normalizeNumberInput('015', false)).toBe('15');
+      expect(normalizeNumberInput('0200', false)).toBe('200');
+      expect(normalizeNumberInput('007', false)).toBe('7');
+      expect(normalizeNumberInput('00', false)).toBe('0');
+      expect(normalizeNumberInput('0', false)).toBe('0');
     });
 
     it('preserves decimals with leading zero (e.g. 0.5, 0.05)', () => {
-      expect(processInput('0.5', true)).toEqual({ text: '0.5', num: 0.5 });
-      expect(processInput('0.05', true)).toEqual({ text: '0.05', num: 0.05 });
-      expect(processInput('0.', true)).toEqual({ text: '0.', num: 0 });
+      expect(normalizeNumberInput('0.5', true)).toBe('0.5');
+      expect(normalizeNumberInput('0.05', true)).toBe('0.05');
+      expect(normalizeNumberInput('0.', true)).toBe('0.');
     });
 
-    it('allows clearing completely to empty string without defaulting to 0 or crashing', () => {
-      expect(processInput('')).toEqual({ text: '', num: undefined });
+    it('allows clearing completely to empty string', () => {
+      expect(normalizeNumberInput('')).toBe('');
     });
 
     it('strips non-numeric characters and enforces single decimal point', () => {
-      expect(processInput('12.3.4.5', true)).toEqual({ text: '12.345', num: 12.345 });
-      expect(processInput('abc25xyz')).toEqual({ text: '25', num: 25 });
+      expect(normalizeNumberInput('12.3.4.5', true)).toBe('12.345');
+      expect(normalizeNumberInput('abc25xyz', false)).toBe('25');
     });
   });
 

@@ -68,7 +68,7 @@ export default function PlansPage() {
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-lime-brand dark:text-lime-hover">
+                <span className="text-xs font-bold uppercase tracking-wider text-ink-base dark:text-lime-brand">
                   {t('আপনার বর্তমান সক্রিয় প্ল্যান', 'Your Active Training Routine')}
                 </span>
                 <h3 className="font-display font-black text-xl text-foreground">

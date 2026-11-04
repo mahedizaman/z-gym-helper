@@ -26,8 +26,8 @@ export function CalculatorTeaser() {
     <section className="py-20 md:py-28 px-4 sm:px-6 bg-secondary/30 border-y border-border">
       <div className="container mx-auto max-w-7xl">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-pink-soft border border-pink-brand/30 text-pink-brand text-xs font-bold uppercase tracking-wider mb-4">
-            <Calculator className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-pink-soft text-ink-base dark:bg-[#2A111E] dark:text-pink-soft border border-thunder-base/40 text-xs font-bold uppercase tracking-wider mb-4">
+            <Calculator className="w-3.5 h-3.5 text-thunder-base dark:text-pink-soft" />
             <span>{t('বিজ্ঞানের ভিত্তিতে ফিটনেস পরিমাপ', 'Scientific Fitness Calculations')}</span>
           </div>
           <h2 className="font-display font-black text-fluid-section uppercase tracking-tight text-foreground">

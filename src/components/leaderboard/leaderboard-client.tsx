@@ -108,8 +108,8 @@ export function LeaderboardClient() {
     <div className="container mx-auto max-w-4xl px-4 py-8 sm:py-12 space-y-8">
       {/* Header Banner */}
       <div className="text-center max-w-2xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pink-soft text-thunder-base border border-thunder-base/30 text-xs font-bold uppercase tracking-wider shadow-xs">
-          <Trophy className="w-3.5 h-3.5" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pink-soft text-ink-base dark:bg-[#2A111E] dark:text-pink-soft border border-thunder-base/40 text-xs font-bold uppercase tracking-wider shadow-xs">
+          <Trophy className="w-3.5 h-3.5 text-thunder-base dark:text-pink-soft" />
           <span>{t('কমিউনিটি লিডারবোর্ড', 'Community Leaderboard')}</span>
         </div>
         <h1 className="font-display font-black text-3xl sm:text-5xl uppercase tracking-tight text-foreground">
