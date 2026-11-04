@@ -29,7 +29,7 @@ const PLANS: PlanOption[] = [
     nameEn: '3-Day Full Body Split',
     levelBn: 'বিগিনার থেকে ইন্টারমিডিয়েট',
     levelEn: 'Beginner to Intermediate',
-    descBn: 'ব্যস্ত শিডিউল ও বিগিনারদের জন্য সেরা। প্রতি সেশনে প্রধান পেশির নিখুঁত ওয়ার্কআউট।',
+    descBn: 'ব্যস্ত শিডিউল ও বিগিনারদের জন্য সেরা। প্রতি সেশনে প্রধান পেশির কার্যকর ওয়ার্কআউট।',
     descEn: 'Perfect for busy routines and beginners. High stimulus with ample rest between days.',
     scheduleBn: ['রবি: ফুল বডি A', 'মঙ্গল: ফুল বডি B', 'বৃহস্পতি: ফুল বডি C'],
     scheduleEn: ['Sun: Full Body A', 'Tue: Full Body B', 'Thu: Full Body C'],

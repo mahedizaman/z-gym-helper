@@ -363,15 +363,26 @@ Here is the complete checklist of all environment variables required by Z-Gym He
      - Playwright script (`scripts/verify-fix-batch-c.mjs`) verified at 360, 744, 935, and 1280 across all theme toggle states under both light and dark host OS settings.
      - 28 screenshots captured and inspected in `screenshots/fix-batch-c/`.
 
-7. **Automated Verification & Build Status**:
-   - Unit tests: 69/69 passing across 8 test suites.
+7. **Fix Batch: Honest Copy & Canonical URL Hardening**:
+   - **Honest Nutrition & Calorie Copy**: Audited landing page and calculator pages, replacing over-claims such as 'নির্ভরযোগ্য' (reliable), 'নিখুঁত' (exact), 'সঠিক' (accurate) for food macros and calorie burn with 'আনুমানিক' / 'estimates'.
+   - **Unverified Estimates Notice**: Preserved the dedicated food database notice (`Nutrition Verification Notice: All values represent standardized culinary recipe and open food composition estimates...`) and the medical disclaimer modal.
+   - **Future-Proof 'ফ্রি' Copy**: Replaced '১০০% ফ্রি' and 100% marketing claims with 'ফ্রি' / 'ফ্রি ব্যবহারযোগ্য' / 'No subscription fees' phrasing that stays truthful if Google AdSense or future ads are enabled.
+   - **Canonical & OpenGraph Hardening**:
+     - Added `resolveAppUrl()` in `src/config/app.ts` and build validation in `next.config.ts`.
+     - og:url and canonical URLs (`metadataBase`, `alternates.canonical`, `openGraph.url`, `sitemap.xml`, `robots.txt`) come strictly from `NEXT_PUBLIC_APP_URL`.
+     - In production builds (`NODE_ENV=production`), missing or empty `NEXT_PUBLIC_APP_URL` throws a fatal error immediately, preventing accidental deployment with unowned domains (e.g. `zgym.app`).
+     - Removed fallback to unowned domains across GitHub actions workflows and progress OG cards.
+   - **Unit Tests**: Added 6 tests in `src/server/services/app-url-honest-copy.test.ts` verifying URL resolution and failure conditions.
+
+8. **Automated Verification & Build Status**:
+   - Unit tests: 75/75 passing across 9 test suites.
    - TypeScript: Clean `tsc --noEmit`.
    - ESLint: Clean with 0 errors and 0 warnings.
-   - Next.js production build: 90/90 static/dynamic routes compiled cleanly.
+   - Next.js production build: 90/90 static/dynamic routes compiled cleanly in Turbopack.
 
 ---
 
 ## Current Status
 
-- **Current focus:** Fix Batch C complete.
-- **Last updated:** 2026-11-04 14:55 UTC+6
+- **Current focus:** Honest copy and canonical URL hardening complete.
+- **Last updated:** 2026-11-04 15:43 UTC+6

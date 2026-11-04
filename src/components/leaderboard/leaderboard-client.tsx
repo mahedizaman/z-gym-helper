@@ -117,8 +117,8 @@ export function LeaderboardClient() {
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
           {t(
-            '১০০% প্রাইভেসি-সুরক্ষিত ও অপ্ট-ইন ভিত্তিক র‍্যাঙ্কিং। আপনার আসল নাম বা ওজন গোপন রেখে কেবল নিকনেম ও স্ট্রিকের ভিত্তিতে র‍্যাঙ্ক নির্ধারণ করা হয়।',
-            '100% privacy-safe and opt-in rankings. Ranks by active streak or weight change %, never raw kg.'
+            'প্রাইভেসি-সুরক্ষিত ও অপ্ট-ইন ভিত্তিক র‍্যাঙ্কিং। আপনার আসল নাম বা ওজন গোপন রেখে কেবল নিকনেম ও স্ট্রিকের ভিত্তিতে র‍্যাঙ্ক নির্ধারণ করা হয়।',
+            'Privacy-safe and opt-in rankings. Ranks by active streak or weight change %, never raw kg.'
           )}
         </p>
       </div>

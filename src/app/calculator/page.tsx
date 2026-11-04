@@ -192,7 +192,7 @@ export default function CalculatorPage() {
             <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
               {t(
                 '৪টি মিল স্লটে দেশি খাবার যোগ করুন, Mifflin-St Jeor সূত্রের ভিত্তিতে দৈনিক ক্যালোরি ঘাটতি পর্যবেক্ষণ করুন এবং ব্যায়ামের ক্যালোরি বার্ন হিসাব করুন।',
-                'Log foods across 4 meal slots, compare against your Mifflin-St Jeor daily targets, and track MET exercise burn with precision.'
+                'Log foods across 4 meal slots, compare against your Mifflin-St Jeor daily targets, and track estimated MET exercise burn.'
               )}
             </p>
           </div>
@@ -362,7 +362,7 @@ export default function CalculatorPage() {
                   <strong className="text-tomato-brand">~{projectedWeeklyChangeKg} kg/week</strong>
                 </span>
               ) : (
-                <span>{t('বর্তমান ওজন স্থিতিশীল (Maintenance)', 'Exact Maintenance Balance')}</span>
+                <span>{t('বর্তমান ওজন স্থিতিশীল (Maintenance)', 'Estimated Maintenance Balance')}</span>
               )}
             </div>
           </div>

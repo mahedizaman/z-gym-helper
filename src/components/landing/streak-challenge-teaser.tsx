@@ -304,8 +304,8 @@ export function StreakChallengeTeaser() {
                 <CheckCircle2 className="w-5 h-5 text-lime-brand shrink-0" />
                 <span>
                   {t(
-                    'ঢাকা টাইমজোনে (UTC+6) নিখুঁত স্ট্রিক হিসাব — রাত ১২টায় অটো রিসেট',
-                    'Accurate Asia/Dhaka (UTC+6) day calculation with zero time-shift bugs'
+                    'ঢাকা টাইমজোনে (UTC+6) স্ট্রিক হিসাব — রাত ১২টায় অটো রিসেট',
+                    'Asia/Dhaka (UTC+6) day calculation with zero time-shift bugs'
                   )}
                 </span>
               </div>

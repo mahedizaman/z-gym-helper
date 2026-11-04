@@ -79,7 +79,7 @@ export function ExerciseBurnSection({
               {t('ব্যায়াম ও ক্যালোরি বার্ন হিসাব (MET)', 'Exercise & Calorie Burn (MET)')}
             </h3>
             <span className="text-xs text-muted-foreground">
-              {t('MET × ওজন(কেজি) × সময় সূত্রের মাধ্যমে সঠিক হিসাব', 'Calculated via MET × Weight(kg) × Hours formula')}
+              {t('MET × ওজন(কেজি) × সময় সূত্রের মাধ্যমে আনুমানিক হিসাব', 'Estimated via MET × Weight(kg) × Hours formula')}
             </span>
           </div>
         </div>

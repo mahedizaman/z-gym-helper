@@ -19,8 +19,8 @@ export function HowItWorks() {
       icon: Search,
       titleBn: 'খাবারের পুষ্টি খুঁজুন',
       titleEn: 'Search Bangladeshi Foods',
-      descBn: 'ভাত, ডাল, মাছ, মাংস ও ভর্তার সঠিক ক্যালোরি ও প্রোটিন মান মুহূর্তেই জেনে নিন।',
-      descEn: 'Search 300+ local staples and get instant macros for bowls, pieces, or grams.',
+      descBn: 'ভাত, ডাল, মাছ, মাংস ও ভর্তার আনুমানিক ক্যালোরি ও প্রোটিন মান মুহূর্তেই জেনে নিন।',
+      descEn: 'Search 300+ local staples and get estimated macros for bowls, pieces, or grams.',
       badge: 'Step 1',
     },
     {
@@ -122,7 +122,7 @@ export function HowItWorks() {
         </div>
         <p className="text-sm sm:text-base text-muted-foreground max-w-md">
           {t(
-            'মাত্র ৪টি সাধারণ পদক্ষেপে আপনার স্বাস্থ্যকর জীবনের যাত্রা শুরু করুন। সম্পূর্ণ ফ্রিতে এবং ঝামেলাহীনভাবে।',
+            'মাত্র ৪টি সাধারণ পদক্ষেপে আপনার স্বাস্থ্যকর জীবনের যাত্রা শুরু করুন। কোনো সাবস্ক্রিপশন ফি বা ঝামেলা ছাড়া।',
             'Start your transformation in 4 simple steps without paywalls or unnecessary friction.'
           )}
         </p>

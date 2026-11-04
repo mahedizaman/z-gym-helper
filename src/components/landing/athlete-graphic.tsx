@@ -156,7 +156,7 @@ export function AthleteGraphic() {
           </div>
           <div className="flex flex-col text-left">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-              {t('উন্মুক্ত ও ফ্রি', 'Open Platform')}
+              {t('উন্মুক্ত প্ল্যাটফর্ম', 'Open Platform')}
             </span>
             <span className="font-display text-sm font-extrabold text-foreground">
               {t('গেস্ট-ফার্স্ট • জিরো পেওয়াল', 'Guest-First • Zero Paywall')}

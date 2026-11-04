@@ -3,7 +3,7 @@ import { APP_CONFIG } from '@/config/app';
 import { CORE_EXERCISES_DATA } from '@/server/seeds/exercises.data';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || APP_CONFIG.url;
+  const baseUrl = APP_CONFIG.url;
   const lastModified = new Date();
 
   // Core static public routes

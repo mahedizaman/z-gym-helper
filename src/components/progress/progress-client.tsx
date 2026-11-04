@@ -344,8 +344,8 @@ export function ProgressClient() {
             <Info className="w-4 h-4 text-lime-brand shrink-0 mt-0.5" />
             <span>
               {t(
-                'সঠিক ট্র্যাকিংয়ের জন্য প্রতিদিন সকালে একই সময়ে (টয়লেট ব্যবহারের পর ও নাস্তার আগে) ওজন মাপুন।',
-                'For greatest accuracy, weigh yourself once daily under the same conditions (morning after restroom, before breakfast).'
+                'ধারাবাহিক ট্র্যাকিংয়ের জন্য প্রতিদিন সকালে একই সময়ে (টয়লেট ব্যবহারের পর ও নাস্তার আগে) ওজন মাপুন।',
+                'For consistent tracking, weigh yourself once daily under the same conditions (morning after restroom, before breakfast).'
               )}
             </span>
           </div>

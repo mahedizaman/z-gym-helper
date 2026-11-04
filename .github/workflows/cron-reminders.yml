@@ -13,9 +13,13 @@ jobs:
     steps:
       - name: Ping Cron Endpoint
         env:
-          APP_URL: ${{ secrets.APP_URL || 'https://zgym.app' }}
+          APP_URL: ${{ secrets.APP_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
+          if [ -z "$APP_URL" ]; then
+            echo "ERROR: APP_URL secret is not set in repository settings. Set it to your canonical app URL."
+            exit 1
+          fi
           if [ -z "$CRON_SECRET" ]; then
             echo "ERROR: CRON_SECRET secret is not set in repository settings."
             exit 1

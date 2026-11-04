@@ -103,7 +103,7 @@ export function HeroSection() {
             <p className="mt-6 text-base sm:text-lg text-muted-foreground font-normal max-w-xl leading-relaxed">
               {t(
                 '৩০০+ দেশি খাবারের পুষ্টিমান, BMR ও ক্যালোরি ক্যালকুলেটর, জিম ওয়ার্কআউট স্প্লিট ও ডেইলি স্ট্রিক — উন্মুক্ত এবং কোনো সাবস্ক্রিপশন বা পেওয়াল নেই।',
-                '300+ Bangladeshi food nutrition profiles, exact Mifflin-St Jeor BMR calculator, proven workout splits, and daily streak tracking — open access with zero paywalls.'
+                '300+ Bangladeshi food nutrition profiles, Mifflin-St Jeor BMR calculator, proven workout splits, and daily streak tracking — open access with zero paywalls.'
               )}
             </p>
 
@@ -139,7 +139,7 @@ export function HeroSection() {
             <div className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs font-semibold text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-lime-brand" />
-                {t('গেস্ট মোডে লগইন ছাড়াই ব্যবহারযোগ্য', '100% Guest-first without login')}
+                {t('গেস্ট মোডে লগইন ছাড়াই ব্যবহারযোগ্য', 'Guest-first without login')}
               </span>
               <span className="hidden sm:inline text-muted-foreground/40">•</span>
               <span className="flex items-center gap-1.5">

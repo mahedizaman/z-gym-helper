@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
+import { APP_CONFIG } from '@/config/app';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -288,8 +289,8 @@ export async function GET(request: NextRequest) {
         >
           <span>
             {isBn
-              ? 'ওয়ার্কআউট, পুষ্টি ও স্ট্রিক ট্র্যাক করুন zgym.app এ'
-              : 'Track workouts, nutrition & streak at zgym.app'}
+              ? `ওয়ার্কআউট, পুষ্টি ও স্ট্রিক ট্র্যাক করুন ${APP_CONFIG.shortName} এ`
+              : `Track workouts, nutrition & streak with ${APP_CONFIG.name}`}
           </span>
           <span>Asia/Dhaka</span>
         </div>

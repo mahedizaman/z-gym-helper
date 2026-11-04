@@ -103,8 +103,8 @@ export default function BMIPage() {
           </h1>
           <p className="mt-3 text-sm sm:text-base text-muted-foreground leading-relaxed">
             {t(
-              'আপনার উচ্চতা ও ওজনের সঠিক স্বাস্থ্যকর অনুপাত, বিশ্ব স্বাস্থ্য সংস্থা (WHO) এবং দক্ষিণ এশীয় সূচকের ভিত্তিতে ক্যাটাগরি বিশ্লেষণ।',
-              'Calculate your exact BMI category, healthy weight range, and South Asian metabolic risk thresholds.'
+              'আপনার উচ্চতা ও ওজনের স্বাস্থ্যকর অনুপাত, বিশ্ব স্বাস্থ্য সংস্থা (WHO) এবং দক্ষিণ এশীয় সূচকের ভিত্তিতে আনুমানিক ক্যাটাগরি বিশ্লেষণ।',
+              'Calculate your estimated BMI category, healthy weight range, and South Asian metabolic risk thresholds.'
             )}
           </p>
 

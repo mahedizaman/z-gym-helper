@@ -27,14 +27,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const title = `${exercise.nameBn} (${exercise.nameEn}) - ব্যায়াম গাইড | ${APP_CONFIG.name}`;
-  const description = `${exercise.nameEn} সঠিক ফর্ম, ধাপসমূহ, সাধারণ ভুল এবং ভিডিও ডেমো। পেশি গ্রুপ: ${exercise.muscle}।`;
+  const description = `${exercise.nameEn} ফর্ম গাইড, ধাপসমূহ, সাধারণ ভুল এবং ভিডিও ডেমো। পেশি গ্রুপ: ${exercise.muscle}।`;
 
   return {
     title,
     description,
+    alternates: {
+      canonical: `${APP_CONFIG.url}/exercises/${exercise.slug}`,
+    },
     openGraph: {
       title,
       description,
+      url: `${APP_CONFIG.url}/exercises/${exercise.slug}`,
       siteName: APP_CONFIG.name,
       images: [
         {

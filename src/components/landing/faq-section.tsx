@@ -14,10 +14,10 @@ interface FAQItem {
 
 const FAQS: FAQItem[] = [
   {
-    qBn: 'জেড-জিম হেল্পার কি সত্যিই ১০০% ফ্রি? কোনো গোপন সাবস্ক্রিপশন ফি আছে কি?',
-    qEn: 'Is Z-Gym Helper truly 100% free? Are there any hidden subscription costs?',
-    aBn: 'হ্যাঁ, জেড-জিম হেল্পার সম্পূর্ণ ফ্রি ও ওপেন ডেটা প্ল্যাটফর্ম। ক্যালকুলেটর, ৩০০+ দেশি খাবারের ডেটাবেজ, জিম স্প্লিট এবং স্ট্রিক ট্র্যাকার ব্যবহার করার জন্য কোনো টাকা দিতে হবে না। কোনো পেওয়াল নেই।',
-    aEn: 'Yes, Z-Gym Helper is 100% free and built on open data. All calculators, the 300+ local food database, workout splits, and streak trackers are completely accessible without paywalls.',
+    qBn: 'জেড-জিম হেল্পার ব্যবহার কি ফ্রি? কোনো গোপন সাবস্ক্রিপশন ফি আছে কি?',
+    qEn: 'Is Z-Gym Helper free to use? Are there any hidden subscription costs?',
+    aBn: 'হ্যাঁ, জেড-জিম হেল্পার ব্যবহার সম্পূর্ণ ফ্রি। ক্যালকুলেটর, ৩০০+ দেশি খাবারের ডেটাবেজ, জিম স্প্লিট এবং স্ট্রিক ট্র্যাকার ব্যবহার করার জন্য কোনো সাবস্ক্রিপশন ফি দিতে হয় না। কোনো পেওয়াল নেই।',
+    aEn: 'Yes, Z-Gym Helper is free to use and built on open data. All calculators, the 300+ local food database, workout splits, and streak trackers are accessible without subscriptions or paywalls.',
   },
   {
     qBn: 'বাংলাদেশী খাবারের ক্যালোরি ও পুষ্টির তথ্য কোথা থেকে নেওয়া হয়েছে?',
@@ -34,8 +34,8 @@ const FAQS: FAQItem[] = [
   {
     qBn: 'ডেইলি স্ট্রিক কীভাবে হিসাব হয়? টাইমজোন সমস্যা হবে কি?',
     qEn: 'How does daily streak tracking work? What about timezones?',
-    aBn: 'আমাদের সিস্টেম সরাসরি এশিয়া/ঢাকা (UTC+6) স্থানীয় সময়ের সাথে যুক্ত। আপনি প্রতিদিন একটি মিল বা ব্যায়াম লগ করলে সেই দিনের স্ট্রিক চালু থাকে। রাত ১২টায় ঢাকাইয়া তারিখ পরিবর্তনের সাথে সাথে সঠিক হিসাব বজায় থাকে।',
-    aEn: 'Our streak algorithm computes exclusively in the Asia/Dhaka (UTC+6) timezone. Logging a meal or workout preserves your daily streak, with midnight resets tied precisely to Bangladesh standard time.',
+    aBn: 'আমাদের সিস্টেম সরাসরি এশিয়া/ঢাকা (UTC+6) স্থানীয় সময়ের সাথে যুক্ত। আপনি প্রতিদিন একটি মিল বা ব্যায়াম লগ করলে সেই দিনের স্ট্রিক চালু থাকে। রাত ১২টায় ঢাকাইয়া তারিখ পরিবর্তনের সাথে সাথে ধারাবাহিক হিসাব বজায় থাকে।',
+    aEn: 'Our streak algorithm computes exclusively in the Asia/Dhaka (UTC+6) timezone. Logging a meal or workout preserves your daily streak, with midnight resets tied cleanly to Bangladesh standard time.',
   },
   {
     qBn: 'আমি কীভাবে এটি আমার অ্যান্ড্রয়েড বা আইফোনে ইনস্টল করব?',

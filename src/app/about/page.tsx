@@ -33,14 +33,14 @@ export default function AboutPage() {
           </h2>
           <p className="text-muted-foreground mb-4">
             {t(
-              'বাংলাদেশের অধিকাংশ ফিটনেস অ্যাপ বা ক্যালকুলেটর আন্তর্জাতিক খাবারকে প্রাধান্য দেয়, যার ফলে সাধারণ জিমগামীরা ভাত, ডাল, ইলিশ মাছ, আলু ভর্তা কিংবা হাতে বানানো রুটির সঠিক ক্যালোরি ও প্রোটিন মান পরিমাপ করতে পারেন না।',
+              'বাংলাদেশের অধিকাংশ ফিটনেস অ্যাপ বা ক্যালকুলেটর আন্তর্জাতিক খাবারকে প্রাধান্য দেয়, যার ফলে সাধারণ জিমগামীরা ভাত, ডাল, ইলিশ মাছ, আলু ভর্তা কিংবা হাতে বানানো রুটির আনুমানিক ক্যালোরি ও প্রোটিন মান পরিমাপ করতে পারেন না।',
               'Most international fitness trackers cater to Western diets, leaving Bangladeshi athletes guessing the macros in staple foods like Bhat, Dal, Ilish, Bhorta, and Handmade Roti.'
             )}
           </p>
           <p className="text-muted-foreground">
             {t(
-              'জেড-জিম হেল্পারের লক্ষ্য হলো বাংলাদেশের প্রতিটি ফিটনেস অনুরাগী যেন কোনো ফি বা পেওয়াল ছাড়াই সঠিক পুষ্টি হিসাব ও বৈজ্ঞানিক জিম প্ল্যান সহজে ব্যবহার করতে পারেন।',
-              'Z-Gym Helper provides 100% accessible, open nutrition data and scientific workout splits without subscription barriers.'
+              'জেড-জিম হেল্পারের লক্ষ্য হলো বাংলাদেশের প্রতিটি ফিটনেস অনুরাগী যেন কোনো ফি বা পেওয়াল ছাড়াই আনুমানিক পুষ্টি হিসাব ও বৈজ্ঞানিক জিম প্ল্যান সহজে ব্যবহার করতে পারেন।',
+              'Z-Gym Helper provides accessible, open nutrition data and scientific workout splits without subscription barriers.'
             )}
           </p>
         </div>
@@ -80,7 +80,7 @@ export default function AboutPage() {
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {t(
-                'কোনো ভুয়া ট্রেইনারের নাম বা কাল্পনিক রেটিং তৈরি করা হয় না। কেবল বাস্তব ডেটা ও নির্ভরযোগ্য হিসাব।',
+                'কোনো ভুয়া ট্রেইনারের নাম বা কাল্পনিক রেটিং তৈরি করা হয় না। উন্মুক্ত ডেটা ও বাস্তবসম্মত অনুমান।',
                 'Zero fabricated metrics, fake trainer numbers, or invented reviews. Transparent code and science.'
               )}
             </p>

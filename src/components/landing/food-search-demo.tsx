@@ -346,7 +346,7 @@ export function FoodSearchDemo() {
             {/* CTA to complete database */}
             <div className="pt-4 border-t border-white/10 flex items-center justify-between">
               <span className="text-xs text-silver-300">
-                {t('৩০০+ দেশি খাবারের পুষ্টি তথ্য', '300+ Bangladeshi foods nutrition database')}
+                {t('৩০০+ দেশি খাবারের আনুমানিক পুষ্টি তথ্য', '300+ Bangladeshi food macro estimates')}
               </span>
               <Link
                 href="/foods"

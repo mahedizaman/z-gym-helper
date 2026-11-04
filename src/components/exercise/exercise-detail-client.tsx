@@ -243,7 +243,7 @@ export function ExerciseDetailClient({ exercise }: ExerciseDetailClientProps) {
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-lime-brand" />
               <h3 className="font-display font-black text-xl text-foreground">
-                {t('ধাপে ধাপে সঠিক পদ্ধতি', 'Step-by-Step Execution')}
+                {t('ধাপে ধাপে ব্যায়ামের পদ্ধতি', 'Step-by-Step Execution')}
               </h3>
             </div>
 

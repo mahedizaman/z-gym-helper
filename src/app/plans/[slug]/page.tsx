@@ -31,9 +31,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
+    alternates: {
+      canonical: `${APP_CONFIG.url}/plans/${plan.slug}`,
+    },
     openGraph: {
       title,
       description,
+      url: `${APP_CONFIG.url}/plans/${plan.slug}`,
       siteName: APP_CONFIG.name,
       images: [
         {

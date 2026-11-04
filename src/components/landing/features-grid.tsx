@@ -23,9 +23,9 @@ export function FeaturesGrid() {
       titleBn: '৩০০+ দেশি খাবারের পুষ্টিমান',
       titleEn: '300+ Bangladeshi Food Macros',
       descBn:
-        'ভাত, ডাল, ইলিশ, আলু ভর্তা, খিচুড়ি ও মুরগির মাংসের নির্ভরযোগ্য ক্যালোরি, প্রোটিন, ফ্যাট ও কার্বোহাইড্রেট পরিমাপ।',
+        'ভাত, ডাল, ইলিশ, আলু ভর্তা, খিচুড়ি ও মুরগির মাংসের আনুমানিক ক্যালোরি, প্রোটিন, ফ্যাট ও কার্বোহাইড্রেট পরিমাপ।',
       descEn:
-        'Nutrient profiles for Bangladeshi staples: Bhat, Dal, Ilish, Bhorta, Roti, and Chicken with exact grams.',
+        'Nutrient profiles for Bangladeshi staples: Bhat, Dal, Ilish, Bhorta, Roti, and Chicken with estimated values.',
       badgeBn: 'ওপেন ডেটা',
       badgeEn: 'Open Data',
       accent: 'lime',
@@ -34,11 +34,11 @@ export function FeaturesGrid() {
     {
       icon: Calculator,
       titleBn: 'বিজ্ঞানের ভিত্তিতে ক্যালোরি হিসাব',
-      titleEn: 'Precision BMR & TDEE Math',
+      titleEn: 'Estimated BMR & TDEE Math',
       descBn:
-        'Mifflin-St Jeor সমীকরণ ও MET এক্সারসাইজ ফর্মুলার মাধ্যমে আপনার দৈনিক ক্যালোরি ও পুষ্টি চাহিদার নিখুঁত হিসাব।',
+        'Mifflin-St Jeor সমীকরণ ও MET এক্সারসাইজ ফর্মুলার মাধ্যমে আপনার দৈনিক ক্যালোরি ও পুষ্টি চাহিদার আনুমানিক হিসাব।',
       descEn:
-        'Accurate daily caloric targets using Mifflin-St Jeor BMR and MET exercise burn equations, safe and realistic.',
+        'Estimated daily caloric targets using Mifflin-St Jeor BMR and MET exercise burn equations, safe and realistic.',
       badgeBn: 'বিজ্ঞানসম্মত',
       badgeEn: 'Scientific',
       accent: 'pink',
@@ -72,13 +72,13 @@ export function FeaturesGrid() {
     },
     {
       icon: BookOpen,
-      titleBn: 'ব্যায়ামের সঠিক ফর্ম লাইব্রেরি',
+      titleBn: 'ব্যায়ামের ফর্ম ও গাইড লাইব্রেরি',
       titleEn: 'Exercise Guide & Form Library',
       descBn:
         '৩০+ কোর ব্যায়ামের ছবি, কমন ভুল, টার্গেট পেশি এবং নিরাপদ ইউটিউব ক্লিক-টু-লোড ভিডিও ফ্যাসাড।',
       descEn:
         '30+ core exercises with muscle maps, common mistakes, form cues, and instant YouTube click-to-load facades.',
-      badgeBn: 'সঠিক ফর্ম',
+      badgeBn: 'নিরাপদ ফর্ম',
       badgeEn: 'Safe Form',
       accent: 'lime',
       href: '/exercises',
@@ -91,7 +91,7 @@ export function FeaturesGrid() {
         'লগইন ছাড়াই ক্যালকুলেটর ও ফুড সার্চ ব্যবহার করুন। আপনার ব্রাউজারে বা অ্যাপ হিসেবে ইনস্টল করে অফলাইনেও চালান।',
       descEn:
         'No mandatory account wall. Browse tools instantly with localStorage, and install as an offline PWA on phone.',
-      badgeBn: '১০০% ফ্রি',
+      badgeBn: 'ফ্রি ব্যবহারযোগ্য',
       badgeEn: 'Installable PWA',
       accent: 'tomato',
       href: '/calculator',
@@ -111,7 +111,7 @@ export function FeaturesGrid() {
           </h2>
           <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
             {t(
-              'বাংলাদেশী অ্যাথলেট ও ফিটনেস প্রেমীদের বাস্তব চাহিদা মাথায় রেখে তৈরি সম্পূর্ণ ফ্রি ও কার্যকর টুলস।',
+              'বাংলাদেশী অ্যাথলেট ও ফিটনেস প্রেমীদের বাস্তব চাহিদা মাথায় রেখে তৈরি উন্মুক্ত ও কার্যকর টুলস।',
               'Tailored specifically for Bangladeshi fitness enthusiasts with local food macros and zero fluff.'
             )}
           </p>

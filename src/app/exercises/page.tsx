@@ -38,7 +38,7 @@ export default function ExercisesPage() {
 
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
             {t(
-              'বুক, পিঠ, কাঁধ, হাত, পা ও কোর পেশির সঠিক বায়োমেকানিক্স, সাধারণ ভুল, প্রো-টিপস এবং ভিডিও ডেমো।',
+              'বুক, পিঠ, কাঁধ, হাত, পা ও কোর পেশির বায়োমেকানিক্স, সাধারণ ভুল, প্রো-টিপস এবং ভিডিও ডেমো।',
               'Master biomechanics for chest, back, shoulders, arms, legs and core with execution steps, common mistakes, and video demos.'
             )}
           </p>

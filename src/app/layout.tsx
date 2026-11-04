@@ -49,6 +49,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: APP_CONFIG.name }],
   metadataBase: new URL(APP_CONFIG.url),
+  alternates: {
+    canonical: APP_CONFIG.url,
+  },
   openGraph: {
     title: `${APP_CONFIG.name} — ${APP_CONFIG.taglineBn}`,
     description: APP_CONFIG.descriptionBn,

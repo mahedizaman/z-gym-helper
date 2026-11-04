@@ -10,7 +10,7 @@ export function MarqueeRibbon() {
   const items = [
     t('৩০০+ দেশি খাবারের পুষ্টি তথ্য', '300+ Bangladeshi Food Profiles'),
     t('উন্মুক্ত ওপেন ডেটা প্ল্যাটফর্ম', 'Open Data Fitness Platform'),
-    t('সঠিক MIFFLIN-ST JEOR BMR', 'Precision Mifflin-St Jeor BMR'),
+    t('আনুমানিক MIFFLIN-ST JEOR BMR', 'Estimated Mifflin-St Jeor BMR'),
     t('৩/৪/৫/৬ দিনের জিম স্প্লিট', '3/4/5/6 Days Gym Workout Splits'),
     t('এশিয়া/ঢাকা টাইমজোনে স্ট্রিক', 'Asia/Dhaka Workout Streak Tracking'),
     t('অফলাইন উপযোগী PWA অ্যাপ', 'Offline Installable PWA'),

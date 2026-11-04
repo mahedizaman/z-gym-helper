@@ -109,7 +109,7 @@ const TEASER_EXERCISES: TeaserExercise[] = [
     equipmentEn: 'Dumbbells',
     levelBn: 'বিগিনার ফ্রেন্ডলি',
     levelEn: 'Beginner Friendly',
-    tipBn: 'ভারী ওজনের চেয়ে সঠিক ফর্ম ও নিয়ন্ত্রিত মুভমেন্ট বেশি জরুরি।',
+    tipBn: 'ভারী ওজনের চেয়ে নিয়ন্ত্রিত ফর্ম ও ধীর মুভমেন্ট বেশি জরুরি।',
     tipEn: 'Lead with elbows, avoid using body momentum or shrugging.',
   },
   {
@@ -184,14 +184,14 @@ export function ExerciseTeaser() {
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-lime-soft border border-lime-brand/30 text-ink-base text-xs font-bold uppercase tracking-wider mb-4">
             <Target className="w-3.5 h-3.5" />
-            <span>{t('সঠিক ফর্ম ও লাইব্রেরি', 'Exercise Guide & Form')}</span>
+            <span>{t('ব্যায়াম ও ফর্ম গাইড', 'Exercise Guide & Form')}</span>
           </div>
           <h2 className="font-display font-black text-fluid-section uppercase tracking-tight text-foreground">
             {t('৩০+ কোর ব্যায়ামের ফর্ম গাইড', 'CORE EXERCISE FORM LIBRARY')}
           </h2>
           <p className="mt-3 text-base text-muted-foreground max-w-xl mx-auto">
             {t(
-              'টার্গেট পেশি অনুযায়ী ব্যায়াম খুঁজুন, সাধারণ ভুল এড়িয়ে চলুন এবং সঠিক কৌশল রপ্ত করুন।',
+              'টার্গেট পেশি অনুযায়ী ব্যায়াম খুঁজুন, সাধারণ ভুল এড়িয়ে চলুন এবং উপযুক্ত কৌশল রপ্ত করুন।',
               'Explore core movements by target muscle with form cues, required equipment, and video demos.'
             )}
           </p>
