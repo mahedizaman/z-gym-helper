@@ -15,13 +15,12 @@ import {
   calculateTDEE,
   calculateCaloricTarget,
   calculateMacroSplit,
-  estimateWeightChange,
-  calculateDailyBalance,
 } from '@/server/services/calculations';
 import { type SeedFood } from '@/server/seeds/generate-foods';
 import { FoodPickerModal } from '@/components/calculator/food-picker-modal';
 import { ProfileTargetModal } from '@/components/calculator/profile-target-modal';
-import { ExerciseBurnSection } from '@/components/calculator/exercise-burn-section';
+import { ProExerciseBurnSection } from '@/components/calculator/pro-exercise-burn-section';
+import { DailyPlanCard } from '@/components/calculator/daily-plan-card';
 import { MedicalDisclaimer } from '@/components/legal/medical-disclaimer';
 import { AdSlot } from '@/components/ads/ad-slot';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
@@ -30,7 +29,6 @@ import {
   Sliders,
   Plus,
   Trash2,
-  Zap,
   Dumbbell,
   Clock,
   RotateCcw,
@@ -47,6 +45,7 @@ export default function CalculatorPage() {
 
   const [activeSlotModal, setActiveSlotModal] = useState<MealSlotKey | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [dailyBurnTarget, setDailyBurnTarget] = useState<number>(300);
 
   // Compute Targets with fallback guards
   const safeWeight = profile.weightKg && profile.weightKg >= 30 ? profile.weightKg : 70;
@@ -102,14 +101,6 @@ export default function CalculatorPage() {
 
   // Exercise Burns Total
   const totalBurnedKcal = exerciseBurns.reduce((acc, b) => acc + b.burnedKcal, 0);
-
-  // Daily Energy Balance: Intake - (TDEE + Exercise Burn)
-  const netEnergyBalance = calculateDailyBalance(
-    totalConsumedKcal,
-    tdee,
-    totalBurnedKcal
-  );
-  const projectedWeeklyChangeKg = estimateWeightChange(netEnergyBalance, 7);
 
   // Handlers
   const handleAddFoodToSlot = (
@@ -218,152 +209,98 @@ export default function CalculatorPage() {
           </div>
         </div>
 
-        {/* Top Target Summary Dashboard Card */}
-        <div className="mt-8 rounded-3xl bg-card border-2 border-lime-brand/40 p-6 sm:p-8 shadow-xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Calories Dial / Big Stat */}
-            <div className="lg:col-span-5 flex flex-col items-center sm:items-start text-center sm:text-left border-b lg:border-b-0 lg:border-r border-border pb-6 lg:pb-0 lg:pr-8">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                {t('আজকের মোট গ্রহণ / দৈনিক লক্ষ্য', 'Caloric Intake vs Target')}
+        {/* Daily Plan Card (আজকের হিসাব) */}
+        <div className="mt-8">
+          <DailyPlanCard
+            userWeightKg={safeWeight}
+            userGender={safeGender}
+            tdee={tdee}
+            consumedKcal={totalConsumedKcal}
+            burnedKcal={totalBurnedKcal}
+            onTargetsAdjusted={(diet, burn) => {
+              setDailyBurnTarget(burn);
+            }}
+          />
+        </div>
+
+        {/* Macro Breakdown Strip */}
+        <div className="mt-6 rounded-3xl bg-card border border-border p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/60">
+            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              {t('দৈনিক ম্যাক্রোনিউট্রিয়েন্ট লক্ষ্য (প্রোটিন, কার্বস, ফ্যাট)', 'Daily Macro Nutrient Breakdown')}
+            </span>
+            <span className="text-xs font-bold text-foreground">
+              {safeWeight} kg • {profile.goal}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Protein */}
+            <div className="p-4 rounded-2xl bg-secondary/50 border border-border/80">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                {t('প্রোটিন (Protein)', 'Protein')}
               </span>
-              <div className="flex items-baseline gap-2 mt-2">
-                <span className="font-display font-black text-5xl sm:text-6xl text-foreground">
-                  {totalConsumedKcal}
+              <div className="flex items-baseline gap-1.5 mt-1">
+                <span className="font-display font-black text-2xl text-lime-brand">
+                  {totalConsumedProtein}g
                 </span>
-                <span className="font-display text-xl sm:text-2xl font-bold text-muted-foreground">
-                  / {targetKcal} kcal
+                <span className="text-xs text-muted-foreground font-semibold">
+                  / {targetMacros.protein}g
                 </span>
               </div>
-
-              {/* Progress bar */}
-              <div className="w-full mt-4 h-3 rounded-full bg-secondary overflow-hidden">
+              <div className="w-full mt-2 h-1.5 rounded-full bg-background overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-500 rounded-full ${
-                    totalConsumedKcal > targetKcal ? 'bg-tomato-brand' : 'bg-lime-brand'
-                  }`}
+                  className="h-full bg-lime-brand rounded-full transition-all duration-300"
                   style={{
-                    width: `${Math.min(100, (totalConsumedKcal / Math.max(1, targetKcal)) * 100)}%`,
+                    width: `${Math.min(100, (totalConsumedProtein / Math.max(1, targetMacros.protein)) * 100)}%`,
                   }}
                 />
               </div>
-
-              <div className="w-full flex items-center justify-between text-xs font-bold mt-2">
-                <span className="text-muted-foreground">
-                  {t('অবশিষ্ট বাজেট:', 'Remaining:')}{' '}
-                  <strong className={targetKcal - totalConsumedKcal >= 0 ? 'text-lime-brand' : 'text-tomato-brand'}>
-                    {targetKcal - totalConsumedKcal} kcal
-                  </strong>
-                </span>
-                <span className="text-muted-foreground">
-                  {Math.round((totalConsumedKcal / Math.max(1, targetKcal)) * 100)}% {t('পূর্ণ', 'hit')}
-                </span>
-              </div>
             </div>
 
-            {/* Macro Breakdown Columns */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* Protein */}
-              <div className="p-4 rounded-2xl bg-secondary/50 border border-border/80">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
-                  {t('প্রোটিন (Protein)', 'Protein')}
-                </span>
-                <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="font-display font-black text-2xl text-lime-brand">
-                    {totalConsumedProtein}g
-                  </span>
-                  <span className="text-xs text-muted-foreground font-semibold">
-                    / {targetMacros.protein}g
-                  </span>
-                </div>
-                <div className="w-full mt-2 h-1.5 rounded-full bg-background overflow-hidden">
-                  <div
-                    className="h-full bg-lime-brand rounded-full transition-all duration-300"
-                    style={{
-                      width: `${Math.min(100, (totalConsumedProtein / Math.max(1, targetMacros.protein)) * 100)}%`,
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Carbs */}
-              <div className="p-4 rounded-2xl bg-secondary/50 border border-border/80">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
-                  {t('কার্বস (Carbs)', 'Carbohydrates')}
-                </span>
-                <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="font-display font-black text-2xl text-foreground">
-                    {totalConsumedCarbs}g
-                  </span>
-                  <span className="text-xs text-muted-foreground font-semibold">
-                    / {targetMacros.carbs}g
-                  </span>
-                </div>
-                <div className="w-full mt-2 h-1.5 rounded-full bg-background overflow-hidden">
-                  <div
-                    className="h-full bg-foreground rounded-full transition-all duration-300"
-                    style={{
-                      width: `${Math.min(100, (totalConsumedCarbs / Math.max(1, targetMacros.carbs)) * 100)}%`,
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Fat */}
-              <div className="p-4 rounded-2xl bg-secondary/50 border border-border/80">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
-                  {t('ফ্যাট (Fat)', 'Fat')}
-                </span>
-                <div className="flex items-baseline gap-1.5 mt-1">
-                  <span className="font-display font-black text-2xl text-pink-brand">
-                    {totalConsumedFat}g
-                  </span>
-                  <span className="text-xs text-muted-foreground font-semibold">
-                    / {targetMacros.fat}g
-                  </span>
-                </div>
-                <div className="w-full mt-2 h-1.5 rounded-full bg-background overflow-hidden">
-                  <div
-                    className="h-full bg-pink-brand rounded-full transition-all duration-300"
-                    style={{
-                      width: `${Math.min(100, (totalConsumedFat / Math.max(1, targetMacros.fat)) * 100)}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Daily Energy Balance Strip */}
-          <div className="mt-6 pt-5 border-t border-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-lime-brand shrink-0" />
-              <span>
-                {t('দৈনিক মোট এনার্জি ব্যালেন্স:', 'Net Daily Energy Balance:')}{' '}
-                <strong
-                  className={netEnergyBalance <= 0 ? 'text-lime-brand' : 'text-tomato-brand'}
-                >
-                  {netEnergyBalance > 0 ? `+${netEnergyBalance}` : netEnergyBalance} kcal
-                </strong>{' '}
-                <span className="text-muted-foreground">
-                  (Intake: {totalConsumedKcal} - TDEE: {tdee} - Exercise Burn: {totalBurnedKcal})
-                </span>
+            {/* Carbs */}
+            <div className="p-4 rounded-2xl bg-secondary/50 border border-border/80">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                {t('কার্বস (Carbs)', 'Carbohydrates')}
               </span>
+              <div className="flex items-baseline gap-1.5 mt-1">
+                <span className="font-display font-black text-2xl text-foreground">
+                  {totalConsumedCarbs}g
+                </span>
+                <span className="text-xs text-muted-foreground font-semibold">
+                  / {targetMacros.carbs}g
+                </span>
+              </div>
+              <div className="w-full mt-2 h-1.5 rounded-full bg-background overflow-hidden">
+                <div
+                  className="h-full bg-foreground rounded-full transition-all duration-300"
+                  style={{
+                    width: `${Math.min(100, (totalConsumedCarbs / Math.max(1, targetMacros.carbs)) * 100)}%`,
+                  }}
+                />
+              </div>
             </div>
 
-            <div className="text-muted-foreground font-medium">
-              {netEnergyBalance < 0 ? (
-                <span>
-                  {t('সাপ্তাহিক সম্ভাব্য চর্বি হ্রাস:', 'Estimated weekly fat loss:')}{' '}
-                  <strong className="text-lime-brand">~{Math.abs(projectedWeeklyChangeKg)} kg/week</strong>
+            {/* Fat */}
+            <div className="p-4 rounded-2xl bg-secondary/50 border border-border/80">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                {t('ফ্যাট (Fat)', 'Fat')}
+              </span>
+              <div className="flex items-baseline gap-1.5 mt-1">
+                <span className="font-display font-black text-2xl text-pink-brand">
+                  {totalConsumedFat}g
                 </span>
-              ) : netEnergyBalance > 0 ? (
-                <span>
-                  {t('সাপ্তাহিক সম্ভাব্য বৃদ্ধি:', 'Estimated weekly weight gain:')}{' '}
-                  <strong className="text-tomato-brand">~{projectedWeeklyChangeKg} kg/week</strong>
+                <span className="text-xs text-muted-foreground font-semibold">
+                  / {targetMacros.fat}g
                 </span>
-              ) : (
-                <span>{t('বর্তমান ওজন স্থিতিশীল (Maintenance)', 'Estimated Maintenance Balance')}</span>
-              )}
+              </div>
+              <div className="w-full mt-2 h-1.5 rounded-full bg-background overflow-hidden">
+                <div
+                  className="h-full bg-pink-brand rounded-full transition-all duration-300"
+                  style={{
+                    width: `${Math.min(100, (totalConsumedFat / Math.max(1, targetMacros.fat)) * 100)}%`,
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -549,10 +486,11 @@ export default function CalculatorPage() {
 
         {/* MET Exercise Burn Logger */}
         <div className="mt-10">
-          <ExerciseBurnSection
-            userWeightKg={profile.weightKg}
+          <ProExerciseBurnSection
+            userWeightKg={safeWeight}
             burns={exerciseBurns}
             onBurnsUpdated={(updated) => setExerciseBurns(updated)}
+            targetBurnKcal={dailyBurnTarget}
           />
         </div>
 

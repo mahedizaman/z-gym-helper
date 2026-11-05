@@ -44,11 +44,28 @@ export interface GuestProfile {
 
 export interface GuestExerciseBurn {
   id: string;
+  activityId?: string;
   nameBn: string;
   nameEn: string;
+  category?: string;
   met: number;
+  intensity?: 'light' | 'moderate' | 'vigorous';
   durationMinutes: number;
   burnedKcal: number;
+  isNet?: boolean;
+  distanceKm?: number;
+  speedKmh?: number;
+  paceMinKm?: string;
+  inclinePct?: number;
+  sets?: number;
+  reps?: number;
+  restSeconds?: number;
+}
+
+export interface DailyPlanPreferences {
+  weeklyGoalKg: number; // e.g. -0.5, 0, +0.25
+  splitRatio: number; // e.g. 0.7 (70% diet / 30% exercise)
+  targetWorkoutBurnKcal?: number;
 }
 
 const STORAGE_KEYS = {
@@ -58,6 +75,7 @@ const STORAGE_KEYS = {
   FAVORITES: 'zgym_guest_food_favorites',
   ACTIVE_PLAN: 'zgym_guest_active_plan',
   PLAN_PROGRESS_PREFIX: 'zgym_guest_plan_progress_',
+  DAILY_PLAN_PREFS: 'zgym_guest_daily_plan_prefs',
 };
 
 // Returns current Asia/Dhaka date YYYY-MM-DD
@@ -253,6 +271,109 @@ export const guestStorage = {
     const updated = list.filter((b) => b.id !== burnId);
     this.saveExerciseBurns(date, updated);
     return updated;
+  },
+
+  updateExerciseBurn(
+    date: string,
+    burnId: string,
+    updates: Partial<Omit<GuestExerciseBurn, 'id'>>
+  ): GuestExerciseBurn[] {
+    const list = this.getExerciseBurns(date);
+    const updated = list.map((b) => (b.id === burnId ? { ...b, ...updates } : b));
+    this.saveExerciseBurns(date, updated);
+    return updated;
+  },
+
+  getYesterdayDhakaDateString(): string {
+    if (typeof window === 'undefined') return '2026-11-02';
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return getDhakaDateString(d);
+  },
+
+  getYesterdayExerciseBurns(): GuestExerciseBurn[] {
+    if (typeof window === 'undefined') return [];
+    const yesterdayDate = this.getYesterdayDhakaDateString();
+    return this.getExerciseBurns(yesterdayDate);
+  },
+
+  repeatYesterdayWorkout(todayDate: string = getDhakaDateString()): GuestExerciseBurn[] {
+    const yesterdayBurns = this.getYesterdayExerciseBurns();
+    if (yesterdayBurns.length === 0) return this.getExerciseBurns(todayDate);
+
+    const todayBurns = this.getExerciseBurns(todayDate);
+    const copied: GuestExerciseBurn[] = yesterdayBurns.map((b) => ({
+      ...b,
+      id: `burn_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    }));
+
+    const combined = [...todayBurns, ...copied];
+    this.saveExerciseBurns(todayDate, combined);
+    return combined;
+  },
+
+  getPast7DaysBurnSummary(todayDate: string = getDhakaDateString()): Array<{
+    date: string;
+    dayLabel: string;
+    dayLabelBn: string;
+    burnedKcal: number;
+    isToday: boolean;
+  }> {
+    if (typeof window === 'undefined') return [];
+    const result: Array<{
+      date: string;
+      dayLabel: string;
+      dayLabelBn: string;
+      burnedKcal: number;
+      isToday: boolean;
+    }> = [];
+
+    const dayLabelsEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayLabelsBn = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'];
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = getDhakaDateString(d);
+      const burns = this.getExerciseBurns(dateStr);
+      const burnedKcal = burns.reduce((acc, b) => acc + (b.burnedKcal || 0), 0);
+      const dayOfWeek = d.getDay();
+
+      result.push({
+        date: dateStr,
+        dayLabel: dayLabelsEn[dayOfWeek],
+        dayLabelBn: dayLabelsBn[dayOfWeek],
+        burnedKcal,
+        isToday: dateStr === todayDate,
+      });
+    }
+
+    return result;
+  },
+
+  getDailyPlanPreferences(): DailyPlanPreferences {
+    if (typeof window === 'undefined') return { weeklyGoalKg: -0.5, splitRatio: 0.7 };
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.DAILY_PLAN_PREFS);
+      if (!raw) return { weeklyGoalKg: -0.5, splitRatio: 0.7 };
+      const parsed = JSON.parse(raw);
+      return {
+        weeklyGoalKg: typeof parsed.weeklyGoalKg === 'number' ? parsed.weeklyGoalKg : -0.5,
+        splitRatio: typeof parsed.splitRatio === 'number' ? parsed.splitRatio : 0.7,
+        targetWorkoutBurnKcal: parsed.targetWorkoutBurnKcal,
+      };
+    } catch {
+      return { weeklyGoalKg: -0.5, splitRatio: 0.7 };
+    }
+  },
+
+  saveDailyPlanPreferences(prefs: DailyPlanPreferences): void {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(STORAGE_KEYS.DAILY_PLAN_PREFS, JSON.stringify(prefs));
+    } catch {
+      // ignore
+    }
   },
 
   getFavorites(): string[] {

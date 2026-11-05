@@ -423,17 +423,17 @@ Here is the complete checklist of all environment variables required by Z-Gym He
   - [x] d) Added unit tests for CSV parser, Bangla UTF-8 text, quotes, duplicates, validation (`src/server/utils/csv-parser.test.ts`, 10 tests), and Playwright verification flow at 360, 744, 1280.
   - [x] Verification: TypeScript clean, ESLint clean, 97/97 unit tests pass, Turbopack production build succeeds (92/92 routes), Playwright screenshots captured at 360, 744, 1280 (light & dark).
 
-- [ ] **Part 4: Professional Exercise & Calorie-Burn Section** (`feat: pro exercise burn and daily plan`)
-  - [ ] a) 40+ Compendium of Physical Activities catalog in `/calculator` with codes, categories, and estimate flags.
-  - [ ] b) Professional logging UI with search, category chips, Recent/Favorites, duration chips + NumberField, live preview, edit/delete.
-  - [ ] c) Distance + time fields for running/walking/cycling with live speed & pace, speed-to-MET interpolation, treadmill incline ACSM formula (net burn).
-  - [ ] d) Optional strength mode (sets x reps x rest or duration).
-  - [ ] e) Extra NET burn formula `(MET - 1) * kg * hours`, routine multiplier excluding workouts (1.2, 1.375, 1.55), profile migration & modal note.
-  - [ ] f) Daily plan card ('আজকের হিসাব'): target eat, target burn, logged totals, net/remaining, rings, weekly deficit/surplus goal, 70/30 split slider, 7-day mini chart, post-workout tip.
-  - [ ] g) Framer Motion delight: animated rings, burn goal celebration, streak logging integration, repeat yesterday's workout.
-  - [ ] h) Fix sticky header translucency bug (solid opaque background in light and dark mode).
-  - [ ] i) Unit tests for speed/pace/incline/net burn/plan math/migration + Playwright workout logging flow.
-  - [ ] Verification: typecheck, lint, test, build, Playwright screenshots at 360, 744, 1280 (light & dark).
+- [x] **Part 4: Professional Exercise & Calorie-Burn Section** (`feat: pro exercise burn and daily plan`)
+  - [x] a) 40+ Compendium of Physical Activities catalog in `src/server/seeds/activities.data.ts` with Compendium codes, categories (Cardio, Strength, Core & Mobility, Bodyweight & HIIT, Sports popular in BD), verified/estimate flags, and MET values for Light/Moderate/Vigorous.
+  - [x] b) Professional logging UI with search, category chips, Recent/Favorites, duration quick chips (10, 20, 30, 45, 60 min) + NumberField, live preview before adding, edit and delete logged exercises.
+  - [x] c) Distance + time fields for running/walking/cycling with live speed (km/h) and pace (min/sec per km), speed-to-MET interpolation from Compendium tables, treadmill incline ACSM formula (`running VO2 = 0.2*S + 0.9*S*G + 3.5`, `walking VO2 = 0.1*S + 1.8*S*G + 3.5`, subtracting resting 3.5 for net burn), and sanity warnings.
+  - [x] d) Optional strength mode (sets x reps x rest estimated active time: `(sets * reps * 4s + sets * rest_s) / 60` or total workout time).
+  - [x] e) Extra NET burn formula `(MET - 1) * kg * hours` with formula drawer explanation preventing double-counting resting calories; routine multiplier in target profile asking for routine EXCLUDING workouts (1.2, 1.375, 1.55) with explicit helper text and legacy profile migration.
+  - [x] f) Daily plan card ('আজকের হিসাব'): target eat, target burn, logged totals, net/remaining, progress bars, weekly deficit/surplus goal (0.25/0.5/0.75 kg loss, 0.25/0.5 kg gain, maintain), eat-less vs burn-more split slider (70/30 default, 50/50, 80/20, 100/0), clinical safe floors (male 1500, female 1200 kcal), 7-day mini chart of burned vs target, projected weekly weight change, post-workout recovery nutrition tip.
+  - [x] g) Framer Motion delight: animated bars, burn goal celebration glow, streak logging integration in Asia/Dhaka timezone, and 'Repeat yesterday's workout' quick button.
+  - [x] h) Fixed sticky header translucency bug: replaced semi-transparent blur with solid opaque `bg-background border-b border-border shadow-sm` in light and dark mode so scrolling page text never shows through behind buttons.
+  - [x] i) Added unit tests for speed/pace/incline/net burn/plan math (`src/server/services/pro-exercise-burn.test.ts`, 14 tests) & Playwright verification at 360, 744, 1280 in light and dark mode (24 screenshots in `screenshots/part4/`).
+  - [x] Verification: TypeScript clean, ESLint clean, 111/111 unit tests pass, Turbopack production build succeeds (92/92 routes).
 
 - [ ] **Part 5: Final Checks** (`chore: final batch checks`)
   - [ ] Full test suite & production build with `NODE_ENV=production` & `NEXT_PUBLIC_APP_URL`.
@@ -444,5 +444,5 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 
 ## Current Status
 
-- **Current focus:** Final Batch Z — Part 4 (Professional exercise & calorie-burn section).
-- **Last updated:** 2026-11-05 23:46 UTC+6
+- **Current focus:** Final Batch Z — Part 5 (Final checks, documentation, and verification).
+- **Last updated:** 2026-11-06 00:02 UTC+6

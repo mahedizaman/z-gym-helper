@@ -46,10 +46,8 @@ export function Navbar() {
       <header
         style={{ zIndex: Z_INDEX.header }}
         className={cn(
-          'sticky top-0 w-full transition-all duration-300',
-          scrolled
-            ? 'py-2.5 glass-panel border-b border-border/40 shadow-sm'
-            : 'py-4 bg-background/80 backdrop-blur-md'
+          'sticky top-0 w-full transition-all duration-200 bg-background border-b border-border shadow-sm',
+          scrolled ? 'py-2.5' : 'py-4'
         )}
       >
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl flex items-center justify-between gap-4">

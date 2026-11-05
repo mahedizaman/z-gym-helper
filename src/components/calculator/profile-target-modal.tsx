@@ -230,22 +230,43 @@ export function ProfileTargetModal({
             />
           </div>
 
-          {/* Activity Level */}
+          {/* Daily Routine Multiplier (Excluding Workouts) */}
           <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground block mb-1.5">
-              {t('দৈনিক শারীরিক পরিশ্রম', 'Daily Activity Level')}
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground block">
+                {t('দৈনিক সাধারণ কাজের ধরন (ব্যায়াম ছাড়া)', 'Daily Routine (Excluding Workouts)')}
+              </label>
+              <span className="text-[10px] font-bold text-lime-brand uppercase">
+                {t('দ্বিগুণ গণনা রোধ', 'No Double Count')}
+              </span>
+            </div>
             <select
-              value={activityLevel}
+              value={
+                activityLevel === 'sedentary'
+                  ? 'sedentary'
+                  : activityLevel === 'light'
+                  ? 'light'
+                  : 'moderate'
+              }
               onChange={(e) => setActivityLevel(e.target.value as ActivityLevel)}
               className="w-full px-3.5 py-2.5 rounded-xl bg-secondary/80 border border-border text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand cursor-pointer"
             >
-              <option value="sedentary">{t('অলস / ডেস্কে বসে কাজ (Sedentary, 1.2x)', 'Sedentary (Little or no exercise, desk work, 1.2x)')}</option>
-              <option value="light">{t('হালকা এক্টিভ (Light 1-3 দিন/সপ্তাহ, 1.375x)', 'Light (1-3 days exercise/week, 1.375x)')}</option>
-              <option value="moderate">{t('মাঝারি এক্টিভ (Moderate 3-5 দিন/সপ্তাহ, 1.55x)', 'Moderate (3-5 days workout/week, 1.55x)')}</option>
-              <option value="active">{t('উচ্চ এক্টিভ (Active 6-7 দিন তীব্র জিম, 1.725x)', 'Active (6-7 days intense gym, 1.725x)')}</option>
-              <option value="very_active">{t('পেশাদার অ্যাথলেট (Very Active দ্বিগুণ সেশন, 1.9x)', 'Very Active (Twice per day training / athlete, 1.9x)')}</option>
+              <option value="sedentary">
+                {t('অলস / ডেস্কে বসে কাজ, হাঁটাচলা কম (Sedentary 1.2x)', 'Sedentary — Desk job, minimal walking (1.2x)')}
+              </option>
+              <option value="light">
+                {t('হালকা সক্রিয় — ডেস্কে কাজ + কিছু হাঁটাচলা (Lightly Active 1.375x)', 'Lightly Active — Desk job + errands / walking (1.375x)')}
+              </option>
+              <option value="moderate">
+                {t('সক্রিয় — বেশিরভাগ সময় দাঁড়িয়ে বা হেঁটে কাজ (On feet most of day 1.55x)', 'On feet most of the day — Standing, retail, teaching (1.55x)')}
+              </option>
             </select>
+            <p className="mt-1.5 text-[11px] text-muted-foreground leading-normal">
+              {t(
+                'এখানে জিম বা স্পোর্টস অন্তর্ভুক্ত করবেন না; সেগুলো নিচে আলাদাভাবে লগ করবেন যাতে ক্যালোরি দুইবার গণনা না হয়।',
+                'Do not include gym or sports here; log them below so you do not count them twice.'
+              )}
+            </p>
           </div>
 
           {/* Fitness Goal */}
