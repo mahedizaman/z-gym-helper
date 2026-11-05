@@ -399,7 +399,50 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 
 ---
 
+## Final Batch Z Plan & Checklist
+
+- [x] **Part 1: Announcement Bug & Admin Errors** (`fix: announcement validation and admin errors`)
+  - [x] a) Derived `authorEmail` and author `id` from server admin session; harmonized Zod schema, API route, and Mongoose model (`src/server/models/announcement.model.ts` is now single source of truth, duplicate definitions in `social.model.ts` removed).
+  - [x] b) Supported single-language announcements (Bangla or English), mirroring the provided text to the other language automatically.
+  - [x] c) Replaced `window.alert` in all admin forms (announcements, foods, exercises, users) with rich floating toast notifications, friendly bilingual messages, and field-level error messages.
+  - [x] d) Translated broadcast confirmation dialog to match the active site language with live preview of the entered title/content.
+  - [x] e) Graceful FCM push degradation: announcements are saved and displayed in the in-app bell even when Firebase env is absent/misconfigured, showing an informative admin toast.
+  - [x] f) Added schema alignment unit tests (`announcement-schema-alignment.test.ts`, 7 tests) & Playwright verification at 360, 744, 1280 in light and dark mode.
+  - [x] Verification: TypeScript clean, ESLint clean, 86/86 unit tests pass, Turbopack production build succeeds.
+
+- [ ] **Part 2: Honest Copy & Canonical URL** (`fix: honest copy, canonical url`)
+  - [ ] a) Audit and verify honest copy ('আনুমানিক' / 'estimates', unverified estimates notice, future-proof 'ফ্রি' copy).
+  - [ ] b) Verify canonical, sitemap, robots, and og:url derive strictly from `NEXT_PUBLIC_APP_URL` without unowned domain fallback, failing in production if missing.
+  - [ ] c) Show discreet 'Admin' link in desktop nav and mobile menu ONLY for server-verified admin users (`session?.user?.role === 'admin'`).
+  - [ ] Verification: typecheck, lint, test, build, Playwright screenshots at 360, 744, 1280 (light & dark).
+
+- [ ] **Part 3: Database-Backed Public Data & Owner Food Import** (`feat: admin food import, db-backed public data`)
+  - [ ] a) Audit public foods, search, modal picker, calculator, exercises, plans; migrate public reads to MongoDB with seed fallback and revalidation cache.
+  - [ ] b) Admin UTF-8 CSV bulk import for foods with downloadable template, Bangla support, duplicate detection (skip/update), Zod validation, row preview, audit log, rate limiting.
+  - [ ] c) Support `public/foods/` image path with neutral placeholder fallback; document image asset placement.
+  - [ ] d) Unit tests for CSV parser, duplicates, validation, and Playwright import-to-search flow.
+  - [ ] Verification: typecheck, lint, test, build, Playwright screenshots at 360, 744, 1280 (light & dark).
+
+- [ ] **Part 4: Professional Exercise & Calorie-Burn Section** (`feat: pro exercise burn and daily plan`)
+  - [ ] a) 40+ Compendium of Physical Activities catalog in `/calculator` with codes, categories, and estimate flags.
+  - [ ] b) Professional logging UI with search, category chips, Recent/Favorites, duration chips + NumberField, live preview, edit/delete.
+  - [ ] c) Distance + time fields for running/walking/cycling with live speed & pace, speed-to-MET interpolation, treadmill incline ACSM formula (net burn).
+  - [ ] d) Optional strength mode (sets x reps x rest or duration).
+  - [ ] e) Extra NET burn formula `(MET - 1) * kg * hours`, routine multiplier excluding workouts (1.2, 1.375, 1.55), profile migration & modal note.
+  - [ ] f) Daily plan card ('আজকের হিসাব'): target eat, target burn, logged totals, net/remaining, rings, weekly deficit/surplus goal, 70/30 split slider, 7-day mini chart, post-workout tip.
+  - [ ] g) Framer Motion delight: animated rings, burn goal celebration, streak logging integration, repeat yesterday's workout.
+  - [ ] h) Fix sticky header translucency bug (solid opaque background in light and dark mode).
+  - [ ] i) Unit tests for speed/pace/incline/net burn/plan math/migration + Playwright workout logging flow.
+  - [ ] Verification: typecheck, lint, test, build, Playwright screenshots at 360, 744, 1280 (light & dark).
+
+- [ ] **Part 5: Final Checks** (`chore: final batch checks`)
+  - [ ] Full test suite & production build with `NODE_ENV=production` & `NEXT_PUBLIC_APP_URL`.
+  - [ ] Secret / `.env` audit via `git ls-files`.
+  - [ ] Update README.md and PROGRESS.md with CSV import instructions, env vars, image placement.
+
+---
+
 ## Current Status
 
-- **Current focus:** Fix Batch D complete.
-- **Last updated:** 2026-11-04 23:54 UTC+6
+- **Current focus:** Final Batch Z — Part 2 (Honest copy and canonical URL).
+- **Last updated:** 2026-11-05 23:27 UTC+6

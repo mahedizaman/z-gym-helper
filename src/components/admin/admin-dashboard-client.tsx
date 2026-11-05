@@ -11,6 +11,9 @@ import {
   Shield,
   Search,
   CheckCircle2,
+  AlertCircle,
+  Info,
+  X,
   Send,
   Plus,
   Edit2,
@@ -117,9 +120,19 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
     contentBn: '',
     type: 'info' as 'info' | 'update' | 'warning' | 'celebration',
   });
+  const [announcementErrors, setAnnouncementErrors] = useState<{ title?: string; content?: string }>({});
   const [showConfirmSendModal, setShowConfirmSendModal] = useState(false);
   const [sendingAnnouncement, setSendingAnnouncement] = useState(false);
   const [announcementFeedback, setAnnouncementFeedback] = useState<string | null>(null);
+
+  // Toast System
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const showToast = useCallback((message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast((curr) => (curr?.message === message ? null : curr));
+    }, 4500);
+  }, []);
 
   // Foods Tab Data
   const [foods, setFoods] = useState<AdminFood[]>([]);
@@ -288,12 +301,29 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
         );
         fetchMetrics();
         fetchAuditLogs();
+        showToast(
+          isBn
+            ? newDisabledState
+              ? 'ইউজার সফলভাবে নিষ্ক্রিয় করা হয়েছে'
+              : 'ইউজারের অ্যাকাউন্ট পুনরায় সক্রিয় করা হয়েছে'
+            : newDisabledState
+              ? 'User suspended successfully'
+              : 'User suspension lifted successfully',
+          'success'
+        );
       } else {
-        const errJson = await res.json();
-        alert(errJson.error || 'Action failed');
+        const errJson = await res.json().catch(() => ({}));
+        showToast(
+          errJson.message ||
+            (isBn ? 'ব্যবহারকারীর স্ট্যাটাস পরিবর্তন ব্যর্থ হয়েছে' : (errJson.error || 'Action failed')),
+          'error'
+        );
       }
     } catch {
-      alert('Error updating user status');
+      showToast(
+        isBn ? 'নেটওয়ার্ক ত্রুটি: ব্যবহারকারীর স্ট্যাটাস আপডেট করা যায়নি' : 'Error updating user status',
+        'error'
+      );
     } finally {
       setActionUserId(null);
     }
@@ -310,6 +340,8 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
         body: JSON.stringify(announcementForm),
       });
 
+      const json = await res.json().catch(() => ({}));
+
       if (res.ok) {
         setShowConfirmSendModal(false);
         setAnnouncementForm({
@@ -319,15 +351,29 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
           contentBn: '',
           type: 'info',
         });
-        setAnnouncementFeedback('Announcement dispatched successfully to all devices!');
+        setAnnouncementErrors({});
+        const feedbackMsg = json.pushSent
+          ? isBn
+            ? 'ঘোষণা সফলভাবে ব্রডকাস্ট করা হয়েছে!'
+            : 'Announcement dispatched successfully to all devices!'
+          : isBn
+            ? 'ঘোষণা সফলভাবে সংরক্ষিত হয়েছে (পুশ নোটিফিকেশন স্কিপ করা হয়েছে)'
+            : 'Announcement saved successfully (push notification skipped)';
+        setAnnouncementFeedback(feedbackMsg);
+        showToast(feedbackMsg, json.pushSent ? 'success' : 'info');
         fetchAnnouncements();
         fetchAuditLogs();
       } else {
-        const json = await res.json();
-        alert(json.error || 'Failed to dispatch announcement');
+        const errorMsg =
+          json.message ||
+          (isBn ? 'ঘোষণা পাঠানো সম্ভব হয়নি' : (json.error || 'Failed to dispatch announcement'));
+        showToast(errorMsg, 'error');
       }
     } catch {
-      alert('Network error while dispatching announcement');
+      showToast(
+        isBn ? 'নেটওয়ার্ক ত্রুটি: ঘোষণা পাঠানো যায়নি' : 'Network error while dispatching announcement',
+        'error'
+      );
     } finally {
       setSendingAnnouncement(false);
     }
@@ -339,7 +385,11 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
     setFoodError(null);
 
     if (editingFood?.verified && (!editingFood.source || !editingFood.source.trim())) {
-      setFoodError('Source citation is strictly mandatory when marking a food item as verified');
+      const msg = isBn
+        ? 'ভেরিফাইড হিসেবে চিহ্নিত করার জন্য সুনির্দিষ্ট তথ্যসূত্র (source) প্রদান করা বাধ্যতামূলক।'
+        : 'Source citation is strictly mandatory when marking a food item as verified';
+      setFoodError(msg);
+      showToast(msg, 'error');
       return;
     }
 
@@ -374,17 +424,27 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
         }),
       });
 
+      const json = await res.json().catch(() => ({}));
+
       if (res.ok) {
         setFoodModalOpen(false);
         setEditingFood(null);
+        showToast(
+          isBn ? 'খাদ্য তালিকা সফলভাবে হালনাগাদ করা হয়েছে' : 'Food item saved successfully',
+          'success'
+        );
         fetchFoods();
         fetchAuditLogs();
       } else {
-        const json = await res.json();
-        setFoodError(json.error || 'Failed to save food');
+        const errorMsg =
+          json.message || (isBn ? 'খাদ্য তথ্য সংরক্ষণ করা যায়নি' : (json.error || 'Failed to save food'));
+        setFoodError(errorMsg);
+        showToast(errorMsg, 'error');
       }
     } catch {
-      setFoodError('Network error saving food');
+      const errorMsg = isBn ? 'নেটওয়ার্ক ত্রুটি: খাদ্য তথ্য সংরক্ষিত হয়নি' : 'Network error saving food';
+      setFoodError(errorMsg);
+      showToast(errorMsg, 'error');
     }
   };
 
@@ -395,7 +455,11 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
 
     const youtubeId = editingExercise?.youtubeId?.trim() || '';
     if (youtubeId && !/^[a-zA-Z0-9_-]{11}$/.test(youtubeId)) {
-      setExerciseError('YouTube ID must be an 11-character code or left completely blank');
+      const msg = isBn
+        ? 'ইউটিউব আইডি অবশ্যই ১১-অক্ষরের কোড হতে হবে অথবা সম্পূর্ণ খালি রাখতে হবে'
+        : 'YouTube ID must be an 11-character code or left completely blank';
+      setExerciseError(msg);
+      showToast(msg, 'error');
       return;
     }
 
@@ -408,7 +472,10 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          slug: editingExercise?.slug || editingExercise?.nameEn?.toLowerCase().replace(/\s+/g, '-') || 'exercise',
+          slug:
+            editingExercise?.slug ||
+            editingExercise?.nameEn?.toLowerCase().replace(/\s+/g, '-') ||
+            'exercise',
           nameBn: editingExercise?.nameBn || '',
           nameEn: editingExercise?.nameEn || '',
           muscle: editingExercise?.muscle || 'chest',
@@ -419,22 +486,67 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
         }),
       });
 
+      const json = await res.json().catch(() => ({}));
+
       if (res.ok) {
         setExerciseModalOpen(false);
         setEditingExercise(null);
+        showToast(
+          isBn ? 'ব্যায়ামের তথ্য সফলভাবে সংরক্ষণ করা হয়েছে' : 'Exercise saved successfully',
+          'success'
+        );
         fetchExercises();
         fetchAuditLogs();
       } else {
-        const json = await res.json();
-        setExerciseError(json.error || 'Failed to save exercise');
+        const errorMsg =
+          json.message ||
+          (isBn ? 'ব্যায়ামের তথ্য সংরক্ষণ করা যায়নি' : (json.error || 'Failed to save exercise'));
+        setExerciseError(errorMsg);
+        showToast(errorMsg, 'error');
       }
     } catch {
-      setExerciseError('Network error saving exercise');
+      const errorMsg = isBn ? 'নেটওয়ার্ক ত্রুটি: ব্যায়াম সংরক্ষিত হয়নি' : 'Network error saving exercise';
+      setExerciseError(errorMsg);
+      showToast(errorMsg, 'error');
     }
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 max-w-7xl py-6 md:py-10 space-y-8">
+    <div className="container mx-auto px-4 sm:px-6 max-w-7xl py-6 md:py-10 space-y-8 relative">
+      {/* Admin Floating Toast Notification */}
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{ zIndex: Z_INDEX.toast }}
+          className={`fixed top-6 left-1/2 -translate-x-1/2 max-w-md w-[calc(100%-2rem)] px-4 py-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 text-xs sm:text-sm font-bold border transition-all animate-in fade-in slide-in-from-top-4 ${
+            toast.type === 'success'
+              ? 'bg-lime-brand text-ink-base border-lime-hover shadow-lime-brand/20'
+              : toast.type === 'info'
+                ? 'bg-card text-foreground border-border shadow-black/20'
+                : 'bg-tomato-brand text-white border-tomato-deep shadow-tomato-brand/20'
+          }`}
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            {toast.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-ink-base" />
+            ) : toast.type === 'info' ? (
+              <Info className="w-4 h-4 shrink-0 text-lime-brand" />
+            ) : (
+              <AlertCircle className="w-4 h-4 shrink-0 text-white" />
+            )}
+            <span className="truncate">{toast.message}</span>
+          </div>
+          <button
+            onClick={() => setToast(null)}
+            className="opacity-70 hover:opacity-100 transition-opacity p-1 rounded-lg shrink-0 cursor-pointer"
+            aria-label="Close"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Top Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-3xl bg-ink-surface border border-lime-brand/30 text-white shadow-xl">
         <div className="space-y-1">
@@ -684,84 +796,140 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
+                const errors: { title?: string; content?: string } = {};
+                const hasTitle = Boolean(
+                  (announcementForm.title && announcementForm.title.trim().length >= 2) ||
+                    (announcementForm.titleBn && announcementForm.titleBn.trim().length >= 2)
+                );
+                const hasContent = Boolean(
+                  (announcementForm.content && announcementForm.content.trim().length >= 2) ||
+                    (announcementForm.contentBn && announcementForm.contentBn.trim().length >= 2)
+                );
+
+                if (!hasTitle) {
+                  errors.title = isBn
+                    ? 'কমপক্ষে একটি ভাষায় শিরোনাম (বাংলা অথবা ইংরেজি) লিখুন'
+                    : 'Please provide a title in at least one language (Bangla or English)';
+                }
+                if (!hasContent) {
+                  errors.content = isBn
+                    ? 'কমপক্ষে একটি ভাষায় বিবরণ (বাংলা অথবা ইংরেজি) লিখুন'
+                    : 'Please provide content in at least one language (Bangla or English)';
+                }
+
+                setAnnouncementErrors(errors);
+                if (Object.keys(errors).length > 0) return;
+
                 setShowConfirmSendModal(true);
               }}
               className="space-y-4"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <div className="flex justify-between text-xs font-bold text-foreground mb-1">
-                    <span>{isBn ? 'শিরোনাম (বাংলা)' : 'Title (Bangla)'} *</span>
-                    <span className="text-muted-foreground">{announcementForm.titleBn.length}/100</span>
+              <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <div className="flex justify-between text-xs font-bold text-foreground mb-1">
+                      <span>{isBn ? 'শিরোনাম (বাংলা)' : 'Title (Bangla)'}</span>
+                      <span className="text-muted-foreground">{announcementForm.titleBn.length}/100</span>
+                    </div>
+                    <input
+                      type="text"
+                      maxLength={100}
+                      value={announcementForm.titleBn}
+                      onChange={(e) => {
+                        setAnnouncementForm({ ...announcementForm, titleBn: e.target.value });
+                        if (announcementErrors.title) {
+                          setAnnouncementErrors((prev) => ({ ...prev, title: undefined }));
+                        }
+                      }}
+                      placeholder="যেমন: নতুন ফিটনেস চ্যালেঞ্জ শুরু হয়েছে!"
+                      className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand"
+                    />
                   </div>
-                  <input
-                    type="text"
-                    required
-                    maxLength={100}
-                    value={announcementForm.titleBn}
-                    onChange={(e) =>
-                      setAnnouncementForm({ ...announcementForm, titleBn: e.target.value })
-                    }
-                    placeholder="যেমন: নতুন ফিটনেস চ্যালেঞ্জ শুরু হয়েছে!"
-                    className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand"
-                  />
-                </div>
 
-                <div>
-                  <div className="flex justify-between text-xs font-bold text-foreground mb-1">
-                    <span>{isBn ? 'শিরোনাম (English)' : 'Title (English)'} *</span>
-                    <span className="text-muted-foreground">{announcementForm.title.length}/100</span>
+                  <div>
+                    <div className="flex justify-between text-xs font-bold text-foreground mb-1">
+                      <span>{isBn ? 'শিরোনাম (English)' : 'Title (English)'}</span>
+                      <span className="text-muted-foreground">{announcementForm.title.length}/100</span>
+                    </div>
+                    <input
+                      type="text"
+                      maxLength={100}
+                      value={announcementForm.title}
+                      onChange={(e) => {
+                        setAnnouncementForm({ ...announcementForm, title: e.target.value });
+                        if (announcementErrors.title) {
+                          setAnnouncementErrors((prev) => ({ ...prev, title: undefined }));
+                        }
+                      }}
+                      placeholder="e.g. New 30-Day Fitness Challenge Live!"
+                      className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand"
+                    />
                   </div>
-                  <input
-                    type="text"
-                    required
-                    maxLength={100}
-                    value={announcementForm.title}
-                    onChange={(e) =>
-                      setAnnouncementForm({ ...announcementForm, title: e.target.value })
-                    }
-                    placeholder="e.g. New 30-Day Fitness Challenge Live!"
-                    className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand"
-                  />
                 </div>
+                {announcementErrors.title && (
+                  <p className="text-xs text-tomato-brand font-semibold pt-1">
+                    {announcementErrors.title}
+                  </p>
+                )}
+                <p className="text-[11px] text-muted-foreground">
+                  {isBn
+                    ? '* যেকোনো একটি ভাষায় শিরোনাম পূরণ করা বাধ্যতামূলক (অন্যটি স্বয়ংক্রিয়ভাবে পূরণ হবে)'
+                    : '* Title in at least one language is required (the other will be mirrored automatically)'}
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <div className="flex justify-between text-xs font-bold text-foreground mb-1">
-                    <span>{isBn ? 'বার্তা বিবরণ (বাংলা)' : 'Content (Bangla)'} *</span>
-                    <span className="text-muted-foreground">{announcementForm.contentBn.length}/500</span>
+              <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <div className="flex justify-between text-xs font-bold text-foreground mb-1">
+                      <span>{isBn ? 'বার্তা বিবরণ (বাংলা)' : 'Content (Bangla)'}</span>
+                      <span className="text-muted-foreground">{announcementForm.contentBn.length}/500</span>
+                    </div>
+                    <textarea
+                      rows={3}
+                      maxLength={500}
+                      value={announcementForm.contentBn}
+                      onChange={(e) => {
+                        setAnnouncementForm({ ...announcementForm, contentBn: e.target.value });
+                        if (announcementErrors.content) {
+                          setAnnouncementErrors((prev) => ({ ...prev, content: undefined }));
+                        }
+                      }}
+                      placeholder="বিস্তারিত বিবরণ..."
+                      className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand"
+                    />
                   </div>
-                  <textarea
-                    required
-                    rows={3}
-                    maxLength={500}
-                    value={announcementForm.contentBn}
-                    onChange={(e) =>
-                      setAnnouncementForm({ ...announcementForm, contentBn: e.target.value })
-                    }
-                    placeholder="বিস্তারিত বিবরণ..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand"
-                  />
-                </div>
 
-                <div>
-                  <div className="flex justify-between text-xs font-bold text-foreground mb-1">
-                    <span>{isBn ? 'বার্তা বিবরণ (English)' : 'Content (English)'} *</span>
-                    <span className="text-muted-foreground">{announcementForm.content.length}/500</span>
+                  <div>
+                    <div className="flex justify-between text-xs font-bold text-foreground mb-1">
+                      <span>{isBn ? 'বার্তা বিবরণ (English)' : 'Content (English)'}</span>
+                      <span className="text-muted-foreground">{announcementForm.content.length}/500</span>
+                    </div>
+                    <textarea
+                      rows={3}
+                      maxLength={500}
+                      value={announcementForm.content}
+                      onChange={(e) => {
+                        setAnnouncementForm({ ...announcementForm, content: e.target.value });
+                        if (announcementErrors.content) {
+                          setAnnouncementErrors((prev) => ({ ...prev, content: undefined }));
+                        }
+                      }}
+                      placeholder="Announcement details..."
+                      className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand"
+                    />
                   </div>
-                  <textarea
-                    required
-                    rows={3}
-                    maxLength={500}
-                    value={announcementForm.content}
-                    onChange={(e) =>
-                      setAnnouncementForm({ ...announcementForm, content: e.target.value })
-                    }
-                    placeholder="Announcement details..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-lime-brand"
-                  />
                 </div>
+                {announcementErrors.content && (
+                  <p className="text-xs text-tomato-brand font-semibold pt-1">
+                    {announcementErrors.content}
+                  </p>
+                )}
+                <p className="text-[11px] text-muted-foreground">
+                  {isBn
+                    ? '* যেকোনো একটি ভাষায় বিবরণ পূরণ করা বাধ্যতামূলক (অন্যটি স্বয়ংক্রিয়ভাবে পূরণ হবে)'
+                    : '* Content in at least one language is required (the other will be mirrored automatically)'}
+                </p>
               </div>
 
               <div>
@@ -820,22 +988,30 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
                   </p>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-secondary/50 border border-border text-xs space-y-1">
-                  <span className="font-bold text-foreground block">{announcementForm.titleBn}</span>
-                  <p className="text-muted-foreground">{announcementForm.contentBn}</p>
+                <div className="p-3.5 rounded-2xl bg-secondary/50 border border-border text-xs space-y-1.5">
+                  <span className="font-bold text-foreground block text-sm">
+                    {isBn
+                      ? announcementForm.titleBn || announcementForm.title
+                      : announcementForm.title || announcementForm.titleBn}
+                  </span>
+                  <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
+                    {isBn
+                      ? announcementForm.contentBn || announcementForm.content
+                      : announcementForm.content || announcementForm.contentBn}
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-2 pt-2">
                   <button
                     onClick={() => setShowConfirmSendModal(false)}
-                    className="flex-1 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs transition-colors"
+                    className="flex-1 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs transition-colors cursor-pointer"
                   >
                     {isBn ? 'বাতিল' : 'Cancel'}
                   </button>
                   <button
                     onClick={handleSendAnnouncement}
                     disabled={sendingAnnouncement}
-                    className="flex-1 py-2 rounded-xl bg-lime-brand hover:bg-lime-hover text-ink-base font-bold text-xs uppercase transition-colors shadow-md disabled:opacity-50"
+                    className="flex-1 py-2.5 rounded-xl bg-lime-brand hover:bg-lime-hover text-ink-base font-bold text-xs uppercase transition-colors shadow-md disabled:opacity-50 cursor-pointer"
                   >
                     {sendingAnnouncement
                       ? isBn

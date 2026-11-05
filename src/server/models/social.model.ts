@@ -78,56 +78,6 @@ export const ChallengeModel: Model<IChallenge> =
   mongoose.models.Challenge ||
   mongoose.model<IChallenge>('Challenge', ChallengeSchema);
 
-// Announcement Collection
-export interface IAnnouncement extends Document {
-  titleBn: string;
-  titleEn: string;
-  bodyBn: string;
-  bodyEn: string;
-  type: 'info' | 'alert' | 'feature';
-  authorEmail: string;
-  createdAt: Date;
-}
-
-const AnnouncementSchema = new Schema<IAnnouncement>(
-  {
-    titleBn: { type: String, required: true },
-    titleEn: { type: String, required: true },
-    bodyBn: { type: String, required: true },
-    bodyEn: { type: String, required: true },
-    type: {
-      type: String,
-      enum: ['info', 'alert', 'feature'],
-      default: 'info',
-    },
-    authorEmail: { type: String, required: true },
-  },
-  { timestamps: { createdAt: true, updatedAt: false } }
-);
-
-export const AnnouncementModel: Model<IAnnouncement> =
-  mongoose.models.Announcement ||
-  mongoose.model<IAnnouncement>('Announcement', AnnouncementSchema);
-
-// Push Token Collection
-export interface IPushToken extends Document {
-  userId: string;
-  token: string;
-  topics: string[];
-  createdAt: Date;
-  lastSeenAt: Date;
-}
-
-const PushTokenSchema = new Schema<IPushToken>(
-  {
-    userId: { type: String, required: true, index: true },
-    token: { type: String, required: true, unique: true },
-    topics: [{ type: String }],
-    lastSeenAt: { type: Date, default: Date.now },
-  },
-  { timestamps: { createdAt: true, updatedAt: false } }
-);
-
-export const PushTokenModel: Model<IPushToken> =
-  mongoose.models.PushToken ||
-  mongoose.model<IPushToken>('PushToken', PushTokenSchema);
+// Re-export Announcement & PushToken models from their canonical files
+export { AnnouncementModel, type IAnnouncement } from './announcement.model';
+export { PushTokenModel, type IPushToken } from './push-token.model';
