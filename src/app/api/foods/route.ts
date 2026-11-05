@@ -5,6 +5,24 @@ import { FoodSearchQuerySchema } from '@/server/validators';
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
+
+    // Return full food catalog for client-side instant caching & search
+    if (searchParams.get('all') === 'true') {
+      const allFoods = await foodService.getAllFoods();
+      return NextResponse.json(
+        {
+          success: true,
+          data: allFoods,
+          total: allFoods.length,
+        },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+          },
+        }
+      );
+    }
+
     const parsed = FoodSearchQuerySchema.safeParse({
       q: searchParams.get('q') || '',
       category: searchParams.get('category') || undefined,

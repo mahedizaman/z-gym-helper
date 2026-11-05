@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { exerciseService } from '@/server/services/exercise.service';
 import { CORE_EXERCISES_DATA } from '@/server/seeds/exercises.data';
 import { getExerciseImages } from '@/server/seeds/exercise-images.data';
 import { ExerciseDetailClient } from '@/components/exercise/exercise-detail-client';
@@ -18,7 +19,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const exercise = CORE_EXERCISES_DATA.find((e) => e.slug === slug);
+  const exercise =
+    (await exerciseService.getExerciseBySlug(slug)) ||
+    CORE_EXERCISES_DATA.find((e) => e.slug === slug);
 
   if (!exercise) {
     return {
@@ -54,7 +57,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 async function ExerciseDetailContent({ params }: PageProps) {
   const { slug } = await params;
-  const exercise = CORE_EXERCISES_DATA.find((e) => e.slug === slug);
+  const exercise =
+    (await exerciseService.getExerciseBySlug(slug)) ||
+    CORE_EXERCISES_DATA.find((e) => e.slug === slug);
 
   if (!exercise) {
     notFound();

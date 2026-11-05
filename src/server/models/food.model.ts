@@ -31,7 +31,8 @@ export interface IFood extends Document {
     | 'eggs_dairy'
     | 'vegetables_bhorta'
     | 'fruits'
-    | 'snacks_beverages';
+    | 'snacks_beverages'
+    | 'other';
   image?: string;
   per100g: IFoodPer100g;
   servings: IFoodServing[];
@@ -83,13 +84,14 @@ const FoodSchema = new Schema<IFood>(
         'vegetables_bhorta',
         'fruits',
         'snacks_beverages',
+        'other',
       ],
       index: true,
     },
     image: { type: String },
     per100g: { type: FoodPer100gSchema, required: true },
     servings: { type: [FoodServingSchema], default: [] },
-    source: { type: String, required: true },
+    source: { type: String, default: '', trim: true },
     verified: { type: Boolean, default: false, index: true },
   },
   { timestamps: true }

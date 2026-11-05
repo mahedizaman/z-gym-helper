@@ -15,7 +15,9 @@ export interface SeedFood {
     | 'eggs_dairy'
     | 'vegetables_bhorta'
     | 'fruits'
-    | 'snacks_beverages';
+    | 'snacks_beverages'
+    | 'other';
+  image?: string;
   per100g: {
     kcal: number;
     protein: number;

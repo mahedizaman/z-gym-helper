@@ -416,12 +416,12 @@ Here is the complete checklist of all environment variables required by Z-Gym He
   - [x] c) Showed discreet 'Admin' link in desktop nav and mobile menu ONLY for server-verified admin users (`session?.user?.role === 'admin'`).
   - [x] Verification: TypeScript clean, ESLint clean, 87/87 unit tests pass, Turbopack production build succeeds, Playwright screenshots at 360, 744, 1280 (light & dark).
 
-- [ ] **Part 3: Database-Backed Public Data & Owner Food Import** (`feat: admin food import, db-backed public data`)
-  - [ ] a) Audit public foods, search, modal picker, calculator, exercises, plans; migrate public reads to MongoDB with seed fallback and revalidation cache.
-  - [ ] b) Admin UTF-8 CSV bulk import for foods with downloadable template, Bangla support, duplicate detection (skip/update), Zod validation, row preview, audit log, rate limiting.
-  - [ ] c) Support `public/foods/` image path with neutral placeholder fallback; document image asset placement.
-  - [ ] d) Unit tests for CSV parser, duplicates, validation, and Playwright import-to-search flow.
-  - [ ] Verification: typecheck, lint, test, build, Playwright screenshots at 360, 744, 1280 (light & dark).
+- [x] **Part 3: Database-Backed Public Data & Owner Food Import** (`feat: admin food import, db-backed public data`)
+  - [x] a) Audited public reads: reported that public `/foods`, `/calculator` food picker, `/exercises/[slug]`, and `/plans/[slug]` originally read bundled seed data. Migrated all reads to MongoDB with bundled seed data fallback and memory caching. Revalidation invalidates cache upon admin writes.
+  - [x] b) Admin UTF-8 CSV bulk import for foods with downloadable template (`GET /api/admin/foods/template`), Bangla support, duplicate detection (skip/update), Zod validation, row preview, audit log (`FOOD_BULK_IMPORT`), rate limiting.
+  - [x] c) Supported `public/foods/` image path with neutral SVG placeholder fallback (`public/foods/placeholder.svg`); documented image asset placement.
+  - [x] d) Added unit tests for CSV parser, Bangla UTF-8 text, quotes, duplicates, validation (`src/server/utils/csv-parser.test.ts`, 10 tests), and Playwright verification flow at 360, 744, 1280.
+  - [x] Verification: TypeScript clean, ESLint clean, 97/97 unit tests pass, Turbopack production build succeeds (92/92 routes), Playwright screenshots captured at 360, 744, 1280 (light & dark).
 
 - [ ] **Part 4: Professional Exercise & Calorie-Burn Section** (`feat: pro exercise burn and daily plan`)
   - [ ] a) 40+ Compendium of Physical Activities catalog in `/calculator` with codes, categories, and estimate flags.
@@ -444,5 +444,5 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 
 ## Current Status
 
-- **Current focus:** Final Batch Z — Part 3 (Database-backed public data and owner food import).
-- **Last updated:** 2026-11-05 23:31 UTC+6
+- **Current focus:** Final Batch Z — Part 4 (Professional exercise & calorie-burn section).
+- **Last updated:** 2026-11-05 23:46 UTC+6

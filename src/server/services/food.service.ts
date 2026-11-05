@@ -18,19 +18,62 @@ export interface FoodSearchResult {
   totalPages: number;
 }
 
-// In-memory Fuse.js instance for instant fallback & offline-capable fuzzy search
-const fuse = new Fuse(BANGLADESHI_FOODS_DATA, {
-  keys: [
-    { name: 'nameBn', weight: 0.5 },
-    { name: 'nameEn', weight: 0.4 },
-    { name: 'aliases', weight: 0.3 },
-  ],
-  threshold: 0.4,
-  includeScore: true,
-  ignoreLocation: true,
-});
+let cachedFoods: (IFood | SeedFood)[] | null = null;
+let fuseInstance: Fuse<IFood | SeedFood> | null = null;
+
+function getFuse(foods: (IFood | SeedFood)[]) {
+  if (!fuseInstance) {
+    fuseInstance = new Fuse(foods, {
+      keys: [
+        { name: 'nameBn', weight: 0.5 },
+        { name: 'nameEn', weight: 0.4 },
+        { name: 'aliases', weight: 0.3 },
+      ],
+      threshold: 0.4,
+      includeScore: true,
+      ignoreLocation: true,
+    });
+  }
+  return fuseInstance;
+}
 
 export const foodService = {
+  /**
+   * Retrieves all foods with MongoDB Atlas priority and bundled seed fallback.
+   * Cached in-memory with instant on-demand cache invalidation on admin writes.
+   */
+  async getAllFoods(): Promise<(IFood | SeedFood)[]> {
+    if (cachedFoods && cachedFoods.length > 0) {
+      return cachedFoods;
+    }
+
+    const db = await connectToDatabase();
+    if (db) {
+      try {
+        const dbFoods = await FoodModel.find({}).sort({ createdAt: -1 }).lean();
+        if (dbFoods && dbFoods.length > 0) {
+          cachedFoods = dbFoods as IFood[];
+          fuseInstance = null;
+          return cachedFoods;
+        }
+      } catch (err) {
+        console.warn('FoodModel.find failed, using bundled seed data fallback:', err);
+      }
+    }
+
+    cachedFoods = BANGLADESHI_FOODS_DATA;
+    fuseInstance = null;
+    return cachedFoods;
+  },
+
+  /**
+   * Invalidates food memory cache so newly imported or edited foods show immediately.
+   */
+  invalidateCache() {
+    cachedFoods = null;
+    fuseInstance = null;
+  },
+
   /**
    * Search foods with fuzzy bilingual matching and database / memory fallback
    */
@@ -38,17 +81,15 @@ export const foodService = {
     const { q = '', category, page = 1, limit = 20 } = options;
     const db = await connectToDatabase();
 
-    // If MongoDB Atlas is connected, use DB query
-    if (db) {
+    // If MongoDB Atlas is connected and text query provided, attempt direct DB search
+    if (db && q.trim()) {
       try {
         const queryFilter: Record<string, unknown> = {};
         if (category && category !== 'all') {
           queryFilter.category = category;
         }
 
-        if (q.trim()) {
-          queryFilter.$text = { $search: q.trim() };
-        }
+        queryFilter.$text = { $search: q.trim() };
 
         const skip = (page - 1) * limit;
         const [foods, total] = await Promise.all([
@@ -56,7 +97,7 @@ export const foodService = {
           FoodModel.countDocuments(queryFilter),
         ]);
 
-        if (total > 0 || !q.trim()) {
+        if (total > 0) {
           return {
             foods: foods as IFood[],
             total,
@@ -66,18 +107,20 @@ export const foodService = {
           };
         }
       } catch (err) {
-        console.warn('MongoDB search failed or returned 0, using Fuse.js fallback:', err);
+        console.warn('MongoDB text search fallback to dynamic dataset Fuse:', err);
       }
     }
 
-    // High-performance Fuse.js in-memory search fallback
-    let matches: SeedFood[] = BANGLADESHI_FOODS_DATA;
+    // Dynamic Fuse.js in-memory search over complete dataset (DB foods or seed fallback)
+    const allFoods = await this.getAllFoods();
+    let matches: (IFood | SeedFood)[] = allFoods;
 
     if (category && category !== 'all') {
       matches = matches.filter((item) => item.category === category);
     }
 
     if (q.trim()) {
+      const fuse = getFuse(allFoods);
       const searchResults = fuse.search(q.trim());
       matches = searchResults.map((res) => res.item);
       if (category && category !== 'all') {
@@ -112,9 +155,9 @@ export const foodService = {
       }
     }
 
-    // Fallback to searching in-memory dataset
+    const allFoods = await this.getAllFoods();
     return (
-      BANGLADESHI_FOODS_DATA.find(
+      allFoods.find(
         (f) =>
           f.nameEn.toLowerCase() === idOrName.toLowerCase() ||
           f.nameBn === idOrName
@@ -133,6 +176,7 @@ export const foodService = {
         if (count > 0) return count;
       } catch {}
     }
-    return BANGLADESHI_FOODS_DATA.length;
+    const allFoods = await this.getAllFoods();
+    return allFoods.length;
   },
 };

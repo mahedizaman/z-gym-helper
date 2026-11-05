@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/lib/language-context';
-import { BANGLADESHI_FOODS_DATA } from '@/server/seeds/foods.data';
+import { BANGLADESHI_FOODS_DATA, type SeedFood } from '@/server/seeds/foods.data';
 import { FoodCard } from '@/components/foods/food-card';
 import { MedicalDisclaimer } from '@/components/legal/medical-disclaimer';
 import { AdSlot } from '@/components/ads/ad-slot';
@@ -26,10 +26,27 @@ type SortOption =
 
 export default function FoodsPage() {
   const { t } = useLanguage();
+  const [foodsList, setFoodsList] = useState<SeedFood[]>(BANGLADESHI_FOODS_DATA);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const [visibleCount, setVisibleCount] = useState<number>(24);
+
+  // Sync with MongoDB-backed public API on mount
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/foods?all=true')
+      .then((res) => res.json())
+      .then((json) => {
+        if (isMounted && json?.success && Array.isArray(json.data) && json.data.length > 0) {
+          setFoodsList(json.data);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const categories = [
     { id: 'all', labelBn: 'সব খাবার', labelEn: 'All Foods' },
@@ -45,7 +62,7 @@ export default function FoodsPage() {
 
   // Client-side filtering & fuzzy match
   const filteredFoods = useMemo(() => {
-    let result = [...BANGLADESHI_FOODS_DATA];
+    let result = [...foodsList];
 
     // Category filter
     if (selectedCategory !== 'all') {
@@ -59,7 +76,7 @@ export default function FoodsPage() {
         (item) =>
           item.nameBn.includes(q) ||
           item.nameEn.toLowerCase().includes(q) ||
-          item.aliases.some((a) => a.toLowerCase().includes(q))
+          item.aliases?.some((a) => a.toLowerCase().includes(q))
       );
     }
 
@@ -85,7 +102,7 @@ export default function FoodsPage() {
     }
 
     return result;
-  }, [searchQuery, selectedCategory, sortBy]);
+  }, [foodsList, searchQuery, selectedCategory, sortBy]);
 
   const displayedFoods = filteredFoods.slice(0, visibleCount);
 
@@ -99,8 +116,8 @@ export default function FoodsPage() {
               <Utensils className="w-3.5 h-3.5" />
               <span>
                 {t(
-                  `৩০০+ দেশি খাবার পুষ্টি ডেটাবেজ (${BANGLADESHI_FOODS_DATA.length}টি খাদ্য)`,
-                  `300+ Bangladeshi Food Catalog (${BANGLADESHI_FOODS_DATA.length} Items)`
+                  `৩০০+ দেশি খাবার পুষ্টি ডেটাবেজ (${foodsList.length}টি খাদ্য)`,
+                  `300+ Bangladeshi Food Catalog (${foodsList.length} Items)`
                 )}
               </span>
             </div>

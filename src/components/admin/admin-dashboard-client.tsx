@@ -20,6 +20,9 @@ import {
   Lock,
   ExternalLink,
   RefreshCw,
+  Upload,
+  Download,
+  FileText,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -33,6 +36,7 @@ import {
 import { NumberField } from '@/components/ui/number-field';
 import { Z_INDEX } from '@/config/z-index';
 import { useLanguage } from '@/lib/language-context';
+import { parseFoodCsv, type CsvParseResult } from '@/server/utils/csv-parser';
 import type { AdminMetrics } from '@/server/services/admin.service';
 
 interface AdminUser {
@@ -139,6 +143,14 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
   const [editingFood, setEditingFood] = useState<Partial<AdminFood> | null>(null);
   const [foodModalOpen, setFoodModalOpen] = useState(false);
   const [foodError, setFoodError] = useState<string | null>(null);
+
+  // CSV Bulk Import State
+  const [csvModalOpen, setCsvModalOpen] = useState(false);
+  const [csvParsed, setCsvParsed] = useState<CsvParseResult | null>(null);
+  const [csvFileName, setCsvFileName] = useState('');
+  const [importMode, setImportMode] = useState<'skip' | 'update'>('skip');
+  const [markVerified, setMarkVerified] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
 
   // Exercises Tab Data
   const [exercises, setExercises] = useState<AdminExercise[]>([]);
@@ -445,6 +457,82 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
       const errorMsg = isBn ? 'নেটওয়ার্ক ত্রুটি: খাদ্য তথ্য সংরক্ষিত হয়নি' : 'Network error saving food';
       setFoodError(errorMsg);
       showToast(errorMsg, 'error');
+    }
+  };
+
+  // Handle CSV File Selection & Client-Side Parse
+  const handleCsvFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      showToast(isBn ? 'দয়া করে একটি .csv ফাইল নির্বাচন করুন' : 'Please select a valid .csv file', 'error');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast(isBn ? 'ফাইলের আকার ৫ মেগাবাইটের কম হতে হবে' : 'File size must be under 5MB', 'error');
+      return;
+    }
+
+    setCsvFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = (event.target?.result as string) || '';
+      const result = parseFoodCsv(text, { markVerified });
+      setCsvParsed(result);
+      if (result.validRows.length === 0 && result.invalidRows.length > 0) {
+        showToast(isBn ? 'CSV ফাইলে কোনো বৈধ খাদ্য তথ্য পাওয়া যায়নি' : 'No valid food items found in CSV', 'error');
+      } else {
+        showToast(
+          isBn
+            ? `${result.validRows.length}টি খাদ্য প্রিভিউয়ের জন্য তৈরি`
+            : `Parsed ${result.validRows.length} valid food rows`,
+          'info'
+        );
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  };
+
+  // Handle Bulk Import Execution
+  const handleExecuteImport = async () => {
+    if (!csvParsed || csvParsed.validRows.length === 0) return;
+    setIsImporting(true);
+
+    try {
+      const res = await fetch('/api/admin/foods/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          foods: csvParsed.validRows,
+          mode: importMode,
+          markVerified,
+        }),
+      });
+
+      const json = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        setCsvModalOpen(false);
+        setCsvParsed(null);
+        setCsvFileName('');
+        showToast(
+          isBn
+            ? `ইমপোর্ট সফল: ${json.inserted}টি যুক্ত, ${json.updated}টি আপডেট, ${json.skipped}টি স্কিপ`
+            : `Import success: ${json.inserted} inserted, ${json.updated} updated, ${json.skipped} skipped`,
+          'success'
+        );
+        fetchFoods();
+        fetchAuditLogs();
+      } else {
+        showToast(
+          json.message || (isBn ? 'খাদ্য ইমপোর্ট ব্যর্থ হয়েছে' : 'Failed to import foods'),
+          'error'
+        );
+      }
+    } catch {
+      showToast(isBn ? 'নেটওয়ার্ক ত্রুটির কারণে ইমপোর্ট করা যায়নি' : 'Network error during import', 'error');
+    } finally {
+      setIsImporting(false);
     }
   };
 
@@ -1207,23 +1295,49 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
               </p>
             </div>
 
-            <button
-              onClick={() => {
-                setEditingFood({
-                  nameBn: '',
-                  nameEn: '',
-                  category: 'grains',
-                  source: '',
-                  verified: false,
-                  per100g: { kcal: 100, protein: 3, carbs: 20, fat: 1, fiber: 1 },
-                });
-                setFoodModalOpen(true);
-              }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-lime-brand hover:bg-lime-hover text-ink-base font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer self-start sm:self-auto"
-            >
-              <Plus className="w-4 h-4" />
-              <span>{isBn ? 'নতুন খাবার যুক্ত করুন' : 'Add New Food'}</span>
-            </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <a
+                href="/api/admin/foods/template"
+                download="zgym_foods_template.csv"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer border border-border"
+                title={isBn ? 'নমুনা CSV টেমপ্লেট ডাউনলোড করুন' : 'Download sample CSV template'}
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>{isBn ? 'টেমপ্লেট' : 'Template'}</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCsvModalOpen(true);
+                  setCsvParsed(null);
+                  setCsvFileName('');
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-lime-brand font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer border border-lime-brand/40 shadow-xs"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>{isBn ? 'CSV বাল্ক ইমপোর্ট' : 'Bulk CSV Import'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingFood({
+                    nameBn: '',
+                    nameEn: '',
+                    category: 'grains',
+                    source: '',
+                    verified: false,
+                    per100g: { kcal: 100, protein: 3, carbs: 20, fat: 1, fiber: 1 },
+                  });
+                  setFoodModalOpen(true);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-lime-brand hover:bg-lime-hover text-ink-base font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer shadow-md"
+              >
+                <Plus className="w-4 h-4" />
+                <span>{isBn ? 'নতুন খাবার যুক্ত করুন' : 'Add New Food'}</span>
+              </button>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -1451,6 +1565,219 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {/* CSV Bulk Import Modal */}
+          {csvModalOpen && (
+            <div
+              role="dialog"
+              aria-modal="true"
+              style={{ zIndex: Z_INDEX.modal }}
+              className="fixed inset-0 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+            >
+              <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-card text-card-foreground border-2 border-border p-6 sm:p-8 shadow-2xl space-y-5">
+                <div className="flex items-center justify-between pb-3 border-b border-border">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-2xl bg-lime-brand/10 text-lime-brand flex items-center justify-center">
+                      <Upload className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-display font-black text-xl text-foreground">
+                        {isBn ? 'CSV ফাইল থেকে খাদ্য ইমপোর্ট' : 'Bulk Food CSV Import'}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        {isBn
+                          ? 'UTF-8 এনকোডিং সমর্থিত (বাংলা নাম ও বিবরণ সহ)'
+                          : 'Supports UTF-8 CSV with Bangla staple names'}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setCsvModalOpen(false);
+                      setCsvParsed(null);
+                      setCsvFileName('');
+                    }}
+                    className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* File Upload / Drag area */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-foreground">
+                      {isBn ? 'CSV ফাইল নির্বাচন করুন' : 'Select CSV File'}
+                    </label>
+                    <a
+                      href="/api/admin/foods/template"
+                      download="zgym_foods_template.csv"
+                      className="text-xs font-bold text-lime-brand hover:underline inline-flex items-center gap-1"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>{isBn ? 'নমুনা টেমপ্লেট ডাউনলোড' : 'Download Sample Template'}</span>
+                    </a>
+                  </div>
+
+                  <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border/80 hover:border-lime-brand/60 rounded-2xl cursor-pointer bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                    <FileText className="w-8 h-8 text-lime-brand mb-2" />
+                    <span className="text-xs font-bold text-foreground">
+                      {csvFileName
+                        ? csvFileName
+                        : isBn
+                          ? 'ফাইল নির্বাচন করতে এখানে ক্লিক করুন'
+                          : 'Click to choose .csv file'}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground mt-1">
+                      {isBn ? 'সর্বোচ্চ ২০০০ সারি ও ৫ মেগাবাইট' : 'Up to 2,000 rows & 5MB'}
+                    </span>
+                    <input
+                      type="file"
+                      accept=".csv,text/csv"
+                      onChange={handleCsvFileSelected}
+                      className="sr-only"
+                    />
+                  </label>
+                </div>
+
+                {/* Options: Duplicate Handling & Verification */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-secondary/40 border border-border text-xs">
+                  <div className="space-y-1.5">
+                    <label className="font-bold text-foreground block">
+                      {isBn ? 'ডুপ্লিকেট নাম পাওয়া গেলে:' : 'Duplicate Name Handling:'}
+                    </label>
+                    <div className="flex items-center gap-4">
+                      <label className="inline-flex items-center gap-1.5 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="importMode"
+                          value="skip"
+                          checked={importMode === 'skip'}
+                          onChange={() => setImportMode('skip')}
+                          className="text-lime-brand cursor-pointer"
+                        />
+                        <span>{isBn ? 'স্কিপ করুন' : 'Skip'}</span>
+                      </label>
+                      <label className="inline-flex items-center gap-1.5 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="importMode"
+                          value="update"
+                          checked={importMode === 'update'}
+                          onChange={() => setImportMode('update')}
+                          className="text-lime-brand cursor-pointer"
+                        />
+                        <span>{isBn ? 'আপডেট করুন' : 'Update Existing'}</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 sm:justify-end">
+                    <label className="inline-flex items-center gap-2 cursor-pointer font-bold text-foreground">
+                      <input
+                        type="checkbox"
+                        checked={markVerified}
+                        onChange={(e) => {
+                          setMarkVerified(e.target.checked);
+                          if (csvParsed) {
+                            setCsvParsed({
+                              ...csvParsed,
+                              validRows: csvParsed.validRows.map((r) => ({
+                                ...r,
+                                verified: Boolean(e.target.checked && r.source?.trim()),
+                              })),
+                            });
+                          }
+                        }}
+                        className="w-4 h-4 rounded text-lime-brand cursor-pointer"
+                      />
+                      <span>
+                        {isBn
+                          ? 'সোর্স থাকলে ভেরিফায়েড মার্ক করুন'
+                          : 'Mark rows with source as verified'}
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Preview Table & Summary */}
+                {csvParsed && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-xs font-bold">
+                      <span className="text-lime-brand">
+                        ✓ {isBn ? `বৈধ খাদ্য: ${csvParsed.validRows.length}টি` : `Valid items: ${csvParsed.validRows.length}`}
+                      </span>
+                      {csvParsed.duplicateCount > 0 && (
+                        <span className="text-amber-500">
+                          ⚠ {isBn ? `ডুপ্লিকেট: ${csvParsed.duplicateCount}টি` : `Duplicates in CSV: ${csvParsed.duplicateCount}`}
+                        </span>
+                      )}
+                      {csvParsed.invalidRows.length > 0 && (
+                        <span className="text-tomato-brand">
+                          ✕ {isBn ? `ত্রুটিযুক্ত: ${csvParsed.invalidRows.length}টি` : `Invalid rows: ${csvParsed.invalidRows.length}`}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="max-h-52 overflow-y-auto rounded-xl border border-border text-xs">
+                      <table className="w-full text-left">
+                        <thead className="bg-secondary sticky top-0 text-muted-foreground uppercase text-[10px]">
+                          <tr>
+                            <th className="py-2 px-2.5">বাংলা নাম</th>
+                            <th className="py-2 px-2.5">English</th>
+                            <th className="py-2 px-2.5">ক্যালোরি</th>
+                            <th className="py-2 px-2.5">প্রোটিন</th>
+                            <th className="py-2 px-2.5">সোর্স</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/60">
+                          {csvParsed.validRows.slice(0, 10).map((r, i) => (
+                            <tr key={i} className="hover:bg-secondary/30">
+                              <td className="py-2 px-2.5 font-bold text-foreground">{r.nameBn}</td>
+                              <td className="py-2 px-2.5 text-muted-foreground">{r.nameEn}</td>
+                              <td className="py-2 px-2.5 font-mono text-tomato-brand">{r.kcal}</td>
+                              <td className="py-2 px-2.5 font-mono text-lime-brand">{r.protein}g</td>
+                              <td className="py-2 px-2.5 truncate max-w-[120px] text-muted-foreground">
+                                {r.source || '—'}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCsvModalOpen(false);
+                      setCsvParsed(null);
+                    }}
+                    className="px-4 py-2.5 rounded-xl bg-secondary text-foreground text-xs font-bold hover:bg-secondary/80 cursor-pointer"
+                  >
+                    {isBn ? 'বাতিল' : 'Cancel'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleExecuteImport}
+                    disabled={!csvParsed || csvParsed.validRows.length === 0 || isImporting}
+                    className="px-6 py-2.5 rounded-xl bg-lime-brand hover:bg-lime-hover text-ink-base text-xs font-bold uppercase tracking-wider shadow-md disabled:opacity-50 cursor-pointer"
+                  >
+                    {isImporting
+                      ? isBn
+                        ? 'ইমপোর্ট হচ্ছে...'
+                        : 'Importing...'
+                      : isBn
+                        ? `ইমপোর্ট সম্পন্ন করুন (${csvParsed?.validRows.length || 0})`
+                        : `Import ${csvParsed?.validRows.length || 0} Foods`}
+                  </button>
+                </div>
               </div>
             </div>
           )}

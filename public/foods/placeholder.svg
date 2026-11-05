@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" rx="24" fill="#1A211E" />
+  <circle cx="100" cy="100" r="54" fill="#0F1412" stroke="#2D3732" stroke-width="3" />
+  <path d="M78 86c0-12 10-22 22-22s22 10 22 22v6H78v-6z" fill="#A9F26B" opacity="0.85" />
+  <rect x="74" y="92" width="52" height="8" rx="4" fill="#C0C5CB" />
+  <path d="M84 104h32c0 14-8 24-16 24s-16-10-16-24z" fill="#FF6347" opacity="0.85" />
+  <text x="100" y="152" fill="#8E959D" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1">Z-GYM NUTRITION</text>
+</svg>

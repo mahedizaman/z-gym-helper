@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/lib/language-context';
 import { BANGLADESHI_FOODS_DATA, type SeedFood } from '@/server/seeds/foods.data';
 import { type MealSlotKey } from '@/lib/guest-storage';
@@ -22,6 +22,7 @@ export function FoodPickerModal({
   onSelectFood,
 }: FoodPickerModalProps) {
   const { t, locale } = useLanguage();
+  const [foodsList, setFoodsList] = useState<SeedFood[]>(BANGLADESHI_FOODS_DATA);
   const [query, setQuery] = useState('');
   const [selectedFood, setSelectedFood] = useState<SeedFood | null>(null);
   const [selectedServingIdx, setSelectedServingIdx] = useState<number>(0);
@@ -29,18 +30,34 @@ export function FoodPickerModal({
   const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
   const [isPreWorkout, setIsPreWorkout] = useState<boolean>(false);
 
+  // Sync with MongoDB-backed public API
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/foods?all=true')
+      .then((res) => res.json())
+      .then((json) => {
+        if (isMounted && json?.success && Array.isArray(json.data) && json.data.length > 0) {
+          setFoodsList(json.data);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const filteredFoods = useMemo(() => {
     if (!query.trim()) {
-      return BANGLADESHI_FOODS_DATA.slice(0, 15);
+      return foodsList.slice(0, 15);
     }
     const q = query.toLowerCase().trim();
-    return BANGLADESHI_FOODS_DATA.filter(
+    return foodsList.filter(
       (f) =>
         f.nameBn.includes(q) ||
         f.nameEn.toLowerCase().includes(q) ||
-        f.aliases.some((a) => a.toLowerCase().includes(q))
+        f.aliases?.some((a) => a.toLowerCase().includes(q))
     ).slice(0, 25);
-  }, [query]);
+  }, [foodsList, query]);
 
   if (!isOpen) return null;
 

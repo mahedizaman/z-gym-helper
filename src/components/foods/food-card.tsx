@@ -103,6 +103,24 @@ export function FoodCard({ food, onAddToMeal }: FoodCardProps) {
           </span>
         </div>
 
+        {/* Optional Image with Neutral Placeholder Fallback */}
+        {food.image && (
+          <div className="relative w-full h-32 rounded-2xl overflow-hidden bg-secondary/80 mt-3 border border-border/50">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={food.image}
+              alt={locale === 'bn' ? food.nameBn : food.nameEn}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                if (!target.src.endsWith('/foods/placeholder.svg')) {
+                  target.src = '/foods/placeholder.svg';
+                }
+              }}
+            />
+          </div>
+        )}
+
         {/* Title */}
         <h3 className="font-display font-black text-xl sm:text-2xl uppercase tracking-tight text-foreground group-hover:text-lime-brand transition-colors line-clamp-1">
           {locale === 'bn' ? food.nameBn : food.nameEn}

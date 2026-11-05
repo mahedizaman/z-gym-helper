@@ -1,7 +1,8 @@
 import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { WORKOUT_PLANS_DATA } from '@/server/seeds/plans.data';
+import { planService } from '@/server/services/plan.service';
+import { WORKOUT_PLANS_DATA, type SeedPlan } from '@/server/seeds/plans.data';
 import { PlanDetailClient } from '@/components/plans/plan-detail-client';
 import { APP_CONFIG } from '@/config/app';
 
@@ -17,7 +18,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const plan = WORKOUT_PLANS_DATA.find((p) => p.slug === slug);
+  const plan =
+    (await planService.getPlanBySlug(slug)) ||
+    WORKOUT_PLANS_DATA.find((p) => p.slug === slug);
 
   if (!plan) {
     return {
@@ -53,13 +56,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 async function PlanDetailContent({ params }: PageProps) {
   const { slug } = await params;
-  const plan = WORKOUT_PLANS_DATA.find((p) => p.slug === slug);
+  const plan =
+    (await planService.getPlanBySlug(slug)) ||
+    WORKOUT_PLANS_DATA.find((p) => p.slug === slug);
 
   if (!plan) {
     notFound();
   }
 
-  return <PlanDetailClient plan={plan} />;
+  return <PlanDetailClient plan={plan as unknown as SeedPlan} />;
 }
 
 export default function PlanDetailPage({ params }: PageProps) {
