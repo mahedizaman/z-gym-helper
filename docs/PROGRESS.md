@@ -435,14 +435,16 @@ Here is the complete checklist of all environment variables required by Z-Gym He
   - [x] i) Added unit tests for speed/pace/incline/net burn/plan math (`src/server/services/pro-exercise-burn.test.ts`, 14 tests) & Playwright verification at 360, 744, 1280 in light and dark mode (24 screenshots in `screenshots/part4/`).
   - [x] Verification: TypeScript clean, ESLint clean, 111/111 unit tests pass, Turbopack production build succeeds (92/92 routes).
 
-- [ ] **Part 5: Final Checks** (`chore: final batch checks`)
-  - [ ] Full test suite & production build with `NODE_ENV=production` & `NEXT_PUBLIC_APP_URL`.
-  - [ ] Secret / `.env` audit via `git ls-files`.
-  - [ ] Update README.md and PROGRESS.md with CSV import instructions, env vars, image placement.
+- [x] **Part 5: Final Checks** (`chore: final batch checks`)
+  - [x] Full test suite (111/111 vitest tests passing across 12 suites).
+  - [x] Production build with `NODE_ENV=production` & `NEXT_PUBLIC_APP_URL=https://z-gym-helper.vercel.app` (all 92/92 static/dynamic routes compiled cleanly in Turbopack).
+  - [x] Secret / `.env` audit via `git ls-files | grep -iE 'env|service.*account|secret'`: 0 secrets, .env, or service account credentials tracked.
+  - [x] Updated `README.md` and `docs/PROGRESS.md` with CSV bulk import instructions, full real environment variable table, and food image directory guidance (`public/foods/`).
 
 ---
 
 ## Current Status
 
-- **Current focus:** Final Batch Z — Part 5 (Final checks, documentation, and verification).
-- **Last updated:** 2026-11-06 00:02 UTC+6
+- **Current focus:** Final Batch Z completed (Parts 1 to 5 fully implemented and verified).
+- **Branch state:** All tasks complete, commits ready, no remote push performed.
+- **Last updated:** 2026-11-06 00:05 UTC+6

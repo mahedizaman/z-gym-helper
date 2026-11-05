@@ -57,9 +57,9 @@ Create a `.env.local` file in the root directory. **Never commit `.env.local` or
 
 ---
 
-## 🗄️ Database Management & Seeding
+## 🗄️ Database Management, Seeding & Food CSV Import
 
-The application includes robust, resilient database CLI tooling:
+The application includes robust, resilient database CLI tooling and owner bulk administration:
 
 ### 1. Test Database Connectivity
 Verify whether your MongoDB cluster is reachable:
@@ -77,6 +77,25 @@ npm run db:seed
 - Runs in an isolated script environment loading `.env.local`.
 - Seeds foods with transparent `verified: false` status (flagged for clinical review).
 - Seeds verified YouTube form technique videos and public-domain exercise illustrations.
+
+### 3. Food Database CSV Bulk Import (Admin)
+Platform owners can upload large food catalogs via the `/admin` dashboard or directly through the bulk import API (`POST /api/admin/foods/import`):
+- **Download Official CSV Template:** Available in the Admin Dashboard or via `GET /api/admin/foods/template`.
+- **Supported Columns:**
+  `nameBn,nameEn,category,servingSizeGrams,servingUnit,kcal,protein,carbs,fat,fiber,bangladeshRegion,verified,source,image`
+- **Encoding & Parsing:** Fully compliant RFC 4180 UTF-8 parser supporting Bengali script (`বাংলা`), commas inside quoted strings, escaped quotes (`""`), and CRLF/LF line endings.
+- **Duplicate Strategies:**
+  - `skip`: Preserves existing database entries with the same English or Bengali food name.
+  - `update`: Overwrites calories, macros, and serving sizes with the newly uploaded row.
+- **Verification Rule:** `verified` can be set to `true` ONLY if a non-empty `source` citation is provided.
+- **Safety Limits:** Up to 2,000 rows per upload with instant preview and validation breakdown. Every import records an audit log entry (`FOOD_BULK_IMPORT`).
+
+### 4. Food Images & Asset Placement
+Food thumbnail images are stored in the public web root:
+- **Location:** Place optimized image files (WebP or JPG) in `public/foods/<image-filename>`.
+  Example: `public/foods/shorshe-ilish.webp` or `public/foods/moshur-dal.jpg`.
+- **CSV Reference:** Reference the path relative to the root in the CSV `image` column: `/foods/shorshe-ilish.webp`.
+- **Default Fallback:** If an image is missing or omitted, the application automatically displays the neutral vector placeholder at `public/foods/placeholder.svg`.
 
 ---
 
