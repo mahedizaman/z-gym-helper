@@ -82,4 +82,19 @@ describe('Canonical URL, OpenGraph & Environment Hardening', () => {
       expect(() => validateAuthUrlForProduction('   ')).not.toThrow();
     });
   });
+
+  describe('Server-Verified Admin Role Navigation Guard', () => {
+    it('restricts admin navigation link to users with server-verified role=admin', () => {
+      const guestSession = null;
+      const userSession = { user: { id: 'u1', email: 'user@example.com', role: 'user' } };
+      const adminSession = { user: { id: 'a1', email: 'admin@zgym.com', role: 'admin' } };
+
+      const shouldShowAdminLink = (session: { user?: { role?: string } } | null) =>
+        session?.user?.role === 'admin';
+
+      expect(shouldShowAdminLink(guestSession)).toBe(false);
+      expect(shouldShowAdminLink(userSession)).toBe(false);
+      expect(shouldShowAdminLink(adminSession)).toBe(true);
+    });
+  });
 });

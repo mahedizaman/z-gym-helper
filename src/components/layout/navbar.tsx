@@ -87,6 +87,21 @@ export function Navbar() {
                 </Link>
               );
             })}
+
+            {/* Discreet Admin link for server-verified admins */}
+            {session?.user?.role === 'admin' && (
+              <Link
+                href="/admin"
+                className={cn(
+                  'relative px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors duration-200 border border-lime-brand/40 text-lime-brand hover:bg-lime-brand/10',
+                  pathname.startsWith('/admin')
+                    ? 'bg-lime-brand text-ink-base dark:text-ink-base'
+                    : ''
+                )}
+              >
+                {locale === 'bn' ? 'অ্যাডমিন' : 'Admin'}
+              </Link>
+            )}
           </nav>
 
           {/* Desktop Actions */}

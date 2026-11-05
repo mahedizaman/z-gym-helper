@@ -410,11 +410,11 @@ Here is the complete checklist of all environment variables required by Z-Gym He
   - [x] f) Added schema alignment unit tests (`announcement-schema-alignment.test.ts`, 7 tests) & Playwright verification at 360, 744, 1280 in light and dark mode.
   - [x] Verification: TypeScript clean, ESLint clean, 86/86 unit tests pass, Turbopack production build succeeds.
 
-- [ ] **Part 2: Honest Copy & Canonical URL** (`fix: honest copy, canonical url`)
-  - [ ] a) Audit and verify honest copy ('আনুমানিক' / 'estimates', unverified estimates notice, future-proof 'ফ্রি' copy).
-  - [ ] b) Verify canonical, sitemap, robots, and og:url derive strictly from `NEXT_PUBLIC_APP_URL` without unowned domain fallback, failing in production if missing.
-  - [ ] c) Show discreet 'Admin' link in desktop nav and mobile menu ONLY for server-verified admin users (`session?.user?.role === 'admin'`).
-  - [ ] Verification: typecheck, lint, test, build, Playwright screenshots at 360, 744, 1280 (light & dark).
+- [x] **Part 2: Honest Copy & Canonical URL** (`fix: honest copy, canonical url`)
+  - [x] a) Audited and verified honest copy ('আনুমানিক' / 'estimates', unverified estimates notice, future-proof 'ফ্রি' copy without 100% over-claims).
+  - [x] b) Verified canonical, sitemap, robots, and og:url derive strictly from `NEXT_PUBLIC_APP_URL` without unowned domain fallback, failing in production if missing.
+  - [x] c) Showed discreet 'Admin' link in desktop nav and mobile menu ONLY for server-verified admin users (`session?.user?.role === 'admin'`).
+  - [x] Verification: TypeScript clean, ESLint clean, 87/87 unit tests pass, Turbopack production build succeeds, Playwright screenshots at 360, 744, 1280 (light & dark).
 
 - [ ] **Part 3: Database-Backed Public Data & Owner Food Import** (`feat: admin food import, db-backed public data`)
   - [ ] a) Audit public foods, search, modal picker, calculator, exercises, plans; migrate public reads to MongoDB with seed fallback and revalidation cache.
@@ -444,5 +444,5 @@ Here is the complete checklist of all environment variables required by Z-Gym He
 
 ## Current Status
 
-- **Current focus:** Final Batch Z — Part 2 (Honest copy and canonical URL).
-- **Last updated:** 2026-11-05 23:27 UTC+6
+- **Current focus:** Final Batch Z — Part 3 (Database-backed public data and owner food import).
+- **Last updated:** 2026-11-05 23:31 UTC+6
