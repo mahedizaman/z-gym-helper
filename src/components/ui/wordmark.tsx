@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Zap } from 'lucide-react';
 import { APP_CONFIG } from '@/config/app';
@@ -10,6 +12,7 @@ interface WordmarkProps {
   forceShowHelper?: boolean;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   asLink?: boolean;
+  href?: string;
 }
 
 export function Wordmark({
@@ -18,7 +21,23 @@ export function Wordmark({
   forceShowHelper = false,
   size = 'md',
   asLink = true,
+  href,
 }: WordmarkProps) {
+  const [resolvedHref, setResolvedHref] = useState(() => href || '/');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (href) {
+        setResolvedHref(href);
+      } else if (typeof window !== 'undefined') {
+        const onboarded = localStorage.getItem('zgym_onboarding_completed');
+        if (onboarded === 'true') {
+          setResolvedHref('/today');
+        }
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [href]);
   const sizeClasses = {
     sm: 'text-lg tracking-tight',
     md: 'text-2xl tracking-normal',
@@ -70,7 +89,7 @@ export function Wordmark({
 
   if (asLink) {
     return (
-      <Link href="/" className="focus:outline-none" aria-label={APP_CONFIG.name}>
+      <Link href={resolvedHref} className="focus:outline-none" aria-label={APP_CONFIG.name}>
         {content}
       </Link>
     );

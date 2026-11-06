@@ -7,9 +7,6 @@ import {
   Utensils,
   Calculator,
   Dumbbell,
-  Flame,
-  BookOpen,
-  Smartphone,
   ArrowRight,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -33,68 +30,29 @@ export function FeaturesGrid() {
     },
     {
       icon: Calculator,
-      titleBn: 'বিজ্ঞানের ভিত্তিতে ক্যালোরি হিসাব',
-      titleEn: 'Estimated BMR & TDEE Math',
+      titleBn: 'বিজ্ঞানসম্মত দৈনিক লক্ষ্য ও ট্র্যাকিং',
+      titleEn: 'Scientific Daily Targets & Tracking',
       descBn:
-        'Mifflin-St Jeor সমীকরণ ও MET এক্সারসাইজ ফর্মুলার মাধ্যমে আপনার দৈনিক ক্যালোরি ও পুষ্টি চাহিদার আনুমানিক হিসাব।',
+        'BMR, TDEE ও ম্যাক্রো অনুপাত অনুযায়ী আপনার লক্ষ্য ঠিক করুন এবং এক নজরে আজকের খাবার ও ব্যালেন্স পূরণ দেখুন।',
       descEn:
-        'Estimated daily caloric targets using Mifflin-St Jeor BMR and MET exercise burn equations, safe and realistic.',
+        'Calculate safe BMR and TDEE calorie budgets, hit your daily protein goal, and track progress effortlessly.',
       badgeBn: 'বিজ্ঞানসম্মত',
       badgeEn: 'Scientific',
       accent: 'pink',
-      href: '/calculator',
+      href: '/today',
     },
     {
       icon: Dumbbell,
-      titleBn: '৩ থেকে ৬ দিনের জিম স্প্লিট',
-      titleEn: 'Structured Gym Workout Splits',
+      titleBn: 'স্ট্রাকচার্ড জিম ওয়ার্কআউট ও স্ট্রিক',
+      titleEn: 'Structured Gym Splits & Discipline',
       descBn:
-        'ফুল বডি, আপার-লোয়ার এবং পুশ-পুল-লেগস স্প্লিট। সেটস, রেপস ও রেস্ট টাইমিং সহ সাজানো রুটিন।',
+        '৩ থেকে ৬ দিনের বিজ্ঞানসম্মত জিম স্প্লিট, সেটস, রেপস ও এশিয়া/ঢাকা টাইমজোনে স্ট্রিক ধরে রাখার সহজ ব্যবস্থা।',
       descEn:
-        'Full Body, Upper/Lower, and Push-Pull-Legs routines with sets, reps, and rest guidance for beginner to advanced.',
+        'Full Body, Upper/Lower, and Push-Pull-Legs routines with sets, reps, and Dhaka-time discipline tracking.',
       badgeBn: 'পেশাদার স্প্লিট',
       badgeEn: 'Pro Splits',
       accent: 'tomato',
       href: '/plans',
-    },
-    {
-      icon: Flame,
-      titleBn: 'এশিয়া/ঢাকা টাইমজোনে স্ট্রিক',
-      titleEn: 'Asia/Dhaka Streak Tracking',
-      descBn:
-        'প্রতিদিনের ওয়ার্কআউট ও খাবার লগে স্ট্রিক গড়ুন। শেয়ারযোগ্য গ্রাফিক্যাল প্রগ্রেস কার্ড দিয়ে বন্ধুদের অনুপ্রাণিত করুন।',
-      descEn:
-        'Maintain daily discipline tied to Dhaka time. Share customized 1080x1350 graphical progress badges with friends.',
-      badgeBn: 'ধারাবাহিকতা',
-      badgeEn: 'Consistency',
-      accent: 'pink',
-      href: '/leaderboard',
-    },
-    {
-      icon: BookOpen,
-      titleBn: 'ব্যায়ামের ফর্ম ও গাইড লাইব্রেরি',
-      titleEn: 'Exercise Guide & Form Library',
-      descBn:
-        '৩০+ কোর ব্যায়ামের ছবি, কমন ভুল, টার্গেট পেশি এবং নিরাপদ ইউটিউব ক্লিক-টু-লোড ভিডিও ফ্যাসাড।',
-      descEn:
-        '30+ core exercises with muscle maps, common mistakes, form cues, and instant YouTube click-to-load facades.',
-      badgeBn: 'নিরাপদ ফর্ম',
-      badgeEn: 'Safe Form',
-      accent: 'lime',
-      href: '/exercises',
-    },
-    {
-      icon: Smartphone,
-      titleBn: 'গেস্ট-ফার্স্ট ও অফলাইন PWA',
-      titleEn: 'Guest-First Offline PWA',
-      descBn:
-        'লগইন ছাড়াই ক্যালকুলেটর ও ফুড সার্চ ব্যবহার করুন। আপনার ব্রাউজারে বা অ্যাপ হিসেবে ইনস্টল করে অফলাইনেও চালান।',
-      descEn:
-        'No mandatory account wall. Browse tools instantly with localStorage, and install as an offline PWA on phone.',
-      badgeBn: 'ফ্রি ব্যবহারযোগ্য',
-      badgeEn: 'Installable PWA',
-      accent: 'tomato',
-      href: '/calculator',
     },
   ];
 
@@ -118,7 +76,7 @@ export function FeaturesGrid() {
         </div>
 
         {/* Features Stagger Grid */}
-        <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <Stagger className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {features.map((feature, idx) => {
             const Icon = feature.icon;
             const isLime = feature.accent === 'lime';

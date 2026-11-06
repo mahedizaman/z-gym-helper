@@ -39,7 +39,7 @@ export function FinalCTA() {
           {/* Action CTAs */}
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <PillButton
-              href="/calculator"
+              href="/today"
               variant="primary"
               size="lg"
               icon="arrow"

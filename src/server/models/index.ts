@@ -6,3 +6,4 @@ export * from './log.model';
 export * from './announcement.model';
 export * from './push-token.model';
 export * from './social.model';
+export * from './feedback.model';

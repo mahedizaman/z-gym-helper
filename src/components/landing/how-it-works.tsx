@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { useLanguage } from '@/lib/language-context';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
-import { Search, Flame, Dumbbell, Award, ArrowRight } from 'lucide-react';
+import { Search, Flame, Dumbbell, ArrowRight } from 'lucide-react';
 
 export function HowItWorks() {
   const { t } = useLanguage();
@@ -26,29 +26,20 @@ export function HowItWorks() {
     {
       num: '02',
       icon: Flame,
-      titleBn: 'BMR ও ব্যালেন্স হিসাব',
-      titleEn: 'Calculate BMR & Deficit',
-      descBn: 'Mifflin-St Jeor সূত্রের সাহায্যে আপনার ওজন কমানো বা বাড়ানোর দৈনিক লক্ষ্য ঠিক করুন।',
-      descEn: 'Find your baseline metabolic rate and calculate custom caloric deficits safely.',
+      titleBn: 'সহজ দৈনিক লক্ষ্য ঠিক করুন',
+      titleEn: 'Set Your Daily Targets',
+      descBn: 'আপনার বয়স, ওজন ও লক্ষ্য অনুযায়ী দৈনিক ক্যালোরি ও প্রোটিনের নিরাপদ লক্ষ্য জেনে নিন।',
+      descEn: 'Calculate safe personalized daily calorie and protein targets with zero jargon.',
       badge: 'Step 2',
     },
     {
       num: '03',
       icon: Dumbbell,
-      titleBn: 'ওয়ার্কআউট প্ল্যান বেছে নিন',
-      titleEn: 'Choose Your Gym Split',
-      descBn: 'আপনার রুটিন অনুযায়ী ৩, ৪, ৫ বা ৬ দিনের বৈজ্ঞানিক স্প্লিট শুরু করুন।',
-      descEn: 'Pick Full Body, Upper/Lower, or Push-Pull-Legs split with sets, reps, and rest timers.',
+      titleBn: 'ওয়ার্কআউট ও স্ট্রিক ধরে রাখুন',
+      titleEn: 'Follow Splits & Build Streaks',
+      descBn: '৩ থেকে ৬ দিনের জিম স্প্লিট মেনে চলুন এবং এশিয়া/ঢাকা সময়ে প্রতিদিনের ধারাবাহিকতা ধরে রাখুন।',
+      descEn: 'Pick a structured 3-6 day split, log exercises, and build an unbroken daily streak.',
       badge: 'Step 3',
-    },
-    {
-      num: '04',
-      icon: Award,
-      titleBn: 'স্ট্রিক গড়ুন ও শেয়ার করুন',
-      titleEn: 'Build Streak & Share Card',
-      descBn: 'এশিয়া/ঢাকা সময়ে ধারাবাহিক থাকুন এবং ইনস্টাগ্রাম সাইজের শেয়ারযোগ্য প্রগ্রেস কার্ড পান।',
-      descEn: 'Log activity in Dhaka timezone and export 1080x1350 visual milestone cards to social media.',
-      badge: 'Step 4',
     },
   ];
 

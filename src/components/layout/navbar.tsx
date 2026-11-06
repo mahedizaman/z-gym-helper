@@ -41,6 +41,13 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Listen for global open more menu requests (e.g. from bottom nav)
+  useEffect(() => {
+    const handleOpenMore = () => setMobileMenuOpen(true);
+    window.addEventListener('zgym-open-more-menu', handleOpenMore);
+    return () => window.removeEventListener('zgym-open-more-menu', handleOpenMore);
+  }, []);
+
   return (
     <>
       <header
@@ -85,6 +92,15 @@ export function Navbar() {
                 </Link>
               );
             })}
+
+            {/* Desktop More Button */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="relative px-3.5 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors cursor-pointer"
+            >
+              {t('আরও', 'More')}
+            </button>
 
             {/* Discreet Admin link for server-verified admins */}
             {session?.user?.role === 'admin' && (
@@ -153,7 +169,7 @@ export function Navbar() {
               </div>
             ) : (
               <>
-                <PillButton href="/calculator" variant="primary" size="sm" icon="arrow">
+                <PillButton href="/today" variant="primary" size="sm" icon="arrow">
                   {t('শুরু করুন', 'Get Started')}
                 </PillButton>
                 <Link

@@ -12,6 +12,7 @@ interface FoodPickerModalProps {
   isOpen: boolean;
   onClose: () => void;
   targetSlot: MealSlotKey;
+  initialFood?: SeedFood | null;
   onSelectFood: (slot: MealSlotKey, food: SeedFood, grams: number, servingLabel: string, isPreWorkout: boolean) => void;
 }
 
@@ -19,16 +20,24 @@ export function FoodPickerModal({
   isOpen,
   onClose,
   targetSlot,
+  initialFood,
   onSelectFood,
 }: FoodPickerModalProps) {
   const { t, locale } = useLanguage();
   const [foodsList, setFoodsList] = useState<SeedFood[]>(BANGLADESHI_FOODS_DATA);
   const [query, setQuery] = useState('');
-  const [selectedFood, setSelectedFood] = useState<SeedFood | null>(null);
+  const [selectedFood, setSelectedFood] = useState<SeedFood | null>(initialFood || null);
+  const [prevInitialFood, setPrevInitialFood] = useState<SeedFood | null | undefined>(initialFood);
   const [selectedServingIdx, setSelectedServingIdx] = useState<number>(0);
   const [customGrams, setCustomGrams] = useState<string>('100');
   const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
   const [isPreWorkout, setIsPreWorkout] = useState<boolean>(false);
+
+  // Adjust state during render when initialFood changes
+  if (initialFood !== prevInitialFood) {
+    setPrevInitialFood(initialFood);
+    setSelectedFood(initialFood || null);
+  }
 
   // Sync with MongoDB-backed public API
   useEffect(() => {

@@ -113,7 +113,7 @@ export function HeroSection() {
               className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4 w-full sm:w-auto"
             >
               <PillButton
-                href="/calculator"
+                href="/today"
                 variant="primary"
                 size="lg"
                 icon="arrow"

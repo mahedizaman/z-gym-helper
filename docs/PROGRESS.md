@@ -452,10 +452,48 @@ Here is the complete checklist of all environment variables required by Z-Gym He
   - [x] Added unit tests (`src/components/progress/progress-card-view.test.tsx`, 4 tests) verifying required Bangla strings (`সক্রিয় স্ট্রিক`, `ওয়ার্কআউট সম্পন্ন`, `অগ্রগতি রিপোর্ট`), opt-in weight display, and English mode.
   - [x] Verified with Playwright (`scripts/verify-progress-card-bangla.mjs`): captured and inspected exported 1080x1350 PNG with 100% correct typography.
 
+- [x] **Product Simplification Batch: Today Screen, Simpler Navigation, Onboarding & Feedback** (`feat: today screen, simpler navigation, onboarding, feedback`)
+  - [x] **1. `/today` ('আজ') Central Screen**:
+    - Created `src/app/today/page.tsx` and `src/components/today/today-client.tsx` as the single hub for both guests (localStorage) and authenticated users.
+    - Interactive calorie ring gauge comparing eaten calories vs target with remaining kcal prominently centered.
+    - Extra workout burn card comparing burned calories against target burn.
+    - 4 macro progress bars: Protein, Carbs, Fat, and Dietary Fiber (calibrated to ~14g fiber per 1000 kcal).
+    - Plain-language real-time status line summarizing what is remaining (e.g. `'প্রোটিন ৭৮ গ্রাম বাকি'`, `'ক্যালোরি ৩৫০ বাকি, প্রোটিন ৪৫ গ্রাম বাকি'`).
+    - 3 intelligent Bangladeshi food suggestions ranked by protein-to-calorie density to help close remaining targets, prefilling `FoodPickerModal` on tap.
+    - Two prominent primary action buttons: `+ খাবার` (Add Food) and `+ ব্যায়াম` (Add Workout via `QuickExerciseModal`).
+    - 4 meal slot checkmarks (Breakfast, Lunch, Snack, Dinner) with quick item count and calorie summary.
+    - Today's workout scheduled from the athlete's active split (e.g. `full-body-3`).
+    - 7-day activity discipline strip highlighting days with logged meals or workouts.
+  - [x] **2. 5-Tab Unified Navigation**:
+    - Mobile bottom bar (`src/components/layout/mobile-bottom-nav.tsx`) rendered for everyone (guests + authenticated) with 5 tabs: আজ (`/today`), খাবার (`/foods`), ব্যায়াম (`/exercises`), অগ্রগতি (`/progress`), আরও (triggering the comprehensive More drawer).
+    - Desktop navigation bar (`src/components/layout/navbar.tsx`) mirrors the exact same 5 primary items, including the 'আরও' trigger button and discreet admin badge.
+    - Placed Leaderboard, Friend Challenges, BMI & Calculators, Plan Library, Settings, About Us, and Legal links into the 'আরও' drawer.
+    - Updated Wordmark brand logo and 'Start Free' buttons to route to `/today` post-onboarding.
+  - [x] **3. First-Run Onboarding Flow**:
+    - Created `src/components/onboarding/first-run-onboarding.tsx`: 3 concise, skippable steps with sensible defaults (Goal -> Body & Age -> Daily routine excluding workouts).
+    - Only prompts once (`zgym_onboarding_completed` localStorage flag); fills targets immediately.
+  - [x] **4. Plain Language & Jargon Drawer**:
+    - Replaced raw acronyms and technical terms (BMR, TDEE, MET, Deficit) on primary screens with plain Bangla labels.
+    - Created `src/components/ui/jargon-details-drawer.tsx` giving friendly, plain explanations of baseline resting burn, total daily energy expenditure, MET intensity, and caloric deficit.
+  - [x] **5. Streamlined Landing Page**:
+    - Shortened `src/app/page.tsx` to: Hero, 3 core benefits (`FeaturesGrid`), 3-step 'how it works' (`HowItWorks`), live food search demo (`FoodSearchDemo`), FAQ accordion, and Final CTA.
+    - Moved secondary teasers out to their dedicated standalone pages (`/calculator`, `/plans`, `/exercises`, `/challenges`).
+  - [x] **6. User Feedback System**:
+    - Created `FeedbackModel` (`src/server/models/feedback.model.ts`) with 500-char max message, optional contact, and optional user relation.
+    - Created `POST /api/feedback` with rate limiting and Zod schema.
+    - Added user account deletion cascade cleanup (`FeedbackModel.deleteMany({ userId })` in `userService.deleteUserAccount`).
+    - Created `GET /api/admin/feedback` protected by `requireServerAdmin()`.
+    - Added read-only Feedback Inbox tab in `AdminDashboardClient` at `/admin`.
+    - Added 'মতামত দিন' button in the 'আরও' drawer opening `FeedbackDialog`.
+  - [x] **7. Quality & Verification**:
+    - Added pure unit tests in `src/lib/today-math.test.ts` (4 tests). Full Vitest suite has **119/119 passing tests** across 14 test files.
+    - Playwright multi-viewport automated flow (`scripts/verify-today-simplification.mjs`) verified at 360px, 744px, and 1280px in both light and dark modes: new guest onboarding -> add food -> add workout -> ring updates -> page reload persistence -> feedback dialog.
+    - TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors, 0 warnings), production build clean (95/95 routes).
+
 ---
 
 ## Current Status
 
-- **Current focus:** Progress card Bengali text shaping bug resolved and verified.
+- **Current focus:** Product simplification batch complete and verified across all viewports.
 - **Branch state:** All tasks complete, commits ready, no remote push performed.
-- **Last updated:** 2026-11-06 12:38 UTC+6
+- **Last updated:** 2026-11-06 13:43 UTC+6

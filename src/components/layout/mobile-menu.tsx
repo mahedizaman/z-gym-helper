@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
@@ -13,6 +13,13 @@ import {
   LayoutDashboard,
   LogOut,
   Zap,
+  Trophy,
+  Flame,
+  Calculator,
+  Dumbbell,
+  Settings,
+  MessageSquarePlus,
+  Sparkles,
 } from 'lucide-react';
 import {
   Dialog,
@@ -25,6 +32,7 @@ import { Wordmark } from '@/components/ui/wordmark';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { LanguageToggle } from '@/components/ui/language-toggle';
 import { PillButton } from '@/components/motion/pill-button';
+import { FeedbackDialog } from '@/components/feedback/feedback-dialog';
 import { APP_CONFIG } from '@/config/app';
 import { useLanguage } from '@/lib/language-context';
 import { cn } from '@/lib/utils';
@@ -42,6 +50,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const { data: session, status } = useSession();
   const isAuthenticated = status === 'authenticated';
 
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const curtainRef = useRef<HTMLDivElement>(null);
   const closeIconRef = useRef<HTMLButtonElement>(null);
   const isClosingRef = useRef(false);
@@ -199,6 +208,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   };
 
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogPortal>
         {/* Completely solid backdrop preventing content bleeding (instant unmount without sluggish exit transition) */}
@@ -291,6 +301,77 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               })}
             </motion.nav>
 
+            {/* MORE FEATURES & TOOLS SECTION */}
+            <div className="mt-6 pt-5 border-t border-border/80 space-y-3">
+              <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground px-2 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-lime-brand" />
+                <span>{t('আরও ফিচার ও টুলস', 'More Tools & Features')}</span>
+              </span>
+
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { href: '/leaderboard', labelBn: 'লিডারবোর্ড', labelEn: 'Leaderboard', icon: Trophy },
+                  { href: '/challenges', labelBn: 'ফ্রেন্ড চ্যালেঞ্জ', labelEn: 'Challenges', icon: Flame },
+                  { href: '/calculator', labelBn: 'বিএমআই ও ক্যালকুলেটর', labelEn: 'BMI & Calculator', icon: Calculator },
+                  { href: '/plans', labelBn: 'প্ল্যান লাইব্রেরি', labelEn: 'Plan Library', icon: Dumbbell },
+                  { href: '/settings', labelBn: 'সেটিংস', labelEn: 'Settings', icon: Settings },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={handleInstantClose}
+                      className={cn(
+                        'flex items-center gap-2.5 p-3 rounded-2xl border text-xs font-bold transition-colors',
+                        isActive
+                          ? 'border-lime-brand bg-lime-brand/10 text-foreground'
+                          : 'border-border/70 bg-card hover:bg-secondary text-foreground'
+                      )}
+                    >
+                      <Icon className="w-4 h-4 text-lime-brand shrink-0" />
+                      <span className="truncate">{t(item.labelBn, item.labelEn)}</span>
+                    </Link>
+                  );
+                })}
+
+                {/* Feedback Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleInstantClose();
+                    setFeedbackOpen(true);
+                  }}
+                  className="flex items-center gap-2.5 p-3 rounded-2xl border border-border/70 bg-card hover:bg-secondary text-foreground text-xs font-bold transition-colors cursor-pointer text-left"
+                >
+                  <MessageSquarePlus className="w-4 h-4 text-thunder-base shrink-0" />
+                  <span className="truncate">{t('মতামত দিন', 'Give Feedback')}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* LEGAL & ABOUT LINKS */}
+            <div className="mt-4 pt-4 border-t border-border/60">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground px-1">
+                {[
+                  { href: '/about', labelBn: 'আমাদের সম্পর্কে', labelEn: 'About' },
+                  { href: '/privacy', labelBn: 'গোপনীয়তা নীতি', labelEn: 'Privacy' },
+                  { href: '/terms', labelBn: 'শর্তাবলী', labelEn: 'Terms' },
+                  { href: '/contact', labelBn: 'যোগাযোগ', labelEn: 'Contact' },
+                ].map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    onClick={handleInstantClose}
+                    className="hover:text-foreground hover:underline transition-colors"
+                  >
+                    {t(l.labelBn, l.labelEn)}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
             {/* Authenticated Quick Shortcuts or CTA */}
             <div className="mt-6 pt-5 border-t border-border/80 flex flex-col gap-3">
               {isAuthenticated ? (
@@ -334,14 +415,14 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               ) : (
                 <div className="flex flex-col sm:flex-row gap-3">
                   <PillButton
-                    href="/calculator"
+                    href="/today"
                     variant="primary"
                     size="md"
                     fullWidth
                     icon="arrow"
                     onClick={handleInstantClose}
                   >
-                    {t('ক্যালকুলেটর শুরু করুন', 'Start Calculator')}
+                    {t('আজকের ট্র্যাকার শুরু করুন', 'Start Today Tracker')}
                   </PillButton>
                   <PillButton
                     href="/login"
@@ -377,5 +458,11 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </DialogContent>
       </DialogPortal>
     </Dialog>
+
+    <FeedbackDialog
+      isOpen={feedbackOpen}
+      onClose={() => setFeedbackOpen(false)}
+    />
+    </>
   );
 }

@@ -23,6 +23,7 @@ import {
   Upload,
   Download,
   FileText,
+  MessageSquarePlus,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -56,6 +57,19 @@ interface AdminAnnouncement {
   content: string;
   contentBn: string;
   type: 'info' | 'update' | 'warning' | 'celebration';
+  createdAt: string;
+}
+
+interface AdminFeedback {
+  _id: string;
+  message: string;
+  contact?: string;
+  userId?: {
+    _id?: string;
+    email?: string;
+    nickname?: string;
+    role?: string;
+  };
   createdAt: string;
 }
 
@@ -102,8 +116,11 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
   const isBn = locale === 'bn';
 
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'announcements' | 'foods' | 'exercises' | 'users' | 'audit'
+    'overview' | 'announcements' | 'users' | 'foods' | 'exercises' | 'feedback' | 'audit'
   >('overview');
+
+  // Feedback Tab Data
+  const [feedbacks, setFeedbacks] = useState<AdminFeedback[]>([]);
 
   // Overview Data
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
@@ -243,6 +260,19 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
     }
   }, []);
 
+  // 7. Fetch Feedback
+  const fetchFeedbacks = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/feedback');
+      if (res.ok) {
+        const json = await res.json();
+        setFeedbacks(json.data || []);
+      }
+    } catch {
+      // Graceful
+    }
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
     fetch('/api/admin/metrics')
@@ -288,6 +318,13 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
         if (isMounted && json?.data) setAuditLogs(json.data);
+      })
+      .catch(() => {});
+
+    fetch('/api/admin/feedback')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (isMounted && json?.data) setFeedbacks(json.data);
       })
       .catch(() => {});
 
@@ -671,6 +708,7 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
           { id: 'users', labelBn: 'ইউজার ম্যানেজমেন্ট', labelEn: 'Users & Access', icon: Users },
           { id: 'foods', labelBn: 'খাদ্য তালিকা', labelEn: 'Food Items', icon: Utensils },
           { id: 'exercises', labelBn: 'ব্যায়াম লাইব্রেরি', labelEn: 'Exercises', icon: Dumbbell },
+          { id: 'feedback', labelBn: 'ব্যবহারকারীর মতামত', labelEn: 'Feedback', icon: MessageSquarePlus },
           { id: 'audit', labelBn: 'অডিট লগ', labelEn: 'Audit Trail', icon: Lock },
         ].map((tab) => {
           const Icon = tab.icon;
@@ -2021,6 +2059,73 @@ export function AdminDashboardClient({ adminEmail }: { adminEmail: string }) {
                   </div>
                 </form>
               </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB: USER FEEDBACK (READ-ONLY) */}
+      {activeTab === 'feedback' && (
+        <div className="p-6 sm:p-8 rounded-3xl bg-card border border-border space-y-4 shadow-xs animate-in fade-in duration-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-display font-black text-xl text-foreground">
+                {isBn ? 'ব্যবহারকারীর প্রতিক্রিয়া ও মতামত' : 'User Feedback Inbox'}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                {isBn
+                  ? 'অ্যাপের ব্যবহারকারীদের পাঠানো পরামর্শ ও মতামতের তালিকা (সর্বোচ্চ ৫০০ অক্ষর)'
+                  : 'Suggestions and feedback submitted by app users (read-only)'}
+              </p>
+            </div>
+            <button
+              onClick={fetchFeedbacks}
+              className="px-3.5 py-2 rounded-xl bg-secondary text-xs font-bold hover:bg-secondary/80 flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>{isBn ? 'রিফ্রেশ' : 'Refresh'}</span>
+            </button>
+          </div>
+
+          {feedbacks.length === 0 ? (
+            <div className="p-12 text-center text-muted-foreground text-xs rounded-2xl bg-secondary/30 border border-border/40">
+              {isBn ? 'এখনো কোনো মতামত জমা পড়েনি।' : 'No user feedback received yet.'}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {feedbacks.map((fb) => (
+                <div
+                  key={fb._id}
+                  className="p-4 sm:p-5 rounded-2xl bg-secondary/30 border border-border/60 space-y-2 hover:border-lime-brand/40 transition-colors"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-foreground">
+                        {fb.userId?.nickname || fb.userId?.email || (isBn ? 'গেস্ট ইউজার' : 'Guest Athlete')}
+                      </span>
+                      {fb.userId?.role === 'admin' && (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-lime-brand/20 text-lime-brand font-bold uppercase">
+                          Admin
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-muted-foreground font-mono text-[11px]">
+                      {new Date(fb.createdAt).toLocaleString(isBn ? 'bn-BD' : 'en-US')}
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">
+                    {fb.message}
+                  </p>
+
+                  {fb.contact && (
+                    <div className="pt-1 text-xs text-muted-foreground">
+                      <span className="font-semibold text-foreground/80">{isBn ? 'যোগাযোগ:' : 'Contact:'}</span>{' '}
+                      <span className="font-mono text-lime-brand">{fb.contact}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>
