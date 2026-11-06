@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/lib/language-context';
 import {
   X,
@@ -14,8 +14,9 @@ import {
   AlertCircle,
   CheckCircle2,
 } from 'lucide-react';
-import Image from 'next/image';
 import { Z_INDEX } from '@/config/z-index';
+import { ProgressCardView } from './progress-card-view';
+import { rasterizeCardToBlob } from '@/lib/generate-card-image';
 
 interface ProgressShareModalProps {
   isOpen: boolean;
@@ -36,7 +37,7 @@ export function ProgressShareModal({
   monthChange,
   weightKg,
 }: ProgressShareModalProps) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [format, setFormat] = useState<'square' | 'story'>('square');
   const [showWeight, setShowWeight] = useState(false);
   const [cardName, setCardName] = useState(nickname || 'অ্যাথলিট');
@@ -44,6 +45,11 @@ export function ProgressShareModal({
   const [downloading, setDownloading] = useState(false);
   const [canShareFile, setCanShareFile] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [previewBlobUrl, setPreviewBlobUrl] = useState<string | null>(null);
+  const [cardBlob, setCardBlob] = useState<Blob | null>(null);
+  const [isRasterizing, setIsRasterizing] = useState(true);
 
   // Sync initial nickname when prop changes
   const [prevNickname, setPrevNickname] = useState(nickname);
@@ -94,18 +100,45 @@ export function ProgressShareModal({
     setTimeout(() => setToast(null), 3500);
   };
 
-  if (!isOpen) return null;
-
   const cleanName = cardName.trim();
   const isNameValid = cleanName.length >= 3 && cleanName.length <= 20;
-  const effectiveName = isNameValid ? cleanName : 'অ্যাথলিট';
+  const effectiveName = isNameValid ? cleanName : locale === 'bn' ? 'অ্যাথলিট' : 'Athlete';
 
-  const weightParam = weightKg ? String(weightKg) : '';
-  const ogImageUrl = `/api/og/progress?nickname=${encodeURIComponent(
-    effectiveName
-  )}&streak=${streak}&workouts=${workouts}&monthChange=${encodeURIComponent(
-    monthChange
-  )}&showWeight=${showWeight}&weight=${encodeURIComponent(weightParam)}&format=${format}`;
+  // Rasterize card using browser rendering whenever props or format changes
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let isMounted = true;
+
+    const timer = setTimeout(async () => {
+      if (!cardRef.current) return;
+      try {
+        setIsRasterizing(true);
+        const blob = await rasterizeCardToBlob(cardRef.current, {
+          width: 1080,
+          height: format === 'story' ? 1350 : 1080,
+        });
+        if (!isMounted) return;
+        const url = URL.createObjectURL(blob);
+        setPreviewBlobUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return url;
+        });
+        setCardBlob(blob);
+      } catch (err) {
+        console.error('Failed to rasterize card in browser:', err);
+      } finally {
+        if (isMounted) setIsRasterizing(false);
+      }
+    }, 150);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [isOpen, effectiveName, streak, workouts, monthChange, weightKg, showWeight, format, locale]);
+
+  if (!isOpen) return null;
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const shareText = `🔥 আমার Z-Gym Helper ফিটনেস প্রগ্রেস: ${streak} দিনের স্ট্রিক এবং ${workouts}টি ওয়ার্কআউট সম্পন্ন! আপনিও যোগ দিন: ${origin}`;
@@ -118,10 +151,17 @@ export function ProgressShareModal({
 
     try {
       setSharing(true);
-      const res = await fetch(ogImageUrl);
-      if (!res.ok) throw new Error('Image generation failed');
-      const blob = await res.blob();
-      const file = new File([blob], `zgym-progress-${effectiveName}.png`, { type: 'image/png' });
+      let blob = cardBlob;
+      if (!blob && cardRef.current) {
+        blob = await rasterizeCardToBlob(cardRef.current, {
+          width: 1080,
+          height: format === 'story' ? 1350 : 1080,
+        });
+        setCardBlob(blob);
+      }
+
+      if (!blob) throw new Error('Card generation failed');
+      const file = new File([blob], `zgym-progress-${effectiveName}-${format}.png`, { type: 'image/png' });
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
@@ -161,9 +201,16 @@ export function ProgressShareModal({
 
     try {
       setDownloading(true);
-      const res = await fetch(ogImageUrl);
-      if (!res.ok) throw new Error('Failed to fetch card image');
-      const blob = await res.blob();
+      let blob = cardBlob;
+      if (!blob && cardRef.current) {
+        blob = await rasterizeCardToBlob(cardRef.current, {
+          width: 1080,
+          height: format === 'story' ? 1350 : 1080,
+        });
+        setCardBlob(blob);
+      }
+
+      if (!blob) throw new Error('Failed to generate card image');
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -200,6 +247,31 @@ export function ProgressShareModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
+      {/* Hidden 1080px off-screen card rendered by the browser with genuine Bengali font shaping */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          left: '-99999px',
+          top: 0,
+          opacity: 0,
+          pointerEvents: 'none',
+          zIndex: -100,
+        }}
+      >
+        <ProgressCardView
+          ref={cardRef}
+          nickname={effectiveName}
+          streak={streak}
+          workouts={workouts}
+          monthChange={monthChange}
+          weightKg={weightKg}
+          showWeight={showWeight}
+          format={format}
+          lang={locale}
+        />
+      </div>
+
       <div className="relative w-full max-w-lg rounded-3xl bg-card text-card-foreground border-2 border-border p-6 sm:p-7 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
         {/* Toast Notification Banner */}
         {toast && (
@@ -236,16 +308,25 @@ export function ProgressShareModal({
           </button>
         </div>
 
-        {/* Card Preview with Dynamic Satori Rendering */}
-        <div className="rounded-2xl overflow-hidden border border-border bg-[#0F1412] relative aspect-square max-w-[340px] mx-auto shadow-inner flex items-center justify-center">
-          <Image
-            src={ogImageUrl}
-            alt="Z-Gym Progress Card"
-            width={340}
-            height={340}
-            unoptimized
-            className="w-full h-full object-contain"
-          />
+        {/* Card Preview with Browser Rasterized Rendering */}
+        <div
+          className={`rounded-2xl overflow-hidden border border-border bg-[#0F1412] relative max-w-[340px] mx-auto shadow-inner flex items-center justify-center ${
+            format === 'story' ? 'aspect-[4/5]' : 'aspect-square'
+          }`}
+        >
+          {previewBlobUrl && !isRasterizing ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={previewBlobUrl}
+              alt="Z-Gym Progress Card"
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground text-xs font-semibold gap-3 min-h-[280px]">
+              <div className="w-8 h-8 border-3 border-lime-brand border-t-transparent rounded-full animate-spin" />
+              <span>{t('কার্ড রেন্ডার হচ্ছে...', 'Rendering progress card...')}</span>
+            </div>
+          )}
         </div>
 
         {/* Customization Controls */}
@@ -312,7 +393,7 @@ export function ProgressShareModal({
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                9:16 Story
+                4:5 Story
               </button>
             </div>
           </div>
@@ -354,7 +435,7 @@ export function ProgressShareModal({
             <div className="flex flex-col">
               <button
                 onClick={handleWebShare}
-                disabled={sharing || !isNameValid || !canShareFile}
+                disabled={sharing || !isNameValid || !canShareFile || isRasterizing}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-lime-brand text-ink-base font-bold text-xs sm:text-sm hover:bg-lime-hover transition-all shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 title={
                   !canShareFile
@@ -370,18 +451,18 @@ export function ProgressShareModal({
             {/* Direct Image Download Button */}
             <button
               onClick={handleDownload}
-              disabled={downloading || !isNameValid}
+              disabled={downloading || !isNameValid || isRasterizing}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-secondary border border-border font-bold text-xs sm:text-sm hover:bg-muted text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Download className="w-4 h-4" />
-              <span>{downloading ? t('লোড হচ্ছে...', 'Loading...') : t('ডাউনলোড', 'Download')}</span>
+              <span>{downloading ? t('ডাউনলোড হচ্ছে...', 'Saving...') : t('ডাউনলোড', 'Download')}</span>
             </button>
 
-            {/* WhatsApp Direct Link */}
+            {/* WhatsApp Share Button */}
             <button
               onClick={handleWhatsApp}
               disabled={!isNameValid}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-[#25D366] text-white font-bold text-xs sm:text-sm hover:opacity-90 transition-all shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-[#25D366] text-white font-bold text-xs sm:text-sm hover:bg-[#20bd5a] transition-all shadow-md cursor-pointer disabled:opacity-40"
             >
               <MessageCircle className="w-4 h-4" />
               <span>WhatsApp</span>
@@ -389,10 +470,10 @@ export function ProgressShareModal({
           </div>
 
           {!canShareFile && (
-            <p className="text-[11px] text-muted-foreground text-center pt-1">
+            <p className="text-[11px] text-center text-muted-foreground pt-1">
               {t(
-                'এই ডিভাইসে সরাসরি ফাইল শেয়ার সমর্থিত নয়; কার্ড সংরক্ষণ করতে "ডাউনলোড" বা "WhatsApp" ব্যবহার করুন।',
-                'Native file sharing is not supported on this device/browser; please use "Download" or "WhatsApp".'
+                '* আপনার ব্রাউজার সরাসরি ফাইল শেয়ার সমর্থন করে না। অনুগ্রহ করে "ডাউনলোড" বা "WhatsApp" ব্যবহার করুন।',
+                '* Native file sharing is not supported in this browser. Please use "Download" or "WhatsApp".'
               )}
             </p>
           )}

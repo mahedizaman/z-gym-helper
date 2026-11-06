@@ -441,10 +441,21 @@ Here is the complete checklist of all environment variables required by Z-Gym He
   - [x] Secret / `.env` audit via `git ls-files | grep -iE 'env|service.*account|secret'`: 0 secrets, .env, or service account credentials tracked.
   - [x] Updated `README.md` and `docs/PROGRESS.md` with CSV bulk import instructions, full real environment variable table, and food image directory guidance (`public/foods/`).
 
+- [x] **Fix: Shareable Progress Card Bangla Rendering & Browser Rasterization** (`fix: progress card bangla rendering`)
+  - [x] Root Cause: Satori (`next/og`) lacks complex HarfBuzz text shaping for Indic/Bengali scripts, incorrectly reversing vowel signs and ligatures (e.g. 'সক্রিয়' rendered as 'সক্রয়ি', 'দিনের' as 'দনির').
+  - [x] Migrated progress card rendering from Satori server generation to a native React component (`ProgressCardView`) rendered in the browser with `next/font` `Hind Siliguri`.
+  - [x] Created `src/lib/generate-card-image.ts` utilizing `html-to-image` after `document.fonts.ready` to export 1080x1350 ('story') and 1080x1080 ('square') PNG blobs directly in the browser.
+  - [x] Handled Bengali digits conversion via `toBengaliDigits` (`src/lib/bengali-digits.ts`) for streak days (`৫ দিন`), workout sessions (`১২ সেশন`), and monthly change (`০%`).
+  - [x] Strictly enforced privacy: body weight remains hidden (`🔒 ব্যক্তিগত (লুকানো)`) unless the athlete explicitly toggles the opt-in checkbox.
+  - [x] Restricted `/api/og/progress` to Latin-only text to prevent broken Satori text; ensured static page OG images use `public/images/og-preview.png`.
+  - [x] Avoided all cross-origin images by using inline vector elements.
+  - [x] Added unit tests (`src/components/progress/progress-card-view.test.tsx`, 4 tests) verifying required Bangla strings (`সক্রিয় স্ট্রিক`, `ওয়ার্কআউট সম্পন্ন`, `অগ্রগতি রিপোর্ট`), opt-in weight display, and English mode.
+  - [x] Verified with Playwright (`scripts/verify-progress-card-bangla.mjs`): captured and inspected exported 1080x1350 PNG with 100% correct typography.
+
 ---
 
 ## Current Status
 
-- **Current focus:** Final Batch Z completed (Parts 1 to 5 fully implemented and verified).
+- **Current focus:** Progress card Bengali text shaping bug resolved and verified.
 - **Branch state:** All tasks complete, commits ready, no remote push performed.
-- **Last updated:** 2026-11-06 00:05 UTC+6
+- **Last updated:** 2026-11-06 12:38 UTC+6

@@ -1,29 +1,31 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
-import fs from 'node:fs';
-import path from 'node:path';
 import { APP_CONFIG } from '@/config/app';
 
+/**
+ * /api/og/progress
+ *
+ * NOTE: Satori does NOT support complex Indic/Bengali script shaping (HarfBuzz).
+ * Therefore, this endpoint is strictly restricted to Latin/English text.
+ * All Bengali cards are rasterized directly in the browser via client canvas / html-to-image.
+ */
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
 
-  const nickname = searchParams.get('nickname') || 'অ্যাথলিট';
+  const rawNickname = searchParams.get('nickname') || 'Athlete';
+  // If nickname contains Bengali characters or fallback 'অ্যাথলিট', use 'Athlete' for Latin Satori rendering
+  const isAllAscii = /^[\x20-\x7E]+$/.test(rawNickname);
+  const nickname = isAllAscii && rawNickname.trim().length > 0 ? rawNickname.trim() : 'Athlete';
+
   const streak = searchParams.get('streak') || '0';
   const workouts = searchParams.get('workouts') || '0';
   const monthChange = searchParams.get('monthChange') || '0%';
   const showWeight = searchParams.get('showWeight') === 'true';
   const weight = searchParams.get('weight') || '';
   const format = searchParams.get('format') === 'story' ? 'story' : 'square';
-  const lang = searchParams.get('lang') || 'bn';
 
   const width = 1080;
   const height = format === 'story' ? 1350 : 1080;
-
-  // Load Bengali TrueType Font for Satori rendering
-  const fontPath = path.join(process.cwd(), 'public/fonts/NotoSansBengali-Bold.ttf');
-  const fontData = fs.readFileSync(fontPath);
-
-  const isBn = lang !== 'en';
 
   return new ImageResponse(
     (
@@ -38,7 +40,7 @@ export async function GET(request: NextRequest) {
           backgroundImage:
             'radial-gradient(circle at 85% 15%, rgba(169, 242, 107, 0.15) 0%, transparent 40%), radial-gradient(circle at 15% 85%, rgba(255, 46, 136, 0.15) 0%, transparent 40%)',
           padding: format === 'story' ? '90px 70px' : '70px 70px',
-          fontFamily: '"Noto Sans Bengali", sans-serif',
+          fontFamily: 'sans-serif',
           color: '#FFFFFF',
         }}
       >
@@ -78,10 +80,10 @@ export async function GET(request: NextRequest) {
                   color: '#FFFFFF',
                 }}
               >
-                Z-GYM HELPER
+                {APP_CONFIG.name.toUpperCase()}
               </span>
               <span style={{ fontSize: '18px', color: '#8E959D', fontWeight: 600 }}>
-                {isBn ? 'ফিটনেস ও নিউট্রিশন অ্যাসিস্ট্যান্ট' : 'FITNESS & NUTRITION ASSISTANT'}
+                FITNESS & NUTRITION ASSISTANT
               </span>
             </div>
           </div>
@@ -100,7 +102,7 @@ export async function GET(request: NextRequest) {
               letterSpacing: '1px',
             }}
           >
-            {isBn ? 'অগ্রগতি রিপোর্ট' : 'PROGRESS REPORT'}
+            PROGRESS REPORT
           </div>
         </div>
 
@@ -122,7 +124,7 @@ export async function GET(request: NextRequest) {
               marginBottom: '8px',
             }}
           >
-            {isBn ? 'অ্যাথলিট প্রোফাইল' : 'ATHLETE PROFILE'}
+            ATHLETE PROFILE
           </span>
           <div
             style={{
@@ -162,7 +164,7 @@ export async function GET(request: NextRequest) {
             }}
           >
             <span style={{ fontSize: '20px', color: '#FFD6E8', fontWeight: 700 }}>
-              {isBn ? '🔥 সক্রিয় স্ট্রিক' : '🔥 ACTIVE STREAK'}
+              🔥 ACTIVE STREAK
             </span>
             <span
               style={{
@@ -172,7 +174,7 @@ export async function GET(request: NextRequest) {
                 marginTop: '6px',
               }}
             >
-              {streak} {isBn ? 'দিন' : 'Days'}
+              {streak} Days
             </span>
           </div>
 
@@ -190,7 +192,7 @@ export async function GET(request: NextRequest) {
             }}
           >
             <span style={{ fontSize: '20px', color: '#E4FBCB', fontWeight: 700 }}>
-              {isBn ? '🏋️ ওয়ার্কআউট সম্পন্ন' : '🏋️ WORKOUTS LOGGED'}
+              🏋️ WORKOUTS LOGGED
             </span>
             <span
               style={{
@@ -200,7 +202,7 @@ export async function GET(request: NextRequest) {
                 marginTop: '6px',
               }}
             >
-              {workouts} {isBn ? 'সেশন' : 'Sessions'}
+              {workouts} Sessions
             </span>
           </div>
 
@@ -218,7 +220,7 @@ export async function GET(request: NextRequest) {
             }}
           >
             <span style={{ fontSize: '20px', color: '#8E959D', fontWeight: 700 }}>
-              {isBn ? '📉 ৩০ দিনের অগ্রগতি' : '📉 30-DAY PROGRESS'}
+              📉 30-DAY PROGRESS
             </span>
             <span
               style={{
@@ -246,7 +248,7 @@ export async function GET(request: NextRequest) {
             }}
           >
             <span style={{ fontSize: '20px', color: '#8E959D', fontWeight: 700 }}>
-              {isBn ? '⚖️ বর্তমান ওজন' : '⚖️ CURRENT WEIGHT'}
+              ⚖️ CURRENT WEIGHT
             </span>
             {showWeight && weight ? (
               <span
@@ -257,7 +259,7 @@ export async function GET(request: NextRequest) {
                   marginTop: '6px',
                 }}
               >
-                {weight} {isBn ? 'কেজি' : 'kg'}
+                {weight} kg
               </span>
             ) : (
               <span
@@ -268,7 +270,7 @@ export async function GET(request: NextRequest) {
                   marginTop: '16px',
                 }}
               >
-                {isBn ? '🔒 ব্যক্তিগত (লুকানো)' : '🔒 Private (Hidden)'}
+                🔒 Private (Hidden)
               </span>
             )}
           </div>
@@ -288,9 +290,7 @@ export async function GET(request: NextRequest) {
           }}
         >
           <span>
-            {isBn
-              ? `ওয়ার্কআউট, পুষ্টি ও স্ট্রিক ট্র্যাক করুন ${APP_CONFIG.shortName} এ`
-              : `Track workouts, nutrition & streak with ${APP_CONFIG.name}`}
+            Track workouts, nutrition & streak with {APP_CONFIG.name}
           </span>
           <span>Asia/Dhaka</span>
         </div>
@@ -299,14 +299,6 @@ export async function GET(request: NextRequest) {
     {
       width,
       height,
-      fonts: [
-        {
-          name: 'Noto Sans Bengali',
-          data: fontData,
-          weight: 700,
-          style: 'normal',
-        },
-      ],
     }
   );
 }

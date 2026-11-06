@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/lib/language-context';
 import {
   Flame,
@@ -14,6 +14,9 @@ import {
 } from 'lucide-react';
 import { PillButton } from '@/components/motion/pill-button';
 import { guestStorage } from '@/lib/guest-storage';
+import { ProgressCardView } from '@/components/progress/progress-card-view';
+import { rasterizeCardToBlob } from '@/lib/generate-card-image';
+import { toBengaliDigits } from '@/lib/bengali-digits';
 
 export function StreakChallengeTeaser() {
   const { t, locale } = useLanguage();
@@ -53,16 +56,14 @@ export function StreakChallengeTeaser() {
     setTimeout(() => setToast(null), 3500);
   };
 
+  const cardRef = useRef<HTMLDivElement>(null);
+
   const cleanName = cardName.trim();
   const isNameValid = cleanName.length >= 3 && cleanName.length <= 20;
   const displayName = isNameValid ? cleanName : isBn ? 'অ্যাথলিট' : 'Athlete';
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const ogImageUrl = `/api/og/progress?nickname=${encodeURIComponent(
-    displayName
-  )}&streak=${streakCount}&workouts=0&monthChange=0%25&showWeight=false&weight=&format=story&lang=${locale}`;
-
-  const shareText = `🔥 আমার Z-Gym Helper ফিটনেস প্রগ্রেস: ${streakCount} দিনের স্ট্রিক! আপনিও যোগ দিন: ${origin}`;
+  const shareText = `🔥 আমার Z-Gym Helper ফিটনেস প্রগ্রেস: ${isBn ? toBengaliDigits(streakCount) : streakCount} দিনের স্ট্রিক! আপনিও যোগ দিন: ${origin}`;
 
   const handleWebShare = async () => {
     if (!isNameValid) {
@@ -72,9 +73,12 @@ export function StreakChallengeTeaser() {
 
     try {
       setSharing(true);
-      const res = await fetch(ogImageUrl);
-      if (!res.ok) throw new Error('Card generation failed');
-      const blob = await res.blob();
+      if (!cardRef.current) throw new Error('Card element not ready');
+      const blob = await rasterizeCardToBlob(cardRef.current, {
+        width: 1080,
+        height: 1350,
+      });
+
       const file = new File([blob], `zgym-streak-${displayName}.png`, { type: 'image/png' });
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -114,9 +118,12 @@ export function StreakChallengeTeaser() {
 
     try {
       setDownloading(true);
-      const res = await fetch(ogImageUrl);
-      if (!res.ok) throw new Error('Card generation failed');
-      const blob = await res.blob();
+      if (!cardRef.current) throw new Error('Card element not ready');
+      const blob = await rasterizeCardToBlob(cardRef.current, {
+        width: 1080,
+        height: 1350,
+      });
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -168,6 +175,29 @@ export function StreakChallengeTeaser() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Interactive 1080x1350 Social Share Card for Guests & Users */}
           <div className="lg:col-span-5 flex flex-col items-center">
+            {/* Hidden 1080px off-screen card rendered by browser with native Bengali font shaping */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'fixed',
+                left: '-99999px',
+                top: 0,
+                opacity: 0,
+                pointerEvents: 'none',
+                zIndex: -100,
+              }}
+            >
+              <ProgressCardView
+                ref={cardRef}
+                nickname={displayName}
+                streak={streakCount}
+                workouts={0}
+                monthChange="0%"
+                format="story"
+                lang={locale}
+              />
+            </div>
+
             <div className="relative w-full max-w-[340px] sm:max-w-[380px] aspect-[4/5] rounded-3xl p-7 bg-[#0F1412] text-white border-2 border-lime-brand/60 shadow-2xl flex flex-col justify-between overflow-hidden">
               {/* Background ambient accents */}
               <div className="absolute top-0 right-0 w-48 h-48 bg-lime-brand/15 rounded-full blur-2xl pointer-events-none" />
@@ -192,7 +222,7 @@ export function StreakChallengeTeaser() {
                   <Flame className="w-9 h-9 text-pink-brand fill-pink-brand animate-pulse" />
                 </div>
                 <span className="font-display font-black text-6xl sm:text-7xl tracking-tight text-white">
-                  {streakCount}
+                  {isBn ? toBengaliDigits(streakCount) : streakCount}
                 </span>
                 <span className="font-display text-sm font-extrabold uppercase tracking-widest text-lime-brand mt-1">
                   {t('দিনের অ্যাক্টিভ স্ট্রিক', 'DAY ACTIVE STREAK')}
