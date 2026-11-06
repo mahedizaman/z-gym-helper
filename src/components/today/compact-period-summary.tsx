@@ -19,12 +19,7 @@ export function CompactPeriodSummary() {
   const isAuthenticated = status === 'authenticated';
 
   const [periodDays, setPeriodDays] = useState<1 | 3 | 7 | 30>(7);
-  const [summaries, setSummaries] = useState<DailySummaryItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      return guestStorage.getPeriodDailySummaries(7);
-    }
-    return [];
-  });
+  const [summaries, setSummaries] = useState<DailySummaryItem[]>([]);
   const [fallbackTargetKcal, setFallbackTargetKcal] = useState(2000);
 
   const loadGuestData = useCallback(() => {

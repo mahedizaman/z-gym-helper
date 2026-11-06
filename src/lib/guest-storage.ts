@@ -120,7 +120,7 @@ export function getDhakaDateString(d?: Date): string {
   return formatter.format(dateObj);
 }
 
-const DEFAULT_PROFILE: GuestProfile = {
+export const DEFAULT_PROFILE: GuestProfile = {
   gender: 'male',
   age: 26,
   heightCm: 172,

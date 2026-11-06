@@ -54,8 +54,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-async function PlanDetailContent({ params }: PageProps) {
-  const { slug } = await params;
+async function PlanDetailContent({ slug }: { slug: string }) {
+  'use cache';
   const plan =
     (await planService.getPlanBySlug(slug)) ||
     WORKOUT_PLANS_DATA.find((p) => p.slug === slug);
@@ -67,7 +67,8 @@ async function PlanDetailContent({ params }: PageProps) {
   return <PlanDetailClient plan={plan as unknown as SeedPlan} />;
 }
 
-export default function PlanDetailPage({ params }: PageProps) {
+export default async function PlanDetailPage({ params }: PageProps) {
+  const { slug } = await params;
   return (
     <div className="min-h-screen bg-background py-10 sm:py-16">
       <div className="container mx-auto px-4 max-w-5xl">
@@ -76,7 +77,7 @@ export default function PlanDetailPage({ params }: PageProps) {
             <div className="h-96 rounded-3xl bg-card animate-pulse border border-border" />
           }
         >
-          <PlanDetailContent params={params} />
+          <PlanDetailContent slug={slug} />
         </Suspense>
       </div>
     </div>

@@ -17,6 +17,27 @@ function withImages<T extends { slug: string; images?: string[] }>(exercise: T):
   return exercise;
 }
 
+/**
+ * Standalone cached query function for a single exercise by slug.
+ * Uses Next.js 16 Cache Components 'use cache' directive to ensure deterministic
+ * prerendering and eliminate unstable timestamp errors during static generation.
+ */
+async function fetchExerciseBySlug(slug: string): Promise<IExercise | SeedExercise | null> {
+  'use cache';
+  const db = await connectToDatabase();
+  if (db) {
+    try {
+      const ex = await ExerciseModel.findOne({ slug }).lean();
+      if (ex) {
+        return withImages(JSON.parse(JSON.stringify(ex)) as IExercise);
+      }
+    } catch {}
+  }
+
+  const ex = CORE_EXERCISES_DATA.find((e) => e.slug === slug);
+  return ex ? withImages(ex) : null;
+}
+
 export const exerciseService = {
   /**
    * Get all exercises with optional muscle, equipment and level filters
@@ -40,7 +61,8 @@ export const exerciseService = {
 
         const exercises = await ExerciseModel.find(query).lean();
         if (exercises.length > 0) {
-          return (exercises as IExercise[]).map(withImages);
+          const plain = JSON.parse(JSON.stringify(exercises)) as IExercise[];
+          return plain.map(withImages);
         }
       } catch (err) {
         console.warn('ExerciseModel.find failed, falling back to seed memory:', err);
@@ -68,15 +90,6 @@ export const exerciseService = {
    * Get single exercise by slug
    */
   async getExerciseBySlug(slug: string): Promise<IExercise | SeedExercise | null> {
-    const db = await connectToDatabase();
-    if (db) {
-      try {
-        const ex = await ExerciseModel.findOne({ slug }).lean();
-        if (ex) return withImages(ex as IExercise);
-      } catch {}
-    }
-
-    const ex = CORE_EXERCISES_DATA.find((e) => e.slug === slug);
-    return ex ? withImages(ex) : null;
+    return fetchExerciseBySlug(slug);
   },
 };

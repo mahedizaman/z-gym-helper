@@ -55,8 +55,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-async function ExerciseDetailContent({ params }: PageProps) {
-  const { slug } = await params;
+async function ExerciseDetailContent({ slug }: { slug: string }) {
+  'use cache';
   const exercise =
     (await exerciseService.getExerciseBySlug(slug)) ||
     CORE_EXERCISES_DATA.find((e) => e.slug === slug);
@@ -73,7 +73,8 @@ async function ExerciseDetailContent({ params }: PageProps) {
   return <ExerciseDetailClient exercise={exerciseWithImages} />;
 }
 
-export default function ExerciseDetailPage({ params }: PageProps) {
+export default async function ExerciseDetailPage({ params }: PageProps) {
+  const { slug } = await params;
   return (
     <div className="min-h-screen bg-background py-10 sm:py-16">
       <div className="container mx-auto px-4 max-w-5xl">
@@ -82,7 +83,7 @@ export default function ExerciseDetailPage({ params }: PageProps) {
             <div className="h-96 rounded-3xl bg-card animate-pulse border border-border" />
           }
         >
-          <ExerciseDetailContent params={params} />
+          <ExerciseDetailContent slug={slug} />
         </Suspense>
       </div>
     </div>

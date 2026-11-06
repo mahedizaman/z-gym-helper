@@ -44,12 +44,7 @@ export function PeriodSummaryCard({
   const isAuthenticated = status === 'authenticated';
 
   const [periodDays, setPeriodDays] = useState<1 | 3 | 7 | 30>(initialPeriod);
-  const [summaries, setSummaries] = useState<DailySummaryItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      return guestStorage.getPeriodDailySummaries(initialPeriod);
-    }
-    return [];
-  });
+  const [summaries, setSummaries] = useState<DailySummaryItem[]>([]);
   const [weightLogs, setWeightLogs] = useState<PeriodWeightLog[]>([]);
   const [fallbackTargets, setFallbackTargets] = useState({
     calorieTarget: 2000,

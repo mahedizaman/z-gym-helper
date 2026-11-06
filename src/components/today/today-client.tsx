@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useLanguage } from '@/lib/language-context';
 import {
   guestStorage,
+  DEFAULT_PROFILE,
   type GuestProfile,
   type GuestDayMeals,
   type GuestExerciseBurn,
@@ -42,18 +43,28 @@ import {
   Check,
 } from 'lucide-react';
 
+const INITIAL_DAY_MEALS: GuestDayMeals = {
+  date: '',
+  slots: {
+    breakfast: [],
+    lunch: [],
+    snack: [],
+    dinner: [],
+  },
+};
+
 export function TodayClient() {
   const { t } = useLanguage();
   const isBn = useLanguage().locale === 'bn';
   const { status } = useSession();
   const isAuthenticated = status === 'authenticated';
 
-  const [date] = useState<string>(() => guestStorage.getDhakaDateString());
-  const [profile, setProfile] = useState<GuestProfile>(() => guestStorage.getProfile());
-  const [meals, setMeals] = useState<GuestDayMeals>(() => guestStorage.getMeals(guestStorage.getDhakaDateString()));
-  const [burns, setBurns] = useState<GuestExerciseBurn[]>(() => guestStorage.getExerciseBurns(guestStorage.getDhakaDateString()));
+  const [date, setDate] = useState<string>(() => guestStorage.getDhakaDateString());
+  const [profile, setProfile] = useState<GuestProfile>(DEFAULT_PROFILE);
+  const [meals, setMeals] = useState<GuestDayMeals>(INITIAL_DAY_MEALS);
+  const [burns, setBurns] = useState<GuestExerciseBurn[]>([]);
   const [foodsList, setFoodsList] = useState<SeedFood[]>(BANGLADESHI_FOODS_DATA);
-  const [activePlanSlug] = useState<string>(() => guestStorage.getActivePlanSlug() || 'full-body-3');
+  const [activePlanSlug, setActivePlanSlug] = useState<string>('full-body-3');
 
   // Modals
   const [onboardingOpen, setOnboardingOpen] = useState(false);
@@ -62,6 +73,19 @@ export function TodayClient() {
   const [foodPickerInitialFood, setFoodPickerInitialFood] = useState<SeedFood | null>(null);
   const [exerciseModalOpen, setExerciseModalOpen] = useState(false);
   const [detailsDrawerOpen, setDetailsDrawerOpen] = useState(false);
+
+  // Load guest data locally after hydration
+  const loadGuestData = useCallback(() => {
+    const todayDate = guestStorage.getDhakaDateString();
+    setDate(todayDate);
+    setProfile(guestStorage.getProfile());
+    setMeals(guestStorage.getMeals(todayDate));
+    setBurns(guestStorage.getExerciseBurns(todayDate));
+    const savedPlan = guestStorage.getActivePlanSlug();
+    if (savedPlan) {
+      setActivePlanSlug(savedPlan);
+    }
+  }, []);
 
   // Check onboarding once mounted on client
   useEffect(() => {
@@ -92,7 +116,7 @@ export function TodayClient() {
     };
   }, []);
 
-  // Sync with authenticated user data if logged in
+  // Sync with authenticated user data if logged in, or load guest local data
   useEffect(() => {
     let isMounted = true;
     if (isAuthenticated) {
@@ -125,11 +149,16 @@ export function TodayClient() {
           }
         })
         .catch(() => {});
+    } else {
+      const timer = setTimeout(() => {
+        if (isMounted) loadGuestData();
+      }, 0);
+      return () => clearTimeout(timer);
     }
     return () => {
       isMounted = false;
     };
-  }, [date, isAuthenticated]);
+  }, [date, isAuthenticated, loadGuestData]);
 
   // Derived Targets & Progress
   const targets = useMemo(() => calculateTodayTargets(profile), [profile]);
@@ -238,7 +267,8 @@ export function TodayClient() {
       isPreWorkout,
     };
 
-    const updated = guestStorage.addMealItem(date, slot, item);
+    const targetDate = date || guestStorage.getDhakaDateString();
+    const updated = guestStorage.addMealItem(targetDate, slot, item);
     setMeals(updated);
 
     if (isAuthenticated) {
