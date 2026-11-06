@@ -24,6 +24,7 @@ import { FoodPickerModal } from '@/components/calculator/food-picker-modal';
 import { QuickExerciseModal } from '@/components/today/quick-exercise-modal';
 import { FirstRunOnboarding } from '@/components/onboarding/first-run-onboarding';
 import { JargonDetailsDrawer } from '@/components/ui/jargon-details-drawer';
+import { CompactPeriodSummary } from '@/components/today/compact-period-summary';
 import {
   Flame,
   Plus,
@@ -530,6 +531,9 @@ export function TodayClient() {
           </button>
         </div>
       </div>
+
+      {/* Compact Period Summary under main card (আজ · ৩ দিন · ৭ দিন · ৩০ দিন) */}
+      <CompactPeriodSummary />
 
       {/* 2. MEAL SLOTS (4 TICKS) */}
       <div className="p-6 rounded-3xl bg-card border border-border space-y-4 shadow-sm">

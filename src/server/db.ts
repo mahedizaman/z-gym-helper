@@ -77,6 +77,12 @@ export function loadEnvLocal(): void {
 export async function connectToDatabase(options?: {
   throwOnError?: boolean;
 }): Promise<typeof mongoose | null> {
+  // During Next.js static prerendering build phase, skip remote database connection
+  // to avoid driver heartbeat prerender conflicts and network hangs.
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return null;
+  }
+
   loadEnvLocal();
   const uri = process.env.MONGODB_URI || process.env.DATABASE_URL;
 

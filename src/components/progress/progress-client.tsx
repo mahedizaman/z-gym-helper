@@ -14,6 +14,7 @@ import {
   Share2,
 } from 'lucide-react';
 import { ProgressShareModal } from '@/components/progress/progress-share-modal';
+import { PeriodSummaryCard } from '@/components/progress/period-summary-card';
 import { NumberField } from '@/components/ui/number-field';
 import {
   ResponsiveContainer,
@@ -137,32 +138,6 @@ export function ProgressClient() {
     }
   };
 
-  if (status === 'unauthenticated') {
-    return (
-      <div className="container mx-auto max-w-xl px-4 py-16 text-center">
-        <div className="w-16 h-16 rounded-3xl bg-lime-soft text-ink-base mx-auto mb-6 flex items-center justify-center border border-lime-brand/30 shadow-md">
-          <Scale className="w-8 h-8 text-ink-base" />
-        </div>
-        <h2 className="font-display font-black text-3xl uppercase tracking-tight text-foreground mb-3">
-          {t('স্থায়ী ওজন ট্র্যাকিং', 'Permanent Weight Tracking')}
-        </h2>
-        <p className="text-muted-foreground text-sm leading-relaxed mb-8">
-          {t(
-            'মাসিক ওজন পরিবর্তনের ধারাবাহিক গ্রাফ ও ইতিহাস রেকর্ড রাখার জন্য Google দিয়ে লগইন করুন।',
-            'Sign in with Google to log daily weights, monitor monthly trends, and retain permanent fitness history.'
-          )}
-        </p>
-        <button
-          onClick={() => signIn('google', { callbackUrl: '/progress' })}
-          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-lime-brand text-ink-base font-bold text-sm hover:bg-lime-hover shadow-lg transition-all cursor-pointer"
-        >
-          <span>{t('Google দিয়ে সাইন ইন করুন', 'Sign In with Google')}</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </div>
-    );
-  }
-
   // Format data for chart
   const chartData = logs.map((l) => ({
     date: l.date.slice(5), // MM-DD
@@ -199,8 +174,36 @@ export function ProgressClient() {
         </button>
       </div>
 
-      {/* Metric Delta Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Period Summary & Analytics Card (আজ · ৩ দিন · ৭ দিন · ৩০ দিন) */}
+      <PeriodSummaryCard />
+
+      {/* Weight Tracking Section */}
+      {status === 'unauthenticated' ? (
+        <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 text-center space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-lime-soft text-ink-base mx-auto flex items-center justify-center border border-lime-brand/30">
+            <Scale className="w-6 h-6 text-ink-base" />
+          </div>
+          <h3 className="font-display font-black text-xl text-foreground">
+            {t('ক্লাউডে স্থায়ী ওজন লগ সংরক্ষণ', 'Save Permanent Weight Logs to Cloud')}
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-md mx-auto">
+            {t(
+              'মাসিক ওজন পরিবর্তনের ধারাবাহিক চার্ট ক্লাউডে সংরক্ষণ ও যেকোনো ডিভাইস থেকে দেখতে Google দিয়ে সাইন ইন করুন।',
+              'Sign in with Google to permanently track daily weights and sync progress across all your devices.'
+            )}
+          </p>
+          <button
+            onClick={() => signIn('google', { callbackUrl: '/progress' })}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-lime-brand text-ink-base font-bold text-xs hover:bg-lime-hover shadow-md transition-all cursor-pointer"
+          >
+            <span>{t('Google দিয়ে সাইন ইন করুন', 'Sign In with Google')}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Metric Delta Stat Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Starting Weight */}
         <div className="rounded-3xl border border-border bg-card p-5 space-y-1">
           <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -459,6 +462,8 @@ export function ProgressClient() {
           </div>
         )}
       </div>
+      </>
+      )}
 
       {/* Progress Share Modal */}
       <ProgressShareModal

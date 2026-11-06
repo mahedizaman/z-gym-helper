@@ -30,7 +30,33 @@ export interface GuestDayMeals {
   };
 }
 
-import { type ActivityLevel, type Goal, calculateStreak } from '@/server/services/calculations';
+import {
+  type ActivityLevel,
+  type Goal,
+  calculateStreak,
+  calculateBMR,
+  calculateTDEE,
+  calculateCaloricTarget,
+  calculateMacroSplit,
+} from '@/server/services/calculations';
+
+export interface GuestDailySummary {
+  date: string; // YYYY-MM-DD
+  totalIntakeKcal: number;
+  totalProtein: number;
+  totalCarbs: number;
+  totalFat: number;
+  totalFiber: number;
+  exerciseBurnKcal: number;
+  netBalanceKcal: number;
+  targetKcal: number;
+  targetProtein: number;
+  targetBurn: number;
+  logged: boolean;
+  mealCount: number;
+  workoutDone: boolean;
+  updatedAt?: string;
+}
 
 export interface GuestProfile {
   gender: 'male' | 'female';
@@ -76,6 +102,7 @@ const STORAGE_KEYS = {
   ACTIVE_PLAN: 'zgym_guest_active_plan',
   PLAN_PROGRESS_PREFIX: 'zgym_guest_plan_progress_',
   DAILY_PLAN_PREFS: 'zgym_guest_daily_plan_prefs',
+  DAILY_SUMMARIES: 'zgym_guest_daily_summaries',
 };
 
 // Returns current Asia/Dhaka date YYYY-MM-DD
@@ -203,6 +230,7 @@ export const guestStorage = {
         `${STORAGE_KEYS.MEALS_PREFIX}${meals.date}`,
         JSON.stringify(meals)
       );
+      this.recalculateDailySummaryForDate(meals.date);
     } catch {
       // ignore
     }
@@ -247,9 +275,134 @@ export const guestStorage = {
         `${STORAGE_KEYS.BURNS_PREFIX}${date}`,
         JSON.stringify(burns)
       );
+      this.recalculateDailySummaryForDate(date);
     } catch {
       // ignore
     }
+  },
+
+  getDailySummariesMap(): Record<string, GuestDailySummary> {
+    if (typeof window === 'undefined') return {};
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.DAILY_SUMMARIES);
+      return data ? JSON.parse(data) : {};
+    } catch {
+      return {};
+    }
+  },
+
+  saveDailySummariesMap(map: Record<string, GuestDailySummary>): void {
+    if (typeof window === 'undefined') return;
+    try {
+      // Auto-prune entries older than 90 days
+      const now = Date.now();
+      const maxAgeMs = 90 * 24 * 60 * 60 * 1000;
+      const pruned: Record<string, GuestDailySummary> = {};
+      for (const [dateKey, item] of Object.entries(map)) {
+        const itemDate = new Date(`${dateKey}T12:00:00Z`).getTime();
+        if (isNaN(itemDate) || now - itemDate <= maxAgeMs) {
+          pruned[dateKey] = item;
+        }
+      }
+      localStorage.setItem(STORAGE_KEYS.DAILY_SUMMARIES, JSON.stringify(pruned));
+    } catch {
+      // ignore
+    }
+  },
+
+  recalculateDailySummaryForDate(date: string): GuestDailySummary {
+    const meals = this.getMeals(date);
+    const burns = this.getExerciseBurns(date);
+    const profile = this.getProfile();
+
+    const allMealItems: GuestMealItem[] = Object.values(meals.slots || {}).flat();
+    const totalIntakeKcal = Math.round(allMealItems.reduce((acc, i) => acc + (i.kcal || 0), 0));
+    const totalProtein = Number(allMealItems.reduce((acc, i) => acc + (i.protein || 0), 0).toFixed(1));
+    const totalCarbs = Number(allMealItems.reduce((acc, i) => acc + (i.carbs || 0), 0).toFixed(1));
+    const totalFat = Number(allMealItems.reduce((acc, i) => acc + (i.fat || 0), 0).toFixed(1));
+    const totalFiber = Number(allMealItems.reduce((acc, i) => acc + (i.fiber || 0), 0).toFixed(1));
+    const mealCount = allMealItems.length;
+
+    const exerciseBurnKcal = Math.round(burns.reduce((acc, b) => acc + (b.burnedKcal || 0), 0));
+    const workoutDone = burns.length > 0;
+    const logged = mealCount > 0 || exerciseBurnKcal > 0;
+
+    // Calculate daily target based on profile
+    const bmr = calculateBMR(profile.weightKg, profile.heightCm, profile.age, profile.gender);
+    const tdee = calculateTDEE(bmr, profile.activityLevel);
+    const targetKcal =
+      profile.customCalorieTarget && profile.customCalorieTarget >= 800
+        ? profile.customCalorieTarget
+        : calculateCaloricTarget(tdee, profile.goal, profile.gender);
+
+    const macroSplit = calculateMacroSplit(targetKcal, profile.weightKg, profile.goal);
+    const targetProtein = macroSplit.protein;
+    const targetBurn = 300;
+
+    const netBalanceKcal = logged ? totalIntakeKcal - (targetKcal + exerciseBurnKcal) : 0;
+
+    const summary: GuestDailySummary = {
+      date,
+      totalIntakeKcal,
+      totalProtein,
+      totalCarbs,
+      totalFat,
+      totalFiber,
+      exerciseBurnKcal,
+      netBalanceKcal,
+      targetKcal,
+      targetProtein,
+      targetBurn,
+      logged,
+      mealCount,
+      workoutDone,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const map = this.getDailySummariesMap();
+    map[date] = summary;
+    this.saveDailySummariesMap(map);
+    return summary;
+  },
+
+  getDailySummary(date: string): GuestDailySummary {
+    const map = this.getDailySummariesMap();
+    if (map[date]) {
+      return map[date];
+    }
+    return this.recalculateDailySummaryForDate(date);
+  },
+
+  saveDailySummary(summary: GuestDailySummary): void {
+    const map = this.getDailySummariesMap();
+    map[summary.date] = summary;
+    this.saveDailySummariesMap(map);
+  },
+
+  getPeriodDailySummaries(daysCount: number, endDateStr?: string): GuestDailySummary[] {
+    const endStr = endDateStr || getDhakaDateString();
+    const result: GuestDailySummary[] = [];
+
+    const [y, m, d] = endStr.split('-').map(Number);
+    const cursor = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+
+    const dateStrings: string[] = [];
+    for (let i = daysCount - 1; i >= 0; i--) {
+      const dayDate = new Date(cursor.getTime() - i * 24 * 60 * 60 * 1000);
+      const iso = dayDate.toISOString().split('T')[0];
+      dateStrings.push(iso);
+    }
+
+    const map = this.getDailySummariesMap();
+    for (const date of dateStrings) {
+      if (map[date]) {
+        result.push(map[date]);
+      } else {
+        result.push(this.recalculateDailySummaryForDate(date));
+      }
+    }
+
+    return result;
   },
 
   addExerciseBurn(
@@ -480,6 +633,11 @@ export const guestStorage = {
           const date = parts[parts.length - 1];
           if (date && date.length === 10) activeDates.add(date);
         }
+      }
+
+      const summariesMap = this.getDailySummariesMap();
+      for (const [sDate, s] of Object.entries(summariesMap)) {
+        if (s && s.logged) activeDates.add(sDate);
       }
     } catch {
       // ignore

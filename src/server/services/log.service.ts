@@ -35,6 +35,7 @@ export const logService = {
     await DailySummaryModel.findOneAndUpdate(
       { userId: data.userId, date: data.date },
       {
+        $set: { logged: true },
         $inc: {
           totalIntakeKcal: data.macros.kcal,
           totalProtein: data.macros.protein,
@@ -113,6 +114,118 @@ export const logService = {
     if (!db) return null;
 
     return await DailySummaryModel.findOne({ userId, date }).lean();
+  },
+
+  /**
+   * Get Daily Summaries across a date range [startDate, endDate]
+   */
+  async getPeriodSummaries(
+    userId: string,
+    startDate: string,
+    endDate: string
+  ): Promise<IDailySummary[]> {
+    const db = await connectToDatabase();
+    if (!db) return [];
+
+    return await DailySummaryModel.find({
+      userId,
+      date: { $gte: startDate, $lte: endDate },
+    })
+      .sort({ date: 1 })
+      .lean();
+  },
+
+  /**
+   * Backfill DailySummary documents from existing MealLog and WorkoutLog entries
+   */
+  async backfillDailySummariesFromLogs(userId?: string): Promise<number> {
+    const db = await connectToDatabase();
+    if (!db) return 0;
+
+    const query = userId ? { userId } : {};
+    const meals = await MealLogModel.find(query).lean();
+    const workouts = await WorkoutLogModel.find(query).lean();
+
+    const dateMap = new Map<
+      string,
+      {
+        userId: string;
+        date: string;
+        kcal: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        mealCount: number;
+        burnKcal: number;
+        workoutDone: boolean;
+      }
+    >();
+
+    for (const m of meals) {
+      const key = `${m.userId}_${m.date}`;
+      if (!dateMap.has(key)) {
+        dateMap.set(key, {
+          userId: m.userId,
+          date: m.date,
+          kcal: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+          mealCount: 0,
+          burnKcal: 0,
+          workoutDone: false,
+        });
+      }
+      const entry = dateMap.get(key)!;
+      entry.kcal += m.macros?.kcal || 0;
+      entry.protein += m.macros?.protein || 0;
+      entry.carbs += m.macros?.carbs || 0;
+      entry.fat += m.macros?.fat || 0;
+      entry.mealCount += 1;
+    }
+
+    for (const w of workouts) {
+      const key = `${w.userId}_${w.date}`;
+      if (!dateMap.has(key)) {
+        dateMap.set(key, {
+          userId: w.userId,
+          date: w.date,
+          kcal: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+          mealCount: 0,
+          burnKcal: 0,
+          workoutDone: false,
+        });
+      }
+      const entry = dateMap.get(key)!;
+      entry.burnKcal += w.estimatedBurnKcal || 0;
+      entry.workoutDone = true;
+    }
+
+    let backfilledCount = 0;
+    for (const entry of dateMap.values()) {
+      await DailySummaryModel.findOneAndUpdate(
+        { userId: entry.userId, date: entry.date },
+        {
+          $set: {
+            totalIntakeKcal: entry.kcal,
+            totalProtein: Number(entry.protein.toFixed(1)),
+            totalCarbs: Number(entry.carbs.toFixed(1)),
+            totalFat: Number(entry.fat.toFixed(1)),
+            mealCount: entry.mealCount,
+            exerciseBurnKcal: entry.burnKcal,
+            workoutDone: entry.workoutDone,
+            logged: true,
+          },
+        },
+        { upsert: true }
+      );
+      backfilledCount++;
+    }
+
+    return backfilledCount;
   },
 
   /**

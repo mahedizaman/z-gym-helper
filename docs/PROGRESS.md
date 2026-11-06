@@ -489,11 +489,46 @@ Here is the complete checklist of all environment variables required by Z-Gym He
     - Added pure unit tests in `src/lib/today-math.test.ts` (4 tests). Full Vitest suite has **119/119 passing tests** across 14 test files.
     - Playwright multi-viewport automated flow (`scripts/verify-today-simplification.mjs`) verified at 360px, 744px, and 1280px in both light and dark modes: new guest onboarding -> add food -> add workout -> ring updates -> page reload persistence -> feedback dialog.
     - TypeScript clean (`tsc --noEmit`), ESLint clean (0 errors, 0 warnings), production build clean (95/95 routes).
+- [x] **Period Summary & Multi-Day Analytics**:
+  - [x] **Domain Math & Correctness (`src/lib/period-summary-math.ts`)**:
+    - Pure domain calculation module computing totals and daily averages strictly over **LOGGED days only** (unlogged days never count as 0 calories when computing the daily average).
+    - Accurately sums daily targets across the period even when targets change over time.
+    - Calculates difference vs target, percent of target, total extra burn, and net caloric balance.
+    - Computes estimated weight change (`7,700 kcal = 1 kg`, labelled as an estimate) alongside real weight change from user weight logs.
+    - Computes `isLowLogging` flag when fewer than half of the period days are logged to show an encouraging, non-shaming hint.
+    - Generates 2 honest plain-language insights computed from real data (e.g. `'প্রোটিন লক্ষ্যের গড়ে ৭৮% পূরণ হয়েছে'`, `'ক্যালরি গ্রহণ লক্ষ্যের চেয়ে গড়ে ১৫০ kcal কম রয়েছে'`).
+    - Formats per-day chart data array with localized short date labels in Bengali and English.
+    - 6 unit tests in `src/lib/period-summary-math.test.ts` (logged-days-only average, target sum over changing targets, empty periods, 30-day edge cases, 7700 kcal/kg balance).
+  - [x] **Permanent Daily Summaries & Guest Storage**:
+    - MongoDB: Added `totalFiber`, `targetKcal`, `targetProtein`, `targetBurn`, and `logged` to `DailySummaryModel`. Updated `logService` with `getPeriodSummaries` and `backfillDailySummariesFromLogs`.
+    - Account deletion cascade already includes `DailySummaryModel.deleteMany({ userId })`.
+    - Guest storage (`src/lib/guest-storage.ts`): Added `GuestDailySummary` interface and `STORAGE_KEYS.DAILY_SUMMARIES` (`zgym_guest_daily_summaries`). Auto-updates on every meal/burn change, auto-prunes summaries older than 90 days, and backfills on demand.
+  - [x] **Authenticated API Route (`GET /api/user/summaries`)**:
+    - Rate-limited endpoint returning daily summaries, weight logs, and user profile targets for 1, 3, 7, or 30 days. Automatically backfills summaries if missing.
+  - [x] **Period Summary Card (`src/components/progress/period-summary-card.tsx`)**:
+    - Mounted on `/progress` for both guests and authenticated users.
+    - Switcher pills: `আজ` · `৩ দিন` · `৭ দিন` · `৩০ দিন`.
+    - Logging indicator badge: `{periodDays} দিনের মধ্যে {loggedDaysCount} দিন লগ করা হয়েছে`.
+    - Encouraging gentle low-logging notice (no shaming).
+    - Subtitle explaining that daily averages are based strictly on logged days.
+    - Side-by-side Totals & Daily Averages grid for Calories, Protein, Carbs, Fat, Fiber, Exercise Burn, Net Balance, and Weight Delta.
+    - Accessible Recharts Bar Chart with Target Reference Line, responsive down to 360px without breaking.
+    - 2 plain-language insights callouts with sparkle badges.
+    - Honest "estimates only" disclaimer.
+  - [x] **Compact Period Summary on /today (`src/components/today/compact-period-summary.tsx`)**:
+    - Compact one-line version mounted under the main card on `/today`.
+    - Switcher pills (`আজ` · `৩ দিন` · `৭ দিন` · `৩০ দিন`) + one-line text (`৭ দিনের গড়: ১৮৫০ kcal (লক্ষ্যের ৯৩%) • ৫ দিন লগ করা`) + link to `/progress`.
+  - [x] **Guest-First Accessibility on /progress**:
+    - Unblocked guests from the entire `/progress` tab, displaying `PeriodSummaryCard` with their local data and a friendly Google sign-in prompt for permanent cloud weight history.
+  - [x] **Quality & Verification**:
+    - Vitest unit tests: **125/125 passing** across 15 test files.
+    - Playwright automated verification (`scripts/verify-period-summary.mjs`) verified at 360px and 1280px in both light and dark modes: seeded 3 days of logs, switched between 3, 7, and 30 days, asserted totals and averages, verified low-logging notice at 7 and 30 days, verified chart and compact summary.
+    - TypeScript strict clean (`tsc --noEmit`), ESLint clean (0 errors, 0 warnings), production build clean (96/96 routes).
 
 ---
 
 ## Current Status
 
-- **Current focus:** Product simplification batch complete and verified across all viewports.
-- **Branch state:** All tasks complete, commits ready, no remote push performed.
-- **Last updated:** 2026-11-06 13:43 UTC+6
+- **Current focus:** Period summary batch complete and verified across all viewports.
+- **Branch state:** All tasks complete, clean working directory, no remote push performed.
+- **Last updated:** 2026-11-06 14:24 UTC+6

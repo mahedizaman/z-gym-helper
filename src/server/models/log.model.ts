@@ -107,8 +107,13 @@ export interface IDailySummary extends Document {
   totalProtein: number;
   totalCarbs: number;
   totalFat: number;
+  totalFiber: number;
   exerciseBurnKcal: number;
   netBalanceKcal: number;
+  targetKcal: number;
+  targetProtein: number;
+  targetBurn: number;
+  logged: boolean;
   workoutDone: boolean;
   mealCount: number;
   createdAt: Date;
@@ -123,8 +128,13 @@ const DailySummarySchema = new Schema<IDailySummary>(
     totalProtein: { type: Number, default: 0 },
     totalCarbs: { type: Number, default: 0 },
     totalFat: { type: Number, default: 0 },
+    totalFiber: { type: Number, default: 0 },
     exerciseBurnKcal: { type: Number, default: 0 },
     netBalanceKcal: { type: Number, default: 0 },
+    targetKcal: { type: Number, default: 0 },
+    targetProtein: { type: Number, default: 0 },
+    targetBurn: { type: Number, default: 0 },
+    logged: { type: Boolean, default: false },
     workoutDone: { type: Boolean, default: false },
     mealCount: { type: Number, default: 0 },
   },
